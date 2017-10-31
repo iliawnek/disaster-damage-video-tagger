@@ -22,6 +22,7 @@ export default {
 $font-stack: Rubik, sans-serif
 
 #app
+  font-size: 20px
   font-family: $font-stack
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
@@ -32,5 +33,4 @@ $font-stack: Rubik, sans-serif
   padding: 20px 28px
 div, header
   box-sizing: border-box
-
 </style>
