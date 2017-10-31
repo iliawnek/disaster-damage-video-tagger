@@ -6,7 +6,8 @@ export default {
 
 <template lang="pug">
   header
-    .title DISASTER DAMAGE VIDEO TAGGER
+    .title
+      router-link(:to="{name: 'Home'}") DISASTER DAMAGE VIDEO TAGGER
 </template>
 
 <style scoped lang="sass">
@@ -17,6 +18,4 @@ header
   height: 80px
   padding: 28px
   font-size: 20px
-.title
-
 </style>

@@ -1,13 +1,12 @@
 <script>
 export default {
-  name: 'Home',
+  name: 'Video',
 }
 </script>
 
 <template lang="pug">
   div
-    p: b {{this.$options.name}}
-    p: router-link(to="browse") Browse
+    p: b Uncut Drone footage earthquake Kathmandu Bhaktapur Nepal
 </template>
 
 <style scoped lang="sass">

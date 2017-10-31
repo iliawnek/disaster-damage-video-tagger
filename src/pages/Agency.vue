@@ -1,13 +1,12 @@
 <script>
 export default {
-  name: 'Home',
+  name: 'Agency',
 }
 </script>
 
 <template lang="pug">
   div
     p: b {{this.$options.name}}
-    p: router-link(to="browse") Browse
 </template>
 
 <style scoped lang="sass">
