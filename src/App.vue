@@ -1,25 +1,39 @@
 <script>
-import HeaderBar from '@/components/HeaderBar'
+import Toolbar from '@/components/Toolbar'
+import Sidenav from '@/components/Sidenav'
+import SignInDialog from './components/SignInDialog.vue'
+import RegisterDialog from './components/RegisterDialog.vue'
 
 export default {
   name: 'app',
   components: {
-    HeaderBar,
+    Toolbar,
+    Sidenav,
+    SignInDialog,
+    RegisterDialog,
+  },
+  beforeCreate () {
+    this.$store.dispatch('auth/getUser')
   },
 }
 </script>
 
 <template lang="pug">
   #app
-    header-bar
+    toolbar
+    sidenav
+    sign-in-dialog
+    register-dialog
     .container
       router-view
 </template>
 
 <style lang="sass">
-@import url('https://fonts.googleapis.com/css?family=Rubik:400,700')
+@import '../node_modules/vue-material/dist/vue-material.css'
+@import url('//fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic')
+@import url('//fonts.googleapis.com/icon?family=Material+Icons')
 
-$font-stack: Rubik, sans-serif
+$font-stack: Roboto, sans-serif
 
 #app
   font-size: 20px
