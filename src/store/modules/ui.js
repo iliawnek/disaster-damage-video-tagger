@@ -1,28 +1,23 @@
 export default {
   namespaced: true,
   state: {
-    isSidenavShown: false,
+    isLeftDrawerShown: false,
+    isRightDrawerShown: false,
     isSignInDialogShown: false,
     isRegisterDialogShown: false,
   },
   mutations: {
-    showSidenav: (moduleState) => {
-      moduleState.isSidenavShown = true
+    showLeftDrawer: (state) => {
+      state.isLeftDrawerShown = true
     },
-    hideSidenav: (moduleState) => {
-      moduleState.isSidenavShown = false
+    hideLeftDrawer: (state) => {
+      state.isLeftDrawerShown = false
     },
-    showSignInDialog: (moduleState) => {
-      moduleState.isSignInDialogShown = true
+    showRightDrawer: (state) => {
+      state.isRightDrawerShown = true
     },
-    hideSignInDialog: (moduleState) => {
-      moduleState.isSignInDialogShown = false
-    },
-    showRegisterDialog: (moduleState) => {
-      moduleState.isRegisterDialogShown = true
-    },
-    hideRegisterDialog: (moduleState) => {
-      moduleState.isRegisterDialogShown = false
+    hideRightDrawer: (state) => {
+      state.isRightDrawerShown = false
     },
   },
 }

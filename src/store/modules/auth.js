@@ -1,3 +1,4 @@
+import firebase from 'firebase'
 import {db, auth} from '^/firebase'
 import moment from 'moment'
 import {firebaseAction} from 'vuexfire'
@@ -11,20 +12,17 @@ export default {
     data: null,
   },
   getters: {
-    signedIn: state => (state.user !== null),
+    signedIn: state => (state.user !== null && state.data !== null),
+    isSiteAdmin: (state, getters) => (getters.signedIn && state.data.type === 'site admin'),
   },
   mutations: {
-    updateUser (state, {user, from}) {
-      let updates = {}
-      if (from === 'auth') {
-        const {email, uid} = user
-        updates = {email, uid}
-      } else if (from === 'db') {
-        updates = user
-      }
+    updateUser (state, {user}) {
       state.user = {
         ...state.user,
-        ...updates,
+        uid: user.uid,
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
       }
     },
     clearUser (state) {
@@ -39,40 +37,42 @@ export default {
       }
     ),
 
-    async register ({dispatch}, {email, password}) {
-      try {
-        const user = await auth.createUserWithEmailAndPassword(email, password)
-        dispatch('saveNewUser', user)
-      } catch (error) {
-        console.log(error)
+    async signInWithGoogle ({dispatch}) {
+      const provider = new firebase.auth.GoogleAuthProvider()
+      const result = await auth.signInWithPopup(provider)
+      const token = result.credential.accessToken
+      const user = result.user
+      dispatch('saveUser', {user, token})
+    },
+
+    saveUser (context, {user, token}) {
+      // Check if user already exists.
+      let userExists
+      usersRef.once('value', snapshot => {
+        userExists = snapshot.hasChild(user.uid)
+      })
+      if (!userExists) {
+        usersRef.child(user.uid).set({
+          type: 'volunteer',
+          token,
+          createdAt: moment().toISOString(),
+        })
       }
     },
-    saveNewUser (context, {uid}) {
-      usersRef.child(uid).set({
-        type: 'volunteer',
-        createdAt: moment().toISOString(),
-      })
-    },
-    saveExistingUser (context, {uid}) {
-      usersRef.child(uid).update({
-        updatedAt: moment().toISOString(),
-      })
-    },
+
     async getUser ({commit, dispatch}) {
       auth.onAuthStateChanged(user => {
         if (user) {
-          commit('updateUser', {user, from: 'auth'})
+          commit('updateUser', {user})
           dispatch('setDataRef', usersRef.child(user.uid))
         } else commit('clearUser')
       })
     },
+
     async signOut ({commit}) {
       await auth.signOut()
       commit('clearUser')
-      commit('ui/hideSidenav', null, {root: true})
-    },
-    signIn (context, {email, password}) {
-      auth.signInWithEmailAndPassword(email, password)
+      commit('ui/hideRightDrawer', null, {root: true})
     },
   },
 }
