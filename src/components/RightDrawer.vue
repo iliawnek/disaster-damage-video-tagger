@@ -22,6 +22,14 @@ export default {
     },
   },
 
+  watch: {
+    signedIn (newValue) {
+      if (newValue) {
+        this.$router.push({name: 'Browse'})
+      }
+    },
+  },
+
   methods: {
     ...mapMutations({
       showRightDrawer: 'ui/showRightDrawer',
