@@ -2,6 +2,7 @@ import firebase from 'firebase'
 import {db, auth} from '^/firebase'
 import moment from 'moment'
 import {firebaseAction} from 'vuexfire'
+import router from '@/router'
 
 const usersRef = db.ref('users')
 
@@ -43,6 +44,7 @@ export default {
       const token = result.credential.accessToken
       const user = result.user
       dispatch('saveUser', {user, token})
+      router.push({name: 'Browse'})
     },
 
     saveUser (context, {user, token}) {
@@ -74,6 +76,7 @@ export default {
       await auth.signOut()
       commit('clearUser')
       commit('ui/hideRightDrawer', null, {root: true})
+      router.push({name: 'Home'})
     },
   },
 }
