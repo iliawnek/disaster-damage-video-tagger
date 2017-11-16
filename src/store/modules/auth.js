@@ -60,11 +60,12 @@ export default {
       }
     },
 
-    async getUser ({commit, dispatch}) {
+    getUser ({commit, dispatch}) {
       auth.onAuthStateChanged(user => {
         if (user) {
           commit('updateUser', {user})
           dispatch('setDataRef', usersRef.child(user.uid))
+          commit('ui/hideRightDrawer', null, {root: true})
         } else commit('clearUser')
       })
     },
