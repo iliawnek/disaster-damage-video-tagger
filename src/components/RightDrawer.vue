@@ -62,6 +62,4 @@ export default {
 </template>
 
 <style scoped lang="sass">
-  .md-drawer
-    background-color: white
 </style>
