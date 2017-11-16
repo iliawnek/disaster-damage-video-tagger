@@ -1,19 +1,17 @@
 <script>
 import {mapMutations} from 'vuex'
+import {mapBoolean} from '@/utilities'
 
 export default {
   name: 'left-drawer',
 
   computed: {
-    isLeftDrawerShown: {
-      get () {
-        return this.$store.state.ui.isLeftDrawerShown
-      },
-      set (value) {
-        if (value) this.showLeftDrawer()
-        else this.hideLeftDrawer()
-      },
-    },
+    ...mapBoolean({
+      namespace: 'ui',
+      key: 'isLeftDrawerShown',
+      setTrue: 'showLeftDrawer',
+      setFalse: 'hideLeftDrawer',
+    }),
   },
 
   methods: {

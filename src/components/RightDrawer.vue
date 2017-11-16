@@ -1,5 +1,6 @@
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
+import {mapBoolean} from '@/utilities'
 
 export default {
   name: 'right-drawer',
@@ -11,15 +12,12 @@ export default {
     ...mapGetters({
       signedIn: 'auth/signedIn',
     }),
-    isRightDrawerShown: {
-      get () {
-        return this.$store.state.ui.isRightDrawerShown
-      },
-      set (value) {
-        if (value) this.showRightDrawer()
-        else this.hideRightDrawer()
-      },
-    },
+    ...mapBoolean({
+      namespace: 'ui',
+      key: 'isRightDrawerShown',
+      setTrue: 'showRightDrawer',
+      setFalse: 'hideRightDrawer',
+    }),
   },
 
   watch: {
