@@ -2,7 +2,7 @@
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
 
 export default {
-  name: 'left-drawer',
+  name: 'right-drawer',
 
   computed: {
     ...mapState({
