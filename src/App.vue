@@ -31,9 +31,14 @@ export default {
 </template>
 
 <style lang="sass">
+@import '~vue-material/dist/vue-material.min.css'
 @import url('//fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic')
 @import url('//fonts.googleapis.com/icon?family=Material+Icons')
+@import '~vue-material/dist/theme/engine'
+@include md-register-theme('default', (primary: md-get-palette-color(blue, A200), accent: md-get-palette-color(red, A200)))
+@import '~vue-material/dist/theme/all'
 
 html
   $font-stack: Roboto, sans-serif
+  overflow: hidden
 </style>
