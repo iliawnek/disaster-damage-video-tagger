@@ -2,6 +2,9 @@
 import Toolbar from '@/components/Toolbar'
 import LeftDrawer from '@/components/LeftDrawer'
 import RightDrawer from '@/components/RightDrawer'
+import NewAgencyDialog from '@/components/NewAgencyDialog'
+import NewEventDialog from '@/components/NewEventDialog'
+import NewVideoDialog from '@/components/NewVideoDialog'
 
 export default {
   name: 'app',
@@ -9,6 +12,9 @@ export default {
     Toolbar,
     LeftDrawer,
     RightDrawer,
+    NewAgencyDialog,
+    NewEventDialog,
+    NewVideoDialog,
   },
   data () {
     return {
@@ -28,6 +34,9 @@ export default {
     toolbar
     left-drawer
     right-drawer
+    new-agency-dialog
+    new-event-dialog
+    new-video-dialog
     #content
       router-view
 </template>

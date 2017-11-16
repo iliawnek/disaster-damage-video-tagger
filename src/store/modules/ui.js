@@ -1,23 +1,42 @@
 export default {
   namespaced: true,
   state: {
-    isLeftDrawerShown: false,
-    isRightDrawerShown: false,
-    isSignInDialogShown: false,
-    isRegisterDialogShown: false,
+    isLeftDrawerOpen: false,
+    isRightDrawerOpen: false,
+    isNewAgencyDialogOpen: false,
+    isNewEventDialogOpen: false,
+    isNewVideoDialogOpen: false,
   },
   mutations: {
-    showLeftDrawer: (state) => {
-      state.isLeftDrawerShown = true
+    openLeftDrawer: (state) => {
+      state.isLeftDrawerOpen = true
     },
-    hideLeftDrawer: (state) => {
-      state.isLeftDrawerShown = false
+    closeLeftDrawer: (state) => {
+      state.isLeftDrawerOpen = false
     },
-    showRightDrawer: (state) => {
-      state.isRightDrawerShown = true
+    openRightDrawer: (state) => {
+      state.isRightDrawerOpen = true
     },
-    hideRightDrawer: (state) => {
-      state.isRightDrawerShown = false
+    closeRightDrawer: (state) => {
+      state.isRightDrawerOpen = false
+    },
+    openNewAgencyDialog: (state) => {
+      state.isNewAgencyDialogOpen = true
+    },
+    closeNewAgencyDialog: (state) => {
+      state.isNewAgencyDialogOpen = false
+    },
+    openNewEventDialog: (state) => {
+      state.isNewEventDialogOpen = true
+    },
+    closeNewEventDialog: (state) => {
+      state.isNewEventDialogOpen = false
+    },
+    openNewVideoDialog: (state) => {
+      state.isNewVideoDialogOpen = true
+    },
+    closeNewVideoDialog: (state) => {
+      state.isNewVideoDialogOpen = false
     },
   },
 }

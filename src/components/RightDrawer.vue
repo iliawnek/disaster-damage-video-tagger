@@ -14,9 +14,9 @@ export default {
     }),
     ...mapBoolean({
       namespace: 'ui',
-      key: 'isRightDrawerShown',
-      setTrue: 'showRightDrawer',
-      setFalse: 'hideRightDrawer',
+      key: 'isRightDrawerOpen',
+      setTrue: 'openRightDrawer',
+      setFalse: 'closeRightDrawer',
     }),
   },
 
@@ -25,8 +25,8 @@ export default {
 
   methods: {
     ...mapMutations({
-      showRightDrawer: 'ui/showRightDrawer',
-      hideRightDrawer: 'ui/hideRightDrawer',
+      openRightDrawer: 'ui/openRightDrawer',
+      closeRightDrawer: 'ui/closeRightDrawer',
     }),
     ...mapActions({
       signOut: 'auth/signOut',
@@ -38,7 +38,7 @@ export default {
 
 <template lang="pug">
   md-drawer(
-  :md-active.sync="isRightDrawerShown"
+  :md-active.sync="isRightDrawerOpen"
   md-right
   )
     div(v-if="!signedIn")

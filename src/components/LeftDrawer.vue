@@ -8,16 +8,16 @@ export default {
   computed: {
     ...mapBoolean({
       namespace: 'ui',
-      key: 'isLeftDrawerShown',
-      setTrue: 'showLeftDrawer',
-      setFalse: 'hideLeftDrawer',
+      key: 'isLeftDrawerOpen',
+      setTrue: 'openLeftDrawer',
+      setFalse: 'closeLeftDrawer',
     }),
   },
 
   methods: {
     ...mapMutations({
-      showLeftDrawer: 'ui/showLeftDrawer',
-      hideLeftDrawer: 'ui/hideLeftDrawer',
+      openLeftDrawer: 'ui/openLeftDrawer',
+      closeLeftDrawer: 'ui/closeLeftDrawer',
     }),
   },
 }
@@ -25,7 +25,7 @@ export default {
 
 <template lang="pug">
   md-drawer(
-      :md-active.sync="isLeftDrawerShown"
+      :md-active.sync="isLeftDrawerOpen"
     )
       md-list
         md-list-item
