@@ -28,6 +28,8 @@ export default {
     toolbar
     left-drawer
     right-drawer
+    #content
+      router-view
 </template>
 
 <style lang="sass">
