@@ -58,7 +58,7 @@ export default {
           .md-list-item-text
             span {{user.displayName}}
             span {{user.email}}
-      md-button(v-if="signedIn" @click="signOut") Sign out
+          md-button(v-if="signedIn" @click="signOut") Sign out
 </template>
 
 <style scoped lang="sass">
