@@ -5,9 +5,9 @@ import Browse from '@/pages/Browse'
 import BrowseVideos from '@/pages/BrowseVideos'
 import BrowseEvents from '@/pages/BrowseEvents'
 import BrowseAgencies from '@/pages/BrowseAgencies'
-import Video from '@/pages/Video'
-import Event from '@/pages/Event'
 import Agency from '@/pages/Agency'
+import Event from '@/pages/Event'
+import Video from '@/pages/Video'
 
 Vue.use(Router)
 
@@ -26,22 +26,25 @@ export default new Router({
       children: [
         {
           path: 'videos',
+          name: 'Videos',
           component: BrowseVideos,
         },
         {
           path: 'events',
+          name: 'Events',
           component: BrowseEvents,
         },
         {
           path: 'agencies',
+          name: 'Agencies',
           component: BrowseAgencies,
         },
       ],
     },
     {
-      path: '/video/:videoId',
-      name: 'Video',
-      component: Video,
+      path: '/agency/:agencyId',
+      name: 'Agency',
+      component: Agency,
     },
     {
       path: '/event/:eventId',
@@ -49,9 +52,9 @@ export default new Router({
       component: Event,
     },
     {
-      path: '/agency/:agencyId',
-      name: 'Agency',
-      component: Agency,
+      path: '/event/:eventId/:videoId',
+      name: 'Video',
+      component: Video,
     },
   ],
 })
