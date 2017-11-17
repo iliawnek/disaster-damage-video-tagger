@@ -1,11 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/pages/Home'
-import Me from '@/pages/Me'
 import Browse from '@/pages/Browse'
-import Agency from '@/pages/Agency'
-import Event from '@/pages/Event'
+import BrowseVideos from '@/pages/BrowseVideos'
+import BrowseEvents from '@/pages/BrowseEvents'
+import BrowseAgencies from '@/pages/BrowseAgencies'
 import Video from '@/pages/Video'
+import Event from '@/pages/Event'
+import Agency from '@/pages/Agency'
 
 Vue.use(Router)
 
@@ -17,29 +19,39 @@ export default new Router({
       component: Home,
     },
     {
-      path: '/me',
-      name: 'Me',
-      component: Me,
-    },
-    {
       path: '/browse',
+      redirect: '/browse/videos',
       name: 'Browse',
       component: Browse,
+      children: [
+        {
+          path: 'videos',
+          component: BrowseVideos,
+        },
+        {
+          path: 'events',
+          component: BrowseEvents,
+        },
+        {
+          path: 'agencies',
+          component: BrowseAgencies,
+        },
+      ],
     },
     {
-      path: '/:agencyId',
-      name: 'Agency',
-      component: Agency,
+      path: '/video/:videoId',
+      name: 'Video',
+      component: Video,
     },
     {
-      path: '/:agencyId/:eventId',
+      path: '/event/:eventId',
       name: 'Event',
       component: Event,
     },
     {
-      path: '/:agencyId/:eventId/:videoId',
-      name: 'Video',
-      component: Video,
+      path: '/agency/:agencyId',
+      name: 'Agency',
+      component: Agency,
     },
   ],
 })
