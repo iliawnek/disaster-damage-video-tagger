@@ -28,15 +28,12 @@ export default {
       :md-active.sync="isLeftDrawerOpen"
     )
       md-list
-        md-list-item
-          md-icon move_to_inbox
-          span.md-list-item-text Videos
-        md-list-item
-          md-icon send
-          span.md-list-item-text Events
-        md-list-item
-          md-icon delete
-          span.md-list-item-text Agencies
+        md-list-item(to="/" @click="closeLeftDrawer")
+          md-icon home
+          span.md-list-item-text Home
+        md-list-item(to="/browse" @click="closeLeftDrawer")
+          md-icon view_comfy
+          span.md-list-item-text Browse
 </template>
 
 <style scoped lang="sass">
