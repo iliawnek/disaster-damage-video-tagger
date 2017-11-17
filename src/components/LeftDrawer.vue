@@ -25,15 +25,17 @@ export default {
 
 <template lang="pug">
   md-drawer(
-      :md-active.sync="isLeftDrawerOpen"
-    )
-      md-list
-        md-list-item(to="/" @click="closeLeftDrawer")
-          md-icon home
-          span.md-list-item-text Home
-        md-list-item(to="/browse" @click="closeLeftDrawer")
-          md-icon view_comfy
-          span.md-list-item-text Browse
+  :md-active.sync="isLeftDrawerOpen"
+  )
+    md-toolbar.md-medium.md-primary
+      h3.md-title Disaster Damage Video Tagger
+    md-list
+      md-list-item(to="/" @click="closeLeftDrawer")
+        md-icon home
+        span.md-list-item-text Home
+      md-list-item(to="/browse" @click="closeLeftDrawer")
+        md-icon view_comfy
+        span.md-list-item-text Browse
 </template>
 
 <style scoped lang="sass">
