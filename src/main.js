@@ -6,9 +6,11 @@ import router from '@/router'
 import store from '@/store'
 import VueFire from 'vuefire'
 import VueMaterial from 'vue-material'
+import Vuelidate from 'vuelidate'
 
 Vue.use(VueFire)
 Vue.use(VueMaterial)
+Vue.use(Vuelidate)
 
 Vue.config.productionTip = false
 
