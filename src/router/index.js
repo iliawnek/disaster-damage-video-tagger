@@ -2,9 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/pages/Home'
 import Browse from '@/pages/Browse'
-import BrowseVideos from '@/pages/BrowseVideos'
-import BrowseEvents from '@/pages/BrowseEvents'
-import BrowseAgencies from '@/pages/BrowseAgencies'
 import Agency from '@/pages/Agency'
 import Event from '@/pages/Event'
 import Video from '@/pages/Video'
@@ -27,17 +24,14 @@ export default new Router({
         {
           path: 'videos',
           name: 'Videos',
-          component: BrowseVideos,
         },
         {
           path: 'events',
           name: 'Events',
-          component: BrowseEvents,
         },
         {
           path: 'agencies',
           name: 'Agencies',
-          component: BrowseAgencies,
         },
       ],
     },
