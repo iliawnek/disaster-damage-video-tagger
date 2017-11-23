@@ -1,23 +1,48 @@
 <script>
-import {mapMutations} from 'vuex'
+import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
 
 export default {
   name: 'browse-events',
+
+  created () {
+    this.loadEvents()
+  },
+
+  computed: {
+    ...mapState({
+      events: state => state.event.events,
+    }),
+    ...mapGetters({
+      eventsExist: 'event/eventsExist',
+    }),
+  },
+
   methods: {
     ...mapMutations({
       openNewEventDialog: 'ui/openNewEventDialog',
+    }),
+    ...mapActions({
+      loadEvents: 'event/loadEvents',
     }),
   },
 }
 </script>
 
 <template lang="pug">
-  md-empty-state(
-  md-icon="event"
-  md-label="No events right now"
-  md-description="As soon as an event occurs, it will appear here."
-  )
-    md-button.md-raised.md-primary(@click="openNewEventDialog") Create new event
+  #browse-events
+    md-empty-state(
+    v-if="!eventsExist"
+    md-icon="event"
+    md-label="No events right now"
+    md-description="As soon as an event occurs, it will appear here."
+    )
+      md-button.md-raised.md-primary(@click="openNewEventDialog") Create new event
+    md-list
+      md-list-item(
+      v-for="event in events"
+      :to="`/event/${event['.key']}`"
+      :key="event['.key']"
+      ) {{event.name}}
 </template>
 
 <style scoped lang="sass">
