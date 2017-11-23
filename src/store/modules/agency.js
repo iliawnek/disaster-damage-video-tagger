@@ -8,7 +8,7 @@ export default {
   state: {
   },
   actions: {
-    saveNewAgency ({rootState, dispatch}, {agency, admin}) {
+    saveNewAgency ({rootState}, {agency, admin}) {
       // save agency
       const newAgencyRef = agenciesRef.push()
       const newAgencyId = newAgencyRef.key
