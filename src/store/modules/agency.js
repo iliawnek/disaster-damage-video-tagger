@@ -24,14 +24,18 @@ export default {
 
   actions: {
     setAgenciesRef: firebaseAction(
-      ({bindFirebaseRef}, ref) => {
-        bindFirebaseRef('agencies', ref)
+      ({bindFirebaseRef}, {ref, commit}) => {
+        bindFirebaseRef('agencies', ref, {
+          readyCallback: () => {
+            commit('setAgenciesLoaded')
+          },
+        })
       }
     ),
 
     loadAgencies ({dispatch, commit, state}) {
       if (!state.agenciesLoaded) {
-        dispatch('setAgenciesRef', agenciesRef)
+        dispatch('setAgenciesRef', {ref: agenciesRef, commit})
       }
       commit('setAgenciesLoaded')
     },

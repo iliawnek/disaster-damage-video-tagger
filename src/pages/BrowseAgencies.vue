@@ -11,6 +11,7 @@ export default {
   computed: {
     ...mapState({
       agencies: state => state.agency.agencies,
+      agenciesLoaded: state => state.agency.agenciesLoaded,
     }),
     ...mapGetters({
       agenciesExist: 'agency/agenciesExist',
@@ -31,7 +32,7 @@ export default {
 <template lang="pug">
   #browse-agencies
     md-empty-state(
-    v-if="!agenciesExist"
+    v-if="!agenciesExist && agenciesLoaded"
     md-icon="people"
     md-label="No agencies"
     md-description="There are no agencies in the system yet."

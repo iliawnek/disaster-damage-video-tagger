@@ -11,6 +11,7 @@ export default {
   computed: {
     ...mapState({
       events: state => state.event.events,
+      eventsLoaded: state => state.event.eventsLoaded,
     }),
     ...mapGetters({
       eventsExist: 'event/eventsExist',
@@ -31,7 +32,7 @@ export default {
 <template lang="pug">
   #browse-events
     md-empty-state(
-    v-if="!eventsExist"
+    v-if="!eventsExist && eventsLoaded"
     md-icon="event"
     md-label="No events right now"
     md-description="As soon as an event occurs, it will appear here."

@@ -9,24 +9,37 @@ export default {
 
   state: {
     events: [],
+    eventsLoaded: false,
   },
 
   getters: {
     eventsExist: state => state.events.length > 0,
   },
 
+  mutations: {
+    setEventsLoaded (state) {
+      state.eventsLoaded = true
+    },
+  },
+
   actions: {
     setEventsRef: firebaseAction(
-      ({bindFirebaseRef}, ref) => {
-        bindFirebaseRef('events', ref)
+      ({bindFirebaseRef}, {ref, commit}) => {
+        bindFirebaseRef('events', ref, {
+          readyCallback: () => {
+            commit('setEventsLoaded')
+          },
+        })
       }
     ),
 
-    loadEvents ({dispatch}) {
-      dispatch('setEventsRef', eventsRef)
+    loadEvents ({dispatch, commit, state}) {
+      if (!state.eventsLoaded) {
+        dispatch('setEventsRef', {ref: eventsRef, commit})
+      }
     },
 
-    saveNewEvent ({rootState}, {event}) {
+    saveNewEvent ({event}) {
       // save event
       const newEventRef = eventsRef.push()
       const newEventId = newEventRef.key
