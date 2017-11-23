@@ -40,7 +40,8 @@ export default {
     md-list
       md-list-item(
       v-for="agency in agencies"
-      :to="'/agency/' + agency['.key']"
+      :to="`/agency/${agency['.key']}`"
+      :key="agency['.key']"
       ) {{agency.name}}
 </template>
 
