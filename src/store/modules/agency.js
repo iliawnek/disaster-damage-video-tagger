@@ -53,18 +53,18 @@ export default {
       }
     },
 
-    saveNewAgency ({rootState}, {agency, admin}) {
+    saveNewAgency ({rootState}, {agency}) {
       // save agency
       const newAgencyRef = agenciesRef.push()
       const newAgencyId = newAgencyRef.key
+      const uid = rootState.auth.user.uid
       newAgencyRef.set({
         ...agency,
         admins: {
-          [admin]: true,
+          [uid]: true,
         },
       })
       // save user
-      const uid = rootState.auth.user.uid
       usersRef.child(uid).child('adminOf').update({
         [newAgencyId]: true,
       })

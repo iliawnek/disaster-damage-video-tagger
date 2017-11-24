@@ -1,5 +1,5 @@
 <script>
-import {mapState, mapActions} from 'vuex'
+import {mapActions} from 'vuex'
 import {mapBoolean} from '@/utilities'
 import {required, minLength} from 'vuelidate/lib/validators'
 
@@ -24,9 +24,6 @@ export default {
   },
 
   computed: {
-    ...mapState({
-      uid: state => state.auth.user.uid,
-    }),
     ...mapBoolean({
       namespace: 'ui',
       key: 'isNewAgencyDialogOpen',
@@ -61,7 +58,6 @@ export default {
       if (!this.$v.$invalid) {
         this.saveNewAgency({
           agency: this.form,
-          admin: this.uid,
         })
         this.isNewAgencyDialogOpen = false
       }
