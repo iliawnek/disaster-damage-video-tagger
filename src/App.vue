@@ -1,7 +1,7 @@
 <script>
 import Toolbar from '@/components/Toolbar'
-import LeftDrawer from '@/components/LeftDrawer'
-import RightDrawer from '@/components/RightDrawer'
+import NavigationDrawer from '@/components/NavigationDrawer'
+import UserDrawer from '@/components/UserDrawer'
 import NewAgencyDialog from '@/components/NewAgencyDialog'
 import NewEventDialog from '@/components/NewEventDialog'
 import NewVideoDialog from '@/components/NewVideoDialog'
@@ -10,8 +10,8 @@ export default {
   name: 'app',
   components: {
     Toolbar,
-    LeftDrawer,
-    RightDrawer,
+    NavigationDrawer,
+    UserDrawer,
     NewAgencyDialog,
     NewEventDialog,
     NewVideoDialog,
@@ -32,8 +32,8 @@ export default {
 <template lang="pug">
   #app
     toolbar
-    left-drawer
-    right-drawer
+    navigation-drawer
+    user-drawer
     new-agency-dialog
     new-event-dialog
     new-video-dialog

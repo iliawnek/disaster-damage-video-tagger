@@ -12,8 +12,8 @@ export default {
 
   methods: {
     ...mapMutations({
-      openLeftDrawer: 'ui/openLeftDrawer',
-      openRightDrawer: 'ui/openRightDrawer',
+      openNavigationDrawer: 'ui/openNavigationDrawer',
+      openUserDrawer: 'ui/openUserDrawer',
     }),
   },
 }
@@ -21,11 +21,11 @@ export default {
 
 <template lang="pug">
   md-toolbar.md-primary
-      md-button.md-icon-button(@click="openLeftDrawer")
+      md-button.md-icon-button(@click="openNavigationDrawer")
         md-icon menu
       h3.md-title {{this.$route.name}}
-      md-button(v-if="!signedIn" @click="openRightDrawer") Sign in or register
-      md-button.md-icon-button(v-if="signedIn" @click="openRightDrawer")
+      md-button(v-if="!signedIn" @click="openUserDrawer") Sign in or register
+      md-button.md-icon-button(v-if="signedIn" @click="openUserDrawer")
         md-icon person
 </template>
 

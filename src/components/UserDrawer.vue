@@ -3,7 +3,7 @@ import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
 import {mapBoolean} from '@/utilities'
 
 export default {
-  name: 'right-drawer',
+  name: 'user-drawer',
 
   created () {
     this.loadAgencies()
@@ -19,9 +19,9 @@ export default {
     }),
     ...mapBoolean({
       namespace: 'ui',
-      key: 'isRightDrawerOpen',
-      setTrue: 'openRightDrawer',
-      setFalse: 'closeRightDrawer',
+      key: 'isUserDrawerOpen',
+      setTrue: 'openUserDrawer',
+      setFalse: 'closeUserDrawer',
     }),
   },
 
@@ -30,8 +30,8 @@ export default {
 
   methods: {
     ...mapMutations({
-      openRightDrawer: 'ui/openRightDrawer',
-      closeRightDrawer: 'ui/closeRightDrawer',
+      openUserDrawer: 'ui/openUserDrawer',
+      closeUserDrawer: 'ui/closeUserDrawer',
     }),
     ...mapActions({
       signOut: 'auth/signOut',
@@ -50,7 +50,7 @@ export default {
 
 <template lang="pug">
   md-drawer(
-  :md-active.sync="isRightDrawerOpen"
+  :md-active.sync="isUserDrawerOpen"
   md-right
   )
     div(v-if="!signedIn")

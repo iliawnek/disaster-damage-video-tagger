@@ -70,7 +70,7 @@ export default {
         if (user) {
           commit('updateUser', {user})
           dispatch('setDataRef', usersRef.child(user.uid))
-          commit('ui/closeRightDrawer', null, {root: true})
+          commit('ui/closeUserDrawer', null, {root: true})
         } else commit('clearUser')
       })
     },
@@ -78,7 +78,7 @@ export default {
     async signOut ({commit}) {
       await auth.signOut()
       commit('clearUser')
-      commit('ui/closeRightDrawer', null, {root: true})
+      commit('ui/closeUserDrawer', null, {root: true})
       router.push({name: 'Home'})
     },
   },

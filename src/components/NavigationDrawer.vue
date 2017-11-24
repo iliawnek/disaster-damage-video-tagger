@@ -3,21 +3,21 @@ import {mapMutations} from 'vuex'
 import {mapBoolean} from '@/utilities'
 
 export default {
-  name: 'left-drawer',
+  name: 'navigation-drawer',
 
   computed: {
     ...mapBoolean({
       namespace: 'ui',
-      key: 'isLeftDrawerOpen',
-      setTrue: 'openLeftDrawer',
-      setFalse: 'closeLeftDrawer',
+      key: 'isNavigationDrawerOpen',
+      setTrue: 'openNavigationDrawer',
+      setFalse: 'closeNavigationDrawer',
     }),
   },
 
   methods: {
     ...mapMutations({
-      openLeftDrawer: 'ui/openLeftDrawer',
-      closeLeftDrawer: 'ui/closeLeftDrawer',
+      openNavigationDrawer: 'ui/openNavigationDrawer',
+      closeNavigationDrawer: 'ui/closeNavigationDrawer',
     }),
   },
 }
@@ -25,15 +25,15 @@ export default {
 
 <template lang="pug">
   md-drawer(
-  :md-active.sync="isLeftDrawerOpen"
+  :md-active.sync="isNavigationDrawerOpen"
   )
     md-toolbar.md-medium.md-primary
       h3.md-title Disaster Damage Video Tagger
     md-list
-      md-list-item(to="/" @click="closeLeftDrawer")
+      md-list-item(to="/" @click="closeNavigationDrawer")
         md-icon home
         span.md-list-item-text Home
-      md-list-item(to="/browse" @click="closeLeftDrawer")
+      md-list-item(to="/browse" @click="closeNavigationDrawer")
         md-icon view_comfy
         span.md-list-item-text Browse
 </template>
