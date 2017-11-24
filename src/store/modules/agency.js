@@ -10,6 +10,7 @@ export default {
   state: {
     agencies: [],
     agenciesLoaded: false,
+    agenciesLoading: false,
   },
 
   getters: {
@@ -17,7 +18,11 @@ export default {
   },
 
   mutations: {
+    setAgenciesLoading (state) {
+      state.agenciesLoading = true
+    },
     setAgenciesLoaded (state) {
+      state.agenciesLoading = false
       state.agenciesLoaded = true
     },
   },
@@ -34,10 +39,10 @@ export default {
     ),
 
     loadAgencies ({dispatch, commit, state}) {
-      if (!state.agenciesLoaded) {
+      if (!state.agenciesLoaded && !state.agenciesLoading) {
+        commit('setAgenciesLoading')
         dispatch('setAgenciesRef', {ref: agenciesRef, commit})
       }
-      commit('setAgenciesLoaded')
     },
 
     saveNewAgency ({rootState}, {agency, admin}) {

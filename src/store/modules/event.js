@@ -10,6 +10,7 @@ export default {
   state: {
     events: [],
     eventsLoaded: false,
+    eventsLoading: false,
   },
 
   getters: {
@@ -18,7 +19,11 @@ export default {
 
   mutations: {
     setEventsLoaded (state) {
+      state.eventsLoading = false
       state.eventsLoaded = true
+    },
+    setEventsLoading (state) {
+      state.eventsLoading = true
     },
   },
 
@@ -34,12 +39,13 @@ export default {
     ),
 
     loadEvents ({dispatch, commit, state}) {
-      if (!state.eventsLoaded) {
+      if (!state.eventsLoaded && !state.eventsLoading) {
+        commit('setEventsLoading')
         dispatch('setEventsRef', {ref: eventsRef, commit})
       }
     },
 
-    saveNewEvent ({event}) {
+    saveNewEvent (context, {event}) {
       // save event
       const newEventRef = eventsRef.push()
       const newEventId = newEventRef.key
