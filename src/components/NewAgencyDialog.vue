@@ -48,9 +48,7 @@ export default {
 
     clearForm () {
       this.$v.$reset()
-      Object.keys(this.form).forEach(field => {
-        this.form[field] = null
-      })
+      this.form.name = null
     },
 
     validateAgency () {
