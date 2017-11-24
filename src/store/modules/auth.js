@@ -13,11 +13,11 @@ export default {
     data: null,
   },
   getters: {
-    signedIn: state => (state.user !== null && state.data !== null),
+    isSignedIn: (state) => (state.user !== null && state.data !== null),
 
-    isSiteAdmin: (state, getters) => (getters.signedIn && state.data.type === 'site admin'),
+    isSiteAdmin: (state, getters) => (getters.isSignedIn && state.data.type === 'site admin'),
 
-    currentUid: state => state.user && state.user.uid,
+    currentUid: (state) => state.user && state.user.uid,
   },
   mutations: {
     updateUser (state, {user}) {
@@ -29,6 +29,7 @@ export default {
         photoURL: user.photoURL,
       }
     },
+
     clearUser (state) {
       state.user = null
       state.data = null
@@ -53,7 +54,7 @@ export default {
     saveUser (context, {user, token}) {
       // Check if user already exists.
       let userExists
-      usersRef.once('value', snapshot => {
+      usersRef.once('value', (snapshot) => {
         userExists = snapshot.hasChild(user.uid)
       })
       if (!userExists) {
@@ -66,7 +67,7 @@ export default {
     },
 
     getUser ({commit, dispatch}) {
-      auth.onAuthStateChanged(user => {
+      auth.onAuthStateChanged((user) => {
         if (user) {
           commit('updateUser', {user})
           dispatch('setDataRef', usersRef.child(user.uid))

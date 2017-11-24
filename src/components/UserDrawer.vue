@@ -11,10 +11,10 @@ export default {
 
   computed: {
     ...mapState({
-      user: state => state.auth.user,
+      user: (state) => state.auth.user,
     }),
     ...mapGetters({
-      signedIn: 'auth/signedIn',
+      isSignedIn: 'auth/isSignedIn',
       currentUsersAgencies: 'agency/currentUsersAgencies',
     }),
     ...mapBoolean({
@@ -53,9 +53,9 @@ export default {
   :md-active.sync="isUserDrawerOpen"
   md-right
   )
-    div(v-if="!signedIn")
+    div(v-if="!isSignedIn")
       md-button(@click="signInWithGoogle") Sign in with Google
-    div(v-if="signedIn")
+    div(v-if="isSignedIn")
       md-list.md-double-line
         md-list-item
           md-avatar
@@ -63,7 +63,7 @@ export default {
           .md-list-item-text
             span {{user.displayName}}
             span {{user.email}}
-          md-button(v-if="signedIn" @click="signOut") Sign out
+          md-button(v-if="isSignedIn" @click="signOut") Sign out
         md-divider
         md-subheader Your agencies
         md-list-item(

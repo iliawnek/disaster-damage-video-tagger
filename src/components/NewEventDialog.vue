@@ -71,7 +71,7 @@ export default {
       if (!this.$v.$invalid) {
         // transform list of agency names into agencyId index
         const agencies = {}
-        this.form.agencies.forEach(agencyId => {
+        this.form.agencies.forEach((agencyId) => {
           agencies[agencyId] = true
         })
         // save event

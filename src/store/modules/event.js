@@ -9,31 +9,38 @@ export default {
 
   state: {
     events: [],
-    eventsLoaded: false,
-    eventsLoading: false,
+    areEventsLoaded: false,
+    areEventsLoading: false,
   },
 
   getters: {
-    eventsExist: state => state.events.length > 0,
-    getEventById: state => eventId => {
-      return state.events.find(event => event['.key'] === eventId)
-    },
-    eventIdsByName: state => {
+    doEventsExist: (state) => state.events.length > 0,
+
+    eventIdsByName: (state) => {
       const eventIdsByName = {}
-      state.events.forEach(event => {
+      state.events.forEach((event) => {
         eventIdsByName[event.name] = event['.key']
       })
       return eventIdsByName
     },
+
+    getEventById: (state) => (eventId) => {
+      return state.events.find((event) => event['.key'] === eventId)
+    },
+
+    getLinkToEvent: () => (event) => {
+      return `/event/${event['.key']}`
+    },
   },
 
   mutations: {
-    setEventsLoaded (state) {
-      state.eventsLoading = false
-      state.eventsLoaded = true
+    setAreEventsLoaded (state) {
+      state.areEventsLoading = false
+      state.areEventsLoaded = true
     },
-    setEventsLoading (state) {
-      state.eventsLoading = true
+
+    setAreEventsLoading (state) {
+      state.areEventsLoading = true
     },
   },
 
@@ -42,15 +49,15 @@ export default {
       ({bindFirebaseRef}, {ref, commit}) => {
         bindFirebaseRef('events', ref, {
           readyCallback: () => {
-            commit('setEventsLoaded')
+            commit('setAreEventsLoaded')
           },
         })
       }
     ),
 
     loadEvents ({dispatch, commit, state}) {
-      if (!state.eventsLoaded && !state.eventsLoading) {
-        commit('setEventsLoading')
+      if (!state.areEventsLoaded && !state.areEventsLoading) {
+        commit('setAreEventsLoading')
         dispatch('setEventsRef', {ref: eventsRef, commit})
       }
     },
@@ -62,7 +69,7 @@ export default {
       newEventRef.set(event)
       // save agencies
       const eventIds = Object.keys(event.agencies)
-      eventIds.forEach(agencyId => {
+      eventIds.forEach((agencyId) => {
         agenciesRef.child(agencyId).child('events').update({
           [newEventId]: true,
         })

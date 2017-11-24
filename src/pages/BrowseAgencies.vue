@@ -10,11 +10,11 @@ export default {
 
   computed: {
     ...mapState({
-      agencies: state => state.agency.agencies,
-      agenciesLoaded: state => state.agency.agenciesLoaded,
+      agencies: (state) => state.agency.agencies,
+      areAgenciesLoaded: (state) => state.agency.areAgenciesLoaded,
     }),
     ...mapGetters({
-      agenciesExist: 'agency/agenciesExist',
+      doAgenciesExist: 'agency/doAgenciesExist',
     }),
   },
 
@@ -28,9 +28,12 @@ export default {
     getEventById (eventId) {
       return this.$store.getters['event/getEventById'](eventId)
     },
+    getLinkToAgency (agency) {
+      return this.$store.getters['agency/getLinkToAgency'](agency)
+    },
     eventListString (events) {
       return Object.keys(events)
-        .map(eventId => this.getEventById(eventId).name)
+        .map((eventId) => this.getEventById(eventId).name)
         .join(', ')
     },
   },
@@ -40,7 +43,7 @@ export default {
 <template lang="pug">
   #browse-agencies
     md-empty-state(
-    v-if="!agenciesExist && agenciesLoaded"
+    v-if="!doAgenciesExist && areAgenciesLoaded"
     md-icon="people"
     md-label="No agencies"
     md-description="There are no agencies in the system yet."
@@ -49,7 +52,7 @@ export default {
     md-list.md-double-line
       md-list-item(
       v-for="agency in agencies"
-      :to="`/agency/${agency['.key']}`"
+      :to="getLinkToAgency(agency)"
       :key="agency['.key']"
       )
         .md-list-item-text

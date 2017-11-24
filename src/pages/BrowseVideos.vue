@@ -10,11 +10,11 @@ export default {
 
   computed: {
     ...mapState({
-      videos: state => state.video.videos,
-      videosLoaded: state => state.video.videosLoaded,
+      videos: (state) => state.video.videos,
+      areVideosLoaded: (state) => state.video.areVideosLoaded,
     }),
     ...mapGetters({
-      videosExist: 'video/videosExist',
+      doVideosExist: 'video/doVideosExist',
     }),
   },
 
@@ -28,6 +28,9 @@ export default {
     getEventById (eventId) {
       return this.$store.getters['event/getEventById'](eventId)
     },
+    getLinkToVideo (video) {
+      return this.$store.getters['video/getLinkToVideo'](video)
+    },
   },
 }
 </script>
@@ -35,7 +38,7 @@ export default {
 <template lang="pug">
   #browse-videos
     md-empty-state(
-    v-if="!videosExist && videosLoaded"
+    v-if="!doVideosExist && areVideosLoaded"
     md-icon="video_library"
     md-label="We're out of videos!"
     md-description="You can submit a video now, or check here later."
@@ -44,7 +47,7 @@ export default {
     md-list.md-double-line
       md-list-item(
       v-for="video in videos"
-      :to="`/video/${video['.key']}`"
+      :to="getLinkToVideo(video)"
       :key="video['.key']"
       )
         .md-list-item-text

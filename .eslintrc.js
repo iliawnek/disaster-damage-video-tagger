@@ -23,6 +23,9 @@ module.exports = {
     'generator-star-spacing': 0,
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
+    // enforce comma dangle
     'comma-dangle': ['warn', 'always-multiline'],
+    // arrow function parameters must be enclosed within parentheses
+    'arrow-parens': ['warn', 'always']
   }
 }

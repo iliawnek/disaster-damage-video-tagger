@@ -9,21 +9,26 @@ export default {
 
   state: {
     videos: [],
-    videosLoaded: false,
-    videosLoading: false,
+    areVideosLoaded: false,
+    areVideosLoading: false,
   },
 
   getters: {
-    videosExist: state => state.videos.length > 0,
+    doVideosExist: (state) => state.videos.length > 0,
+
+    getLinkToVideo: () => (video) => {
+      return `/video/${video['.key']}`
+    },
   },
 
   mutations: {
-    setVideosLoaded (state) {
-      state.videosLoading = false
-      state.videosLoaded = true
+    setAreVideosLoaded (state) {
+      state.areVideosLoading = false
+      state.areVideosLoaded = true
     },
-    setVideosLoading (state) {
-      state.videosLoading = true
+
+    setAreVideosLoading (state) {
+      state.areVideosLoading = true
     },
   },
 
@@ -32,15 +37,15 @@ export default {
       ({bindFirebaseRef}, {ref, commit}) => {
         bindFirebaseRef('videos', ref, {
           readyCallback: () => {
-            commit('setVideosLoaded')
+            commit('setAreVideosLoaded')
           },
         })
       }
     ),
 
     loadVideos ({dispatch, commit, state}) {
-      if (!state.videosLoaded && !state.videosLoading) {
-        commit('setVideosLoading')
+      if (!state.areVideosLoaded && !state.areVideosLoading) {
+        commit('setAreVideosLoading')
         dispatch('setVideosRef', {ref: videosRef, commit})
       }
     },

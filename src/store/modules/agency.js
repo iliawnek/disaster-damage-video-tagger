@@ -9,41 +9,39 @@ export default {
 
   state: {
     agencies: [],
-    agenciesLoaded: false,
-    agenciesLoading: false,
+    areAgenciesLoaded: false,
+    areAgenciesLoading: false,
   },
 
   getters: {
-    agenciesExist: state => state.agencies.length > 0,
+    doAgenciesExist: (state) => state.agencies.length > 0,
 
     currentUsersAgencies: (state, getters, rootState, rootGetters) => {
       const currentUid = rootGetters['auth/currentUid']
-      return state.agencies.filter(agency => agency.admins[currentUid])
+      return state.agencies.filter((agency) => agency.admins[currentUid])
     },
 
-    agencyNames: state => state.agencies.map(agency => agency.name),
-
-    agencyIdsByName: state => {
+    agencyIdsByName: (state) => {
       const agencyIdsByName = {}
-      state.agencies.forEach(agency => {
+      state.agencies.forEach((agency) => {
         agencyIdsByName[agency.name] = agency['.key']
       })
       return agencyIdsByName
     },
 
-    getAgencyById: state => agencyId => {
-      return state.agencies.find(agency => agency['.key'] === agencyId)
+    getAgencyById: (state) => (agencyId) => {
+      return state.agencies.find((agency) => agency['.key'] === agencyId)
     },
 
-    getAgencyAdmins: state => agency => {
+    getAgencyAdmins: (state) => (agency) => {
       return Object.keys(agency.admins)
     },
 
-    getLinkToAgency: () => agency => {
+    getLinkToAgency: () => (agency) => {
       return `/agency/${agency['.key']}`
     },
 
-    isCurrentUserAnAgencyAdmin: (state, getters, rootState, rootGetters) => agency => {
+    isCurrentUserAnAgencyAdmin: (state, getters, rootState, rootGetters) => (agency) => {
       const currentUid = rootGetters['auth/currentUid']
       const agencyAdmins = getters.getAgencyAdmins(agency)
       return agencyAdmins.includes(currentUid)
@@ -51,12 +49,12 @@ export default {
   },
 
   mutations: {
-    setAgenciesLoading (state) {
-      state.agenciesLoading = true
+    setAreAgenciesLoading (state) {
+      state.areAgenciesLoading = true
     },
-    setAgenciesLoaded (state) {
-      state.agenciesLoading = false
-      state.agenciesLoaded = true
+    setAreAgenciesLoaded (state) {
+      state.areAgenciesLoading = false
+      state.areAgenciesLoaded = true
     },
   },
 
@@ -65,15 +63,15 @@ export default {
       ({bindFirebaseRef}, {ref, commit}) => {
         bindFirebaseRef('agencies', ref, {
           readyCallback: () => {
-            commit('setAgenciesLoaded')
+            commit('setAreAgenciesLoaded')
           },
         })
       },
     ),
 
     loadAgencies ({dispatch, commit, state}) {
-      if (!state.agenciesLoaded && !state.agenciesLoading) {
-        commit('setAgenciesLoading')
+      if (!state.areAgenciesLoaded && !state.areAgenciesLoading) {
+        commit('setAreAgenciesLoading')
         dispatch('setAgenciesRef', {ref: agenciesRef, commit})
       }
     },

@@ -6,7 +6,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      signedIn: 'auth/signedIn',
+      isSignedIn: 'auth/isSignedIn',
     }),
   },
 
@@ -24,8 +24,8 @@ export default {
       md-button.md-icon-button(@click="openNavigationDrawer")
         md-icon menu
       h3.md-title {{this.$route.name}}
-      md-button(v-if="!signedIn" @click="openUserDrawer") Sign in or register
-      md-button.md-icon-button(v-if="signedIn" @click="openUserDrawer")
+      md-button(v-if="!isSignedIn" @click="openUserDrawer") Sign in or register
+      md-button.md-icon-button(v-if="isSignedIn" @click="openUserDrawer")
         md-icon person
 </template>
 
