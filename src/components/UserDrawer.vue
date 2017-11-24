@@ -1,9 +1,14 @@
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
 import {mapBoolean} from '@/utilities'
+import Label from '@/components/Label'
 
 export default {
   name: 'user-drawer',
+
+  components: {
+    'kl-label': Label,
+  },
 
   created () {
     this.loadAgencies()
@@ -23,9 +28,6 @@ export default {
       setTrue: 'openUserDrawer',
       setFalse: 'closeUserDrawer',
     }),
-  },
-
-  watch: {
   },
 
   methods: {
@@ -64,17 +66,19 @@ export default {
             span {{user.displayName}}
             span {{user.email}}
           md-button(v-if="isSignedIn" @click="signOut") Sign out
-        md-divider
+      md-divider
+      md-list
         md-subheader Your agencies
         md-list-item(
         v-for="agency in currentUsersAgencies"
         :key="agency['.key']"
         :to="getLinkToAgency(agency)"
         )
-          .md-list-item-text(v-if="isCurrentUserAnAgencyAdmin(agency)")
-            span {{agency.name}}
-            span admin
-          span(v-else) {{agency.name}}
+          span {{agency.name}}
+          kl-label(
+          v-if="isCurrentUserAnAgencyAdmin(agency)"
+          text="Admin"
+          )
 </template>
 
 <style scoped lang="sass">

@@ -1,0 +1,10 @@
+@import '~vue-material/dist/theme/themes';
+@import '~vue-material/dist/theme/engine';
+
+$md-primary: md-get-palette-color(blue, 500);
+$md-accent: md-get-palette-color(red, 500);
+
+$md-theme: (
+  primary: $md-primary,
+  accent: $md-accent
+)
