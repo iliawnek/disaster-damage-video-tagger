@@ -33,7 +33,9 @@ export default {
     },
     eventListString (events) {
       return Object.keys(events)
-        .map((eventId) => this.getEventById(eventId).name)
+        .map((eventId) => this.getEventById(eventId))
+        .filter((event) => event)
+        .map((event) => event.name)
         .join(', ')
     },
   },

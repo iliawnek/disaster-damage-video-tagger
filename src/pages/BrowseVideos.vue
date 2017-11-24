@@ -52,7 +52,7 @@ export default {
       )
         .md-list-item-text
           span {{video.url}}
-          span {{getEventById(video.event).name}}
+          span(v-if="getEventById(video.event)") {{getEventById(video.event).name}}
 </template>
 
 <style scoped lang="sass">
