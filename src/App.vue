@@ -52,4 +52,8 @@ export default {
 html
   $font-stack: Roboto, sans-serif
   overflow: hidden
+
+// required because dropdown menus don't render properly within dialogs
+.md-menu-content
+  z-index: 1000 !important
 </style>

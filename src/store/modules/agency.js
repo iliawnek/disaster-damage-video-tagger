@@ -15,6 +15,14 @@ export default {
 
   getters: {
     agenciesExist: state => state.agencies.length > 0,
+    agencyNames: state => state.agencies.map(agency => agency.name),
+    agencyIdsByName: state => {
+      const agencyIdsByName = {}
+      state.agencies.forEach(agency => {
+        agencyIdsByName[agency.name] = agency['.key']
+      })
+      return agencyIdsByName
+    },
   },
 
   mutations: {
@@ -35,7 +43,7 @@ export default {
             commit('setAgenciesLoaded')
           },
         })
-      }
+      },
     ),
 
     loadAgencies ({dispatch, commit, state}) {

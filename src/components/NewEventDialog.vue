@@ -1,10 +1,7 @@
 <script>
-import Vue from 'vue'
-import {mapState, mapActions} from 'vuex'
-import _ from 'lodash'
+import {mapGetters, mapActions} from 'vuex'
 import {mapBoolean} from '@/utilities'
 import {required, minLength} from 'vuelidate/lib/validators'
-// import {required} from '@/utilities/validators'
 
 export default {
   name: 'new-event-dialog',
@@ -17,8 +14,7 @@ export default {
     return {
       form: {
         name: null,
-        agency: null,
-        agencies: {},
+        agencies: [],
       },
     }
   },
@@ -29,24 +25,24 @@ export default {
         required,
         minLength: minLength(3),
       },
+      agencies: {
+        required,
+      },
     },
   },
 
   computed: {
-    ...mapState({
-      agencies: state => state.agency.agencies,
-    }),
     ...mapBoolean({
       namespace: 'ui',
       key: 'isNewEventDialogOpen',
       setTrue: 'openNewEventDialog',
       setFalse: 'closeNewEventDialog',
     }),
-    autocompleteOptions () {
-      return this.agencies
-        .map(agency => agency.name)
-        .filter(agencyName => !Object.keys(this.form.agencies).includes(agencyName))
-    },
+
+    ...mapGetters({
+      agencyNames: 'agency/agencyNames',
+      agencyIdsByName: 'agency/agencyIdsByName',
+    }),
   },
 
   methods: {
@@ -64,41 +60,23 @@ export default {
       }
     },
 
-    handleAgencySelection (agencyName) {
-      // if not already selected...
-      if (!this.form.agencies[agencyName]) {
-        // get full agency object from store
-        const agency = _.find(this.agencies, agency => agency.name === agencyName)
-        // add object to data
-        this.form.agencies[agencyName] = agency['.key']
-      }
-    },
-
-    handleAgencyRemoval (name) {
-      Vue.delete(this.form.agencies, name)
-    },
-
     clearForm () {
       this.$v.$reset()
       this.form.name = null
-      this.form.agency = null
-      this.form.agencies = {}
+      this.form.agencies = []
     },
 
     validateEvent () {
       this.$v.$touch()
       if (!this.$v.$invalid) {
-        // transform this.form.agencies into index
+        // transform list of agency names into agencyId index
         const agencies = {}
-        Object.values(this.form.agencies).forEach(agencyId => {
+        this.form.agencies.forEach(agencyId => {
           agencies[agencyId] = true
         })
         // save event
         this.saveNewEvent({
-          event: {
-            name: this.form.name,
-            agencies,
-          },
+          event: this.form,
         })
         this.isNewEventDialogOpen = false
       }
@@ -129,32 +107,23 @@ export default {
           span.md-error(v-else-if="!$v.form.name.minlength") Must be at least 3 letters long.
 
         // Associated agencies
-        md-autocomplete(
-        md-input-placeholder="Enter an agency name..."
-        v-model="form.agency"
-        :md-options="autocompleteOptions"
-        :md-open-on-focus="false"
-        md-dense
-        @md-selected="handleAgencySelection"
-        )
-          label Assigned agencies
-          template(slot="md-autocomplete-item" slot-scope="{item, term}")
-            md-highlight-text(:md-term="term") {{item}}
-        #chips
-          md-chip.md-primary(
-          v-for="name in Object.keys(this.form.agencies)"
-          :key="name"
-          md-deletable
-          @md-delete="handleAgencyRemoval(name, $event)"
-          ) {{name}}
+        md-field(:class="getValidationClass('agencies')")
+          label(for="agencies") Assigned agencies
+          md-select(
+          v-model="form.agencies"
+          name="agencies"
+          id="agencies"
+          multiple
+          md-dense
+          )
+            md-option(
+            v-for="(id, name) in agencyIdsByName"
+            :key="id"
+            :value="id"
+            ) {{name}}
+          span.md-error(v-if="!$v.form.agencies.required") An event must be assigned to at least one agency.
 
       md-dialog-actions
         md-button.md-secondary(type="submit" @click="isNewEventDialogOpen = false") Cancel
         md-button.md-primary(type="submit") Create
 </template>
-
-<style lang="sass">
-  // required because md-autocomplete suggestion menu doesn't render properly within dialogs
-  .md-menu-content
-    z-index: 100000 !important
-</style>

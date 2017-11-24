@@ -15,6 +15,13 @@ export default {
 
   getters: {
     eventsExist: state => state.events.length > 0,
+    eventIdsByName: state => {
+      const eventIdsByName = {}
+      state.events.forEach(event => {
+        eventIdsByName[event.name] = event['.key']
+      })
+      return eventIdsByName
+    },
   },
 
   mutations: {
@@ -51,8 +58,7 @@ export default {
       const newEventId = newEventRef.key
       newEventRef.set(event)
       // save agencies
-      const agencyIds = Object.keys(event.agencies)
-      agencyIds.forEach(agencyId => {
+      event.agencies.forEach(agencyId => {
         agenciesRef.child(agencyId).child('events').update({
           [newEventId]: true,
         })
