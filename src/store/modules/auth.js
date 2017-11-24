@@ -14,7 +14,10 @@ export default {
   },
   getters: {
     signedIn: state => (state.user !== null && state.data !== null),
+
     isSiteAdmin: (state, getters) => (getters.signedIn && state.data.type === 'site admin'),
+
+    currentUid: state => state.user && state.user.uid,
   },
   mutations: {
     updateUser (state, {user}) {

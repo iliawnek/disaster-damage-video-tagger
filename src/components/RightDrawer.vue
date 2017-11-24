@@ -5,12 +5,17 @@ import {mapBoolean} from '@/utilities'
 export default {
   name: 'right-drawer',
 
+  created () {
+    this.loadAgencies()
+  },
+
   computed: {
     ...mapState({
       user: state => state.auth.user,
     }),
     ...mapGetters({
       signedIn: 'auth/signedIn',
+      currentUsersAgencies: 'agency/currentUsersAgencies',
     }),
     ...mapBoolean({
       namespace: 'ui',
@@ -31,7 +36,14 @@ export default {
     ...mapActions({
       signOut: 'auth/signOut',
       signInWithGoogle: 'auth/signInWithGoogle',
+      loadAgencies: 'agency/loadAgencies',
     }),
+    getLinkToAgency (agency) {
+      return this.$store.getters['agency/getLinkToAgency'](agency)
+    },
+    isCurrentUserAnAgencyAdmin (agency) {
+      return this.$store.getters['agency/isCurrentUserAnAgencyAdmin'](agency)
+    },
   },
 }
 </script>
@@ -52,6 +64,17 @@ export default {
             span {{user.displayName}}
             span {{user.email}}
           md-button(v-if="signedIn" @click="signOut") Sign out
+        md-divider
+        md-subheader Your agencies
+        md-list-item(
+        v-for="agency in currentUsersAgencies"
+        :key="agency['.key']"
+        :to="getLinkToAgency(agency)"
+        )
+          .md-list-item-text(v-if="isCurrentUserAnAgencyAdmin(agency)")
+            span {{agency.name}}
+            span admin
+          span(v-else) {{agency.name}}
 </template>
 
 <style scoped lang="sass">

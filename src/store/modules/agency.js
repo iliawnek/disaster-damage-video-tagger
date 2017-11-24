@@ -15,16 +15,38 @@ export default {
 
   getters: {
     agenciesExist: state => state.agencies.length > 0,
-    getAgencyById: state => agencyId => {
-      return state.agencies.find(agency => agency['.key'] === agencyId)
+
+    currentUsersAgencies: (state, getters, rootState, rootGetters) => {
+      const currentUid = rootGetters['auth/currentUid']
+      return state.agencies.filter(agency => agency.admins[currentUid])
     },
+
     agencyNames: state => state.agencies.map(agency => agency.name),
+
     agencyIdsByName: state => {
       const agencyIdsByName = {}
       state.agencies.forEach(agency => {
         agencyIdsByName[agency.name] = agency['.key']
       })
       return agencyIdsByName
+    },
+
+    getAgencyById: state => agencyId => {
+      return state.agencies.find(agency => agency['.key'] === agencyId)
+    },
+
+    getAgencyAdmins: state => agency => {
+      return Object.keys(agency.admins)
+    },
+
+    getLinkToAgency: () => agency => {
+      return `/agency/${agency['.key']}`
+    },
+
+    isCurrentUserAnAgencyAdmin: (state, getters, rootState, rootGetters) => agency => {
+      const currentUid = rootGetters['auth/currentUid']
+      const agencyAdmins = getters.getAgencyAdmins(agency)
+      return agencyAdmins.includes(currentUid)
     },
   },
 
