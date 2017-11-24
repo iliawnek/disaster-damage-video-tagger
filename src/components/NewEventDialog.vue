@@ -76,7 +76,10 @@ export default {
         })
         // save event
         this.saveNewEvent({
-          event: this.form,
+          event: {
+            ...this.form,
+            agencies,
+          },
         })
         this.isNewEventDialogOpen = false
       }

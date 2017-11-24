@@ -15,6 +15,9 @@ export default {
 
   getters: {
     agenciesExist: state => state.agencies.length > 0,
+    getAgencyById: state => agencyId => {
+      return state.agencies.find(agency => agency['.key'] === agencyId)
+    },
     agencyNames: state => state.agencies.map(agency => agency.name),
     agencyIdsByName: state => {
       const agencyIdsByName = {}

@@ -25,6 +25,9 @@ export default {
     ...mapActions({
       loadVideos: 'video/loadVideos',
     }),
+    getEventById (eventId) {
+      return this.$store.getters['event/getEventById'](eventId)
+    },
   },
 }
 </script>
@@ -38,12 +41,15 @@ export default {
     md-description="You can submit a video now, or check here later."
     )
       md-button.md-raised.md-primary(@click="openNewVideoDialog") Submit video
-    md-list
+    md-list.md-double-line
       md-list-item(
       v-for="video in videos"
       :to="`/video/${video['.key']}`"
       :key="video['.key']"
-      ) {{video.url}}
+      )
+        .md-list-item-text
+          span {{video.url}}
+          span {{getEventById(video.event).name}}
 </template>
 
 <style scoped lang="sass">

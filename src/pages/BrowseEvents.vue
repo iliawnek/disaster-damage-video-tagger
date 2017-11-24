@@ -25,6 +25,14 @@ export default {
     ...mapActions({
       loadEvents: 'event/loadEvents',
     }),
+    getAgencyById (agencyId) {
+      return this.$store.getters['agency/getAgencyById'](agencyId)
+    },
+    agencyListString (agencies) {
+      return Object.keys(agencies)
+        .map(agencyId => this.getAgencyById(agencyId).name)
+        .join(', ')
+    },
   },
 }
 </script>
@@ -38,12 +46,15 @@ export default {
     md-description="As soon as an event occurs, it will appear here."
     )
       md-button.md-raised.md-primary(@click="openNewEventDialog") Create new event
-    md-list
+    md-list.md-double-line
       md-list-item(
       v-for="event in events"
       :to="`/event/${event['.key']}`"
       :key="event['.key']"
-      ) {{event.name}}
+      )
+        .md-list-item-text
+          span {{event.name}}
+          span {{agencyListString(event.agencies)}}
 </template>
 
 <style scoped lang="sass">

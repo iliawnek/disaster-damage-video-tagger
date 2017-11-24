@@ -25,6 +25,14 @@ export default {
     ...mapActions({
       loadAgencies: 'agency/loadAgencies',
     }),
+    getEventById (eventId) {
+      return this.$store.getters['event/getEventById'](eventId)
+    },
+    eventListString (events) {
+      return Object.keys(events)
+        .map(eventId => this.getEventById(eventId).name)
+        .join(', ')
+    },
   },
 }
 </script>
@@ -38,12 +46,15 @@ export default {
     md-description="There are no agencies in the system yet."
     )
       md-button.md-raised.md-primary(@click="openNewAgencyDialog") Create new agency
-    md-list
+    md-list.md-double-line
       md-list-item(
       v-for="agency in agencies"
       :to="`/agency/${agency['.key']}`"
       :key="agency['.key']"
-      ) {{agency.name}}
+      )
+        .md-list-item-text
+          span {{agency.name}}
+          span(v-if="agency.events") {{eventListString(agency.events)}}
 </template>
 
 <style scoped lang="sass">
