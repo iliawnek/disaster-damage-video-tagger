@@ -130,7 +130,6 @@ export default {
 
         // Associated agencies
         md-autocomplete(
-        :class="getValidationClass('agencies')"
         md-input-placeholder="Enter an agency name..."
         v-model="form.agency"
         :md-options="autocompleteOptions"
