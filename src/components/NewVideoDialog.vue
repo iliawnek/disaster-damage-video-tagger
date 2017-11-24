@@ -1,5 +1,5 @@
 <script>
-import {mapState, mapGetters, mapActions} from 'vuex'
+import {mapGetters, mapActions} from 'vuex'
 import {required, url} from 'vuelidate/lib/validators'
 import {mapBoolean} from '@/utilities'
 
@@ -28,9 +28,6 @@ export default {
   },
 
   computed: {
-    ...mapState({
-      events: state => state.event.events,
-    }),
     ...mapGetters({
       eventIdsByName: 'event/eventIdsByName',
     }),
