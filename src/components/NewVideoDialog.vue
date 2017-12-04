@@ -2,7 +2,7 @@
 import {mapGetters, mapActions} from 'vuex'
 import {required, url} from 'vuelidate/lib/validators'
 import {youTubeUrl, youTubeVideo} from '@/validators'
-import {mapBoolean} from '@/utilities'
+import {mapBoolean, extractYouTubeVideoId} from '@/utilities'
 import Message from '@/components/Message'
 
 export default {
@@ -72,7 +72,10 @@ export default {
       this.$v.$touch()
       if (!this.$v.$invalid) {
         this.saveNewVideo({
-          video: this.form,
+          video: {
+            youTube: extractYouTubeVideoId(this.form.url),
+            event: this.form.event,
+          },
         })
         this.isNewVideoDialogOpen = false
       }
