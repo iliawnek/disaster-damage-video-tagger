@@ -15,7 +15,7 @@ export const youTubeVideo = withParams(
     if (!videoId) return false
     const params = {
       id: videoId,
-      part: 'snippet,contentDetails,statistics',
+      part: 'id',
     }
     const {data} = await youTube.get('/videos', {params})
     return data.items.length > 0
