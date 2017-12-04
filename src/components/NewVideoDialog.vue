@@ -1,7 +1,9 @@
 <script>
 import {mapGetters, mapActions} from 'vuex'
 import {required, url} from 'vuelidate/lib/validators'
+import {youTubeUrl, youTubeVideo} from '@/validators'
 import {mapBoolean} from '@/utilities'
+import Message from '@/components/Message'
 
 export default {
   name: 'new-video-dialog',
@@ -15,11 +17,17 @@ export default {
     }
   },
 
+  components: {
+    message: Message,
+  },
+
   validations: {
     form: {
       url: {
         required,
         url,
+        youTubeUrl,
+        youTubeVideo,
       },
       event: {
         required,
@@ -81,8 +89,13 @@ export default {
   :md-click-outside-to-close="false"
   )
     md-dialog-title Submit video
+    message(
+    message="Only YouTube videos are currently supported."
+    icon="warning"
+    )
     form(novalidate @submit.prevent="validateVideo")
       md-dialog-content
+
         md-field(:class="getValidationClass('url')")
           label(for="url") Video URL
           md-input(
@@ -91,7 +104,9 @@ export default {
           v-model="form.url"
           )
           span.md-error(v-if="!$v.form.url.required") A video must have a video URL.
-          span.md-error(v-else-if="!$v.form.url.url") Not a valid URL.
+          span.md-error(v-else-if="!$v.form.url.url") Invalid URL.
+          span.md-error(v-else-if="!$v.form.url.youTubeUrl") Only YouTube videos are currently supported.
+          span.md-error(v-else-if="!$v.form.url.youTubeVideo") Invalid YouTube video.
 
         md-field(:class="getValidationClass('event')")
           label(for="event") Event
