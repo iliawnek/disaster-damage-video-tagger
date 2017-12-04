@@ -46,7 +46,7 @@ export default new Router({
       component: Event,
     },
     {
-      path: '/event/:eventId/:videoId',
+      path: '/video/:videoId',
       name: 'Video',
       component: Video,
     },
