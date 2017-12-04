@@ -53,6 +53,8 @@ export default {
 @import url('//fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic')
 @import url('//fonts.googleapis.com/icon?family=Material+Icons')
 
+@import '~video.js/dist/video-js.css'
+
 html
   $font-stack: Roboto, sans-serif
   overflow: hidden
