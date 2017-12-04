@@ -73,7 +73,8 @@ export default {
       if (!this.$v.$invalid) {
         this.saveNewVideo({
           video: {
-            youTube: extractYouTubeVideoId(this.form.url),
+            source: 'youtube',
+            sourceId: extractYouTubeVideoId(this.form.url),
             event: this.form.event,
           },
         })

@@ -51,7 +51,7 @@ export default {
       :key="video['.key']"
       )
         .md-list-item-text
-          span {{video.url}}
+          span {{video.source}}: {{video.sourceId}}
           span(v-if="getEventById(video.event)") {{getEventById(video.event).name}}
 </template>
 
