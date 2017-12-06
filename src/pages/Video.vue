@@ -23,6 +23,10 @@ export default {
           type: 'video/youtube',
           src: `https://youtu.be/${this.video.sourceId}`,
         },
+        muted: true,
+        controlBar: {
+          volumePanel: false,
+        },
       }
     },
   },
