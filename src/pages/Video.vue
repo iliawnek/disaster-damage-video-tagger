@@ -27,6 +27,7 @@ export default {
         controlBar: {
           volumePanel: false,
         },
+        fluid: true,
       }
     },
   },
