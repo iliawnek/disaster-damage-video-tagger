@@ -1,9 +1,10 @@
 <script>
 import {mapGetters, mapActions} from 'vuex'
 import {required, url} from 'vuelidate/lib/validators'
-import {youTubeUrl, youTubeVideo} from '@/validators'
-import {mapBoolean, extractYouTubeVideoId} from '@/utilities'
+import {tweetUrl} from '@/validators'
+import {mapBoolean} from '@/utilities'
 import Message from '@/components/Message'
+import {serverless} from '@/utilities/api'
 
 export default {
   name: 'new-video-dialog',
@@ -14,6 +15,7 @@ export default {
         url: null,
         event: null,
       },
+      tweetLoading: false,
     }
   },
 
@@ -26,12 +28,14 @@ export default {
       url: {
         required,
         url,
-        youTubeUrl,
-        youTubeVideo,
+        tweetUrl,
       },
       event: {
         required,
       },
+    },
+    tweet: {
+      required,
     },
   },
 
@@ -47,6 +51,33 @@ export default {
     }),
   },
 
+  asyncComputed: {
+    async tweet () {
+      if (!this.$v.form.url.$invalid) {
+        this.tweet = null
+        const params = {tweetUrl: this.form.url}
+        this.tweetLoading = true
+        try {
+          const response = await serverless.get('/tweetInfo', {params})
+          console.log(response)
+          const {data} = response
+          this.tweetLoading = false
+          return {
+            video: {
+              url: data,
+            },
+          }
+        } catch (error) {
+          this.tweetLoading = false
+          return null
+        }
+      } else {
+        this.tweetLoading = false
+        return null
+      }
+    },
+  },
+
   methods: {
     ...mapActions({
       saveNewVideo: 'video/saveNewVideo',
@@ -56,8 +87,14 @@ export default {
     getValidationClass (fieldName) {
       const field = this.$v.form[fieldName]
       if (field) {
-        return {
-          'md-invalid': field.$error,
+        if (fieldName === 'url') {
+          return {
+            'md-invalid': field.$error || this.$v.tweet.$error,
+          }
+        } else {
+          return {
+            'md-invalid': field.$error,
+          }
         }
       }
     },
@@ -66,6 +103,7 @@ export default {
       this.$v.$reset()
       this.form.url = null
       this.form.event = null
+      this.tweet = null
     },
 
     validateVideo () {
@@ -73,8 +111,7 @@ export default {
       if (!this.$v.$invalid) {
         this.saveNewVideo({
           video: {
-            source: 'youtube',
-            sourceId: extractYouTubeVideoId(this.form.url),
+            url: this.tweet.video.url,
             event: this.form.event,
           },
         })
@@ -94,23 +131,23 @@ export default {
   )
     md-dialog-title Submit video
     message(
-    message="Only YouTube videos are currently supported."
+    message="Only Twitter videos are currently supported."
     icon="warning"
     )
     form(novalidate @submit.prevent="validateVideo")
       md-dialog-content
 
         md-field(:class="getValidationClass('url')")
-          label(for="url") Video URL
+          label(for="url") Tweet URL
           md-input(
           name="url"
           id="url"
           v-model="form.url"
           )
-          span.md-error(v-if="!$v.form.url.required") A video must have a video URL.
+          span.md-error(v-if="!$v.form.url.required") A video must have a tweet URL.
           span.md-error(v-else-if="!$v.form.url.url") Invalid URL.
-          span.md-error(v-else-if="!$v.form.url.youTubeUrl") Only YouTube videos are currently supported.
-          span.md-error(v-else-if="!$v.form.url.youTubeVideo") Invalid YouTube video.
+          span.md-error(v-else-if="!$v.form.url.tweetUrl") URL does not link to a tweet.
+          span.md-error(v-else-if="!$v.tweet.required && !tweetLoading") Tweet does not contain a video.
 
         md-field(:class="getValidationClass('event')")
           label(for="event") Event
@@ -129,5 +166,5 @@ export default {
 
       md-dialog-actions
         md-button.md-secondary(type="submit" @click="isNewVideoDialogOpen = false") Cancel
-        md-button.md-primary(type="submit") Submit
+        md-button.md-primary(type="submit" :disabled="tweetLoading") Submit
 </template>

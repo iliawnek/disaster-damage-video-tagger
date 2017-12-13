@@ -9,12 +9,14 @@ import VueMaterial from 'vue-material'
 import Vuelidate from 'vuelidate'
 import VueVideoPlayer from 'vue-video-player'
 /* eslint-disable no-unused-vars */
-import videojsYoutube from 'videojs-youtube/dist/Youtube.min'
+import videojsContribHls from 'videojs-contrib-hls/dist/videojs-contrib-hls'
+import AsyncComputed from 'vue-async-computed'
 
 Vue.use(VueFire)
 Vue.use(VueMaterial)
 Vue.use(Vuelidate)
 Vue.use(VueVideoPlayer)
+Vue.use(AsyncComputed)
 
 Vue.config.productionTip = false
 
