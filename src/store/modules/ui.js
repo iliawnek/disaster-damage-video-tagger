@@ -6,7 +6,6 @@ export default {
     isNewAgencyDialogOpen: false,
     isNewEventDialogOpen: false,
     isNewVideoDialogOpen: false,
-    isNewTagButtonShown: false,
   },
   mutations: {
     openNavigationDrawer: (state) => {
@@ -38,12 +37,6 @@ export default {
     },
     closeNewVideoDialog: (state) => {
       state.isNewVideoDialogOpen = false
-    },
-    showNewTagButton: (state) => {
-      state.isNewTagButtonShown = true
-    },
-    hideNewTagButton: (state) => {
-      state.isNewTagButtonShown = false
     },
   },
 }
