@@ -117,10 +117,10 @@ export default {
     },
 
     buildCropperButtons () {
-      const doneButton = document.createElement('div')
-      doneButton.className = 'vjs-tagger-button'
-      doneButton.innerText = 'Done'
-      doneButton.addEventListener('click', () => {
+      const nextButton = document.createElement('div')
+      nextButton.className = 'vjs-tagger-button'
+      nextButton.innerText = 'Next'
+      nextButton.addEventListener('click', () => {
         this.saveCrop()
       })
 
@@ -134,7 +134,7 @@ export default {
       const cropperButtons = document.createElement('div')
       cropperButtons.className = 'vjs-cropper-buttons'
       cropperButtons.appendChild(backButton)
-      cropperButtons.appendChild(doneButton)
+      cropperButtons.appendChild(nextButton)
       return cropperButtons
     },
   },
