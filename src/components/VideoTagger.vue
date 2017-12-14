@@ -169,6 +169,10 @@ export default {
       background-color: $white
       color: black
 
+    .vjs-control-bar:hover
+      .vjs-button
+        background-color: white
+
     .vjs-big-play-button
       position: absolute
       left: 50%
@@ -180,6 +184,7 @@ export default {
       border: none
       background-color: $white
       color: black
+      transition: ease-in-out 0.15s !important
       .vjs-icon-placeholder::before
         font-size: 40px
         line-height: 2em
@@ -191,10 +196,13 @@ export default {
     .vjs-button
       width: 50px
       font-size: 14px
-      background-color: white !important
+      transition: ease-in-out 0.15s
       // button icon position
       .vjs-icon-placeholder::before
          line-height: 2.1em
+
+    .vjs-play-control
+      background-color: $white-on-white
 
     .vjs-progress-control
       .vjs-slider
@@ -225,6 +233,7 @@ export default {
       cursor: pointer
       padding: 16px
       line-height: 1em
+      transition: ease-in-out 0.15s
     .vjs-tagger-button:hover
       background-color: white
 
