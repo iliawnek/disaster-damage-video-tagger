@@ -1,19 +1,15 @@
 <script>
 import {mapState} from 'vuex'
-import {videojs} from 'vue-video-player'
 import Cropper from 'cropperjs'
+
+let cropper
 
 export default {
   name: 'video-tagger',
 
   data () {
     return {
-      area: {
-        x: null,
-        y: null,
-        width: null,
-        height: null,
-      },
+      crop: null,
     }
   },
 
@@ -43,81 +39,71 @@ export default {
   },
 
   methods: {
-    buildButton (Component, {componentName, className, label, onClick}) {
-      const Button = videojs.extend(Component, {
-        constructor (player, options) {
-          Component.apply(this, arguments)
-          if (options.label) {
-            this.setLabel(options.label)
-          }
-          this.on('click', onClick)
-        },
-        createEl () {
-          return videojs.createEl('div', {className})
-        },
-        setLabel (text) {
-          videojs.emptyEl(this.el())
-          videojs.appendContent(this.el(), text)
-        },
-      })
-      videojs.registerComponent(componentName, Button)
-      this.player.addChild(componentName, {label})
+    videojs () {
+      return document.getElementsByClassName('video-js')[0]
     },
-
-    buildCreateTagButton (Component, context) {
-      this.buildButton(Component, {
-        componentName: 'CreateTagButton',
-        className: 'vjs-create-tag-button',
-        label: 'Create tag',
-        onClick () {
-          context.takeScreenshot(context)
-        },
-      })
+    cropBox () {
+      return document.getElementsByClassName('cropper-crop-box')[0]
     },
-
-    buildCanvas (Component) {
-      const Canvas = videojs.extend(Component, {
-        constructor (player, options) {
-          Component.apply(this, arguments)
-        },
-        createEl () {
-          const container = document.createElement('div')
-          container.id = 'vjs-canvas-container'
-          const canvas = document.createElement('canvas')
-          canvas.id = 'vjs-canvas'
-          canvas.width = 0
-          canvas.height = 0
-          container.appendChild(canvas)
-          return container
-        },
-      })
-      videojs.registerComponent('Canvas', Canvas)
-      this.player.addChild('Canvas')
+    canvas () {
+      return document.getElementById('vjs-canvas')
+    },
+    canvasContainer () {
+      return document.getElementById('vjs-canvas-container')
     },
 
     buildPlayerUI () {
-      const Component = videojs.getComponent('Component')
-      this.buildCreateTagButton(Component, this)
-      this.buildCanvas(Component)
+      // create tag button
+      const createTagButton = document.createElement('div')
+      createTagButton.className = 'vjs-tagger-button vjs-create-tag-button'
+      createTagButton.innerText = 'Create tag'
+      createTagButton.addEventListener('click', () => {
+        this.startCrop()
+      })
+      this.videojs().appendChild(createTagButton)
+
+      // canvas
+      const canvasContainer = document.createElement('div')
+      canvasContainer.id = 'vjs-canvas-container'
+      const canvas = document.createElement('canvas')
+      canvas.id = 'vjs-canvas'
+      canvas.width = 0
+      canvas.height = 0
+      canvasContainer.appendChild(canvas)
+      this.videojs().appendChild(canvasContainer)
     },
 
-    takeScreenshot (context) {
-      const player = this.player
-      const video = player.children_[0]
-      const canvas = document.getElementById('vjs-canvas')
-      const ctx = canvas.getContext('2d')
-      const container = document.getElementById('vjs-canvas-container')
-      container.style.display = 'block'
+    startCrop () {
+      const video = this.player.children_[0]
+      const ctx = this.canvas().getContext('2d')
+      this.canvasContainer().style.display = 'block'
 
-      canvas.width = parseInt(video.videoWidth)
-      canvas.height = parseInt(video.videoHeight)
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+      this.canvas().width = parseInt(video.videoWidth)
+      this.canvas().height = parseInt(video.videoHeight)
+      ctx.drawImage(video, 0, 0, this.canvas().width, this.canvas().height)
 
-      const image = document.createElement('img')
-      image.src = canvas.toDataURL()
+      this.buildCropper(this.canvas(), this)
+      // console.log(canvas.toDataURL('image/jpeg'))
+    },
 
-      /* eslint-disable no-new */
-      new Cropper(canvas, {
+    cancelCrop () {
+      cropper.destroy()
+      this.canvasContainer().style.display = 'none'
+    },
+
+    saveCrop () {
+      const cropData = cropper.getData(true)
+      this.crop = {...cropData}
+      this.cancelCrop()
+    },
+
+    buildCropper (canvas) {
+      const onReady = () => {
+        this.cropBox().appendChild(cropperButtons)
+      }
+      /* eslint-disable no-unused-vars */
+      const cropperButtons = this.buildCropperButtons()
+      cropper = new Cropper(canvas, {
         viewMode: 1,
         dragMode: 'move',
         guides: false,
@@ -126,15 +112,30 @@ export default {
         rotatable: false,
         scalable: false,
         toggleDragModeOnDblclick: false,
-        // events
-        crop (e) {
-          context.area.x = Math.round(e.detail.x)
-          context.area.y = Math.round(e.detail.y)
-          context.area.width = Math.round(e.detail.width)
-          context.area.height = Math.round(e.detail.height)
-        },
+        ready: onReady,
       })
-      // console.log(canvas.toDataURL('image/jpeg'))
+    },
+
+    buildCropperButtons () {
+      const doneButton = document.createElement('div')
+      doneButton.className = 'vjs-tagger-button'
+      doneButton.innerText = 'Done'
+      doneButton.addEventListener('click', () => {
+        this.saveCrop()
+      })
+
+      const backButton = document.createElement('div')
+      backButton.className = 'vjs-tagger-button'
+      backButton.innerText = 'Back'
+      backButton.addEventListener('click', () => {
+        this.cancelCrop()
+      })
+
+      const cropperButtons = document.createElement('div')
+      cropperButtons.className = 'vjs-cropper-buttons'
+      cropperButtons.appendChild(backButton)
+      cropperButtons.appendChild(doneButton)
+      return cropperButtons
     },
   },
 }
@@ -153,23 +154,24 @@ export default {
   @import '~cropperjs/dist/cropper.css'
 
   .video-js
-    .vjs-create-tag-button
+    .vjs-tagger-button
       background: rgba(255,255,255,0.8)
       color: black
-
       font-family: Roboto, sans-serif
       font-size: 16px
       font-weight: bold
       text-transform: uppercase
       user-select: none
       cursor: pointer
+      padding: 16px
+      margin: 8px
 
+    .vjs-create-tag-button
       display: none
       position: absolute
       top: 50%
       left: 50%
       transform: translate(-50%, -50%)
-      padding: 20px
 
     #vjs-canvas-container
       position: absolute
@@ -182,6 +184,14 @@ export default {
 
       #vjs-canvas
         max-width: 100% // required for Cropper.js
+
+    .vjs-cropper-buttons
+      position: absolute
+      display: flex
+      bottom: 0
+      left: 50%
+      margin: 8px
+      transform: translate(calc(-50% - 8px), calc(100% + 16px))
 
   .vjs-paused.vjs-has-started .vjs-create-tag-button
       display: block
