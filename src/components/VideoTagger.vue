@@ -3,6 +3,8 @@ import {mapState} from 'vuex'
 import Cropper from 'cropperjs'
 
 let cropper
+let canvas
+let canvasContainer
 
 export default {
   name: 'video-tagger',
@@ -10,6 +12,17 @@ export default {
   data () {
     return {
       crop: null,
+      stage: 0,
+      stages: [
+        'play',
+        'crop',
+        'range-start',
+        'range-end',
+        'type',
+        'sub-type',
+        'description',
+        'done',
+      ],
     }
   },
 
@@ -18,11 +31,6 @@ export default {
       video: (state) => state.video.video,
       isVideoLoaded: (state) => state.video.isVideoLoaded,
     }),
-
-    player () {
-      return this.$refs.videoPlayer.player
-    },
-
     playerOptions () {
       return {
         sources: {
@@ -36,73 +44,119 @@ export default {
         fluid: true,
       }
     },
+    lastStageIndex () {
+      return this.stages.length - 1
+    },
+  },
+
+  watch: {
+    stage (newStage, oldStage) {
+      const newStageName = this.getStageName(newStage)
+      const oldStageName = this.getStageName(oldStage)
+      const restarted = newStage === 0 && oldStage === this.lastStageIndex
+      const clickedNext = restarted || (oldStage < newStage)
+
+      const entered = (stageName) => (newStageName === stageName)
+      const left = (stageName) => (oldStageName === stageName)
+
+      if (clickedNext) { // clicked 'next'
+        if (entered('crop')) {
+          this.startCrop()
+        }
+        if (left('crop')) {
+          this.saveCrop()
+        }
+      } else { // clicked 'back'
+        if (left('crop')) {
+          this.endCrop()
+        }
+      }
+    },
   },
 
   methods: {
+    nextStage () {
+      this.stage = (this.stage + 1) % this.stages.length
+    },
+    previousStage () {
+      this.stage = this.stage === 0 ? this.stage : (this.stage - 1)
+    },
+    getStageName (stage) {
+      return this.stages[stage]
+    },
+
     videojs () {
       return document.getElementsByClassName('video-js')[0]
     },
     cropBox () {
       return document.getElementsByClassName('cropper-crop-box')[0]
     },
-    canvas () {
-      return document.getElementById('vjs-canvas')
+    currentTimeTooltip () {
+      return document.getElementsByClassName('vjs-play-progress')[0].children[0]
     },
-    canvasContainer () {
-      return document.getElementById('vjs-canvas-container')
+    videoElement () {
+      return this.player().children_[0]
+    },
+    player () {
+      return this.$refs.videoPlayer.player
     },
 
-    buildPlayerUI () {
-      // create tag button
-      const createTagButton = document.createElement('div')
-      createTagButton.className = 'vjs-tagger-button vjs-create-tag-button'
-      createTagButton.innerText = 'Create a new tag'
-      createTagButton.addEventListener('click', () => {
-        this.startCrop()
+    showCanvas () {
+      canvasContainer.style.display = 'block'
+    },
+    hideCanvas () {
+      canvasContainer.style.display = 'none'
+    },
+
+    buildButton ({className, label, onClick}) {
+      const button = document.createElement('div')
+      button.className = `vjs-tagger-button ${className}`
+      button.innerText = label
+      button.addEventListener('click', onClick)
+      return button
+    },
+    buildNextButton ({className, label, onClick}) {
+      return this.buildButton({
+        className,
+        label: label || 'Next',
+        onClick: onClick || (() => {
+          this.nextStage()
+        }),
       })
-      this.videojs().appendChild(createTagButton)
-
-      // canvas
-      const canvasContainer = document.createElement('div')
+    },
+    buildBackButton ({className, label, onClick}) {
+      return this.buildButton({
+        className,
+        label: label || 'Back',
+        onClick: onClick || (() => {
+          this.previousStage()
+        }),
+      })
+    },
+    buildCropperButtons () {
+      const backButton = this.buildBackButton({})
+      const nextButton = this.buildNextButton({})
+      const cropperButtons = document.createElement('div')
+      cropperButtons.className = 'vjs-cropper-buttons'
+      cropperButtons.appendChild(backButton)
+      cropperButtons.appendChild(nextButton)
+      return cropperButtons
+    },
+    buildCanvas () {
+      canvasContainer = document.createElement('div')
       canvasContainer.id = 'vjs-canvas-container'
-      const canvas = document.createElement('canvas')
+      canvas = document.createElement('canvas')
       canvas.id = 'vjs-canvas'
       canvas.width = 0
       canvas.height = 0
       canvasContainer.appendChild(canvas)
-      this.videojs().appendChild(canvasContainer)
     },
-
-    startCrop () {
-      const video = this.player.children_[0]
-      const ctx = this.canvas().getContext('2d')
-      this.canvasContainer().style.display = 'block'
-
-      this.canvas().width = parseInt(video.videoWidth)
-      this.canvas().height = parseInt(video.videoHeight)
-      ctx.drawImage(video, 0, 0, this.canvas().width, this.canvas().height)
-
-      this.buildCropper(this.canvas(), this)
-      // console.log(canvas.toDataURL('image/jpeg'))
-    },
-
-    cancelCrop () {
-      cropper.destroy()
-      this.canvasContainer().style.display = 'none'
-    },
-
-    saveCrop () {
-      const cropData = cropper.getData(true)
-      this.crop = {...cropData}
-      this.cancelCrop()
-    },
-
-    buildCropper (canvas) {
+    buildCropper (crop) {
+      this.showCanvas()
+      const cropperButtons = this.buildCropperButtons()
       const onReady = () => {
         this.cropBox().appendChild(cropperButtons)
       }
-      /* eslint-disable no-unused-vars */
-      const cropperButtons = this.buildCropperButtons()
       cropper = new Cropper(canvas, {
         viewMode: 1,
         dragMode: 'move',
@@ -112,30 +166,42 @@ export default {
         rotatable: false,
         scalable: false,
         toggleDragModeOnDblclick: false,
+        data: crop, // load existing crop if it exists
         ready: onReady,
       })
     },
-
-    buildCropperButtons () {
-      const nextButton = document.createElement('div')
-      nextButton.className = 'vjs-tagger-button'
-      nextButton.innerText = 'Next'
-      nextButton.addEventListener('click', () => {
-        this.saveCrop()
+    buildInitialUI () {
+      const createTagButton = this.buildNextButton({
+        className: 'vjs-create-tag-button',
+        label: 'Create a new tag',
       })
+      this.buildCanvas()
+      this.videojs().appendChild(createTagButton)
+      this.videojs().appendChild(canvasContainer)
+    },
 
-      const backButton = document.createElement('div')
-      backButton.className = 'vjs-tagger-button'
-      backButton.innerText = 'Back'
-      backButton.addEventListener('click', () => {
-        this.cancelCrop()
-      })
+    takeScreenshot () {
+      const context = canvas.getContext('2d')
+      canvas.width = parseInt(this.videoElement().videoWidth)
+      canvas.height = parseInt(this.videoElement().videoHeight)
+      context.drawImage(this.videoElement(), 0, 0, canvas.width, canvas.height)
+    },
 
-      const cropperButtons = document.createElement('div')
-      cropperButtons.className = 'vjs-cropper-buttons'
-      cropperButtons.appendChild(backButton)
-      cropperButtons.appendChild(nextButton)
-      return cropperButtons
+    startCrop () {
+      this.takeScreenshot()
+      this.buildCropper()
+    },
+    saveCrop () {
+      const cropData = cropper.getData(true)
+      this.crop = {...cropData}
+      this.endCrop()
+    },
+    endCrop () {
+      cropper.destroy()
+      this.hideCanvas()
+    },
+    resumeCrop () {
+      this.buildCropper(this.crop)
     },
   },
 }
@@ -146,7 +212,7 @@ export default {
   ref="videoPlayer"
   v-if="isVideoLoaded"
   :options="playerOptions"
-  @ready="buildPlayerUI"
+  @ready="buildInitialUI"
   )
 </template>
 
