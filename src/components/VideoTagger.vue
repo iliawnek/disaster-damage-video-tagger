@@ -2,9 +2,11 @@
 import {mapState} from 'vuex'
 import Cropper from 'cropperjs'
 
+let createTagButton
 let cropper
 let canvas
 let canvasContainer
+let rangeNavigationButtons
 
 export default {
   name: 'video-tagger',
@@ -44,6 +46,9 @@ export default {
         fluid: true,
       }
     },
+    currentStageName () {
+      return this.getStageName(this.stage)
+    },
     lastStageIndex () {
       return this.stages.length - 1
     },
@@ -59,6 +64,13 @@ export default {
       const entered = (stageName) => (newStageName === stageName)
       const left = (stageName) => (oldStageName === stageName)
 
+      if (left('play')) {
+        this.hide(createTagButton)
+      }
+      if (entered('play')) {
+        this.show(createTagButton)
+      }
+
       if (clickedNext) { // clicked 'next'
         if (entered('crop')) {
           this.startCrop()
@@ -66,15 +78,25 @@ export default {
         if (left('crop')) {
           this.saveCrop()
         }
+        if (entered('range-start')) {
+          this.startRangeSelection()
+        }
       } else { // clicked 'back'
         if (left('crop')) {
           this.endCrop()
+        }
+        if (entered('crop')) {
+          this.resumeCrop()
+        }
+        if (left('range-start')) {
+          this.endRangeSelection()
         }
       }
     },
   },
 
   methods: {
+    // stages
     nextStage () {
       this.stage = (this.stage + 1) % this.stages.length
     },
@@ -85,14 +107,12 @@ export default {
       return this.stages[stage]
     },
 
+    // frequently-accessed elements
     videojs () {
       return document.getElementsByClassName('video-js')[0]
     },
     cropBox () {
       return document.getElementsByClassName('cropper-crop-box')[0]
-    },
-    currentTimeTooltip () {
-      return document.getElementsByClassName('vjs-play-progress')[0].children[0]
     },
     videoElement () {
       return this.player().children_[0]
@@ -101,13 +121,15 @@ export default {
       return this.$refs.videoPlayer.player
     },
 
-    showCanvas () {
-      canvasContainer.style.display = 'block'
+    // element visibility
+    show (element) {
+      element.classList.remove('hide')
     },
-    hideCanvas () {
-      canvasContainer.style.display = 'none'
+    hide (element) {
+      element.classList.add('hide')
     },
 
+    // button generators
     buildButton ({className, label, onClick}) {
       const button = document.createElement('div')
       button.className = `vjs-tagger-button ${className}`
@@ -115,47 +137,75 @@ export default {
       button.addEventListener('click', onClick)
       return button
     },
-    buildNextButton ({className, label, onClick}) {
+    buildNextButton ({className, label}) {
       return this.buildButton({
         className,
         label: label || 'Next',
-        onClick: onClick || (() => {
+        onClick: (event) => {
+          event.stopPropagation()
           this.nextStage()
-        }),
+        },
       })
     },
-    buildBackButton ({className, label, onClick}) {
+    buildBackButton ({className, label}) {
       return this.buildButton({
         className,
         label: label || 'Back',
-        onClick: onClick || (() => {
+        onClick: (event) => {
+          event.stopPropagation()
           this.previousStage()
-        }),
+        },
       })
     },
-    buildCropperButtons () {
-      const backButton = this.buildBackButton({})
-      const nextButton = this.buildNextButton({})
-      const cropperButtons = document.createElement('div')
-      cropperButtons.className = 'vjs-cropper-buttons'
-      cropperButtons.appendChild(backButton)
-      cropperButtons.appendChild(nextButton)
-      return cropperButtons
+    buildNavigationButtons ({className, hideBack, nextLabel}) {
+      const navigationButtons = document.createElement('div')
+      navigationButtons.className = `vjs-navigation-buttons ${className}`
+      if (!hideBack) {
+        const backButton = this.buildBackButton({})
+        navigationButtons.appendChild(backButton)
+      }
+      const nextButton = this.buildNextButton({
+        label: nextLabel,
+      })
+      navigationButtons.appendChild(nextButton)
+      return navigationButtons
     },
+
+    // initialise player UI
+    buildInitialUI () {
+      this.buildCanvas()
+      this.buildCreateTagButton()
+      this.buildRangeSelectionNavigationButtons()
+    },
+
+    // playback
+    buildCreateTagButton () {
+      createTagButton = this.buildNavigationButtons({
+        className: 'vjs-center-buttons vjs-create-tag-button',
+        nextLabel: 'Create a new tag',
+        hideBack: true,
+      })
+      this.videojs().appendChild(createTagButton)
+    },
+
+    // cropping
     buildCanvas () {
       canvasContainer = document.createElement('div')
-      canvasContainer.id = 'vjs-canvas-container'
+      canvasContainer.className = 'vjs-canvas-container hide'
       canvas = document.createElement('canvas')
-      canvas.id = 'vjs-canvas'
+      canvas.className = 'vjs-canvas'
       canvas.width = 0
       canvas.height = 0
       canvasContainer.appendChild(canvas)
+      this.videojs().appendChild(canvasContainer)
     },
     buildCropper (crop) {
-      this.showCanvas()
-      const cropperButtons = this.buildCropperButtons()
+      this.show(canvasContainer)
+      const cropperNavigationButtons = this.buildNavigationButtons({
+        className: 'vjs-cropper-navigation-buttons',
+      })
       const onReady = () => {
-        this.cropBox().appendChild(cropperButtons)
+        this.cropBox().appendChild(cropperNavigationButtons)
       }
       cropper = new Cropper(canvas, {
         viewMode: 1,
@@ -170,23 +220,12 @@ export default {
         ready: onReady,
       })
     },
-    buildInitialUI () {
-      const createTagButton = this.buildNextButton({
-        className: 'vjs-create-tag-button',
-        label: 'Create a new tag',
-      })
-      this.buildCanvas()
-      this.videojs().appendChild(createTagButton)
-      this.videojs().appendChild(canvasContainer)
-    },
-
     takeScreenshot () {
       const context = canvas.getContext('2d')
       canvas.width = parseInt(this.videoElement().videoWidth)
       canvas.height = parseInt(this.videoElement().videoHeight)
       context.drawImage(this.videoElement(), 0, 0, canvas.width, canvas.height)
     },
-
     startCrop () {
       this.takeScreenshot()
       this.buildCropper()
@@ -198,10 +237,25 @@ export default {
     },
     endCrop () {
       cropper.destroy()
-      this.hideCanvas()
+      this.hide(canvasContainer)
     },
     resumeCrop () {
       this.buildCropper(this.crop)
+    },
+
+    // range selection
+    buildRangeSelectionNavigationButtons () {
+      rangeNavigationButtons = this.buildNavigationButtons({
+        className: 'vjs-center-buttons vjs-range-navigation-buttons',
+      })
+      this.videojs().appendChild(rangeNavigationButtons)
+      this.hide(rangeNavigationButtons)
+    },
+    startRangeSelection () {
+      this.show(rangeNavigationButtons)
+    },
+    endRangeSelection () {
+      this.hide(rangeNavigationButtons)
     },
   },
 }
@@ -221,24 +275,22 @@ export default {
   $white: rgba(255,255,255,0.6)
   $white-on-white: rgba(255,255,255,0.5)
 
-  .video-js:hover
-    .vjs-big-play-button
-      background-color: $white
-
+  // big play button
+  .video-js:hover .vjs-big-play-button
+      background-color: $white // disable default
   .vjs-has-started.vjs-paused .vjs-big-play-button
     display: block
     transform: translate(-50%, calc(-50% - 50px))
 
   .video-js
+    // control bar
     .vjs-control-bar
       height: 50px
       background-color: $white
       color: black
-
-    .vjs-control-bar:hover
-      .vjs-button
-        background-color: white
-
+    .vjs-control-bar:hover .vjs-button
+        background-color: white // disable default
+    // big play button
     .vjs-big-play-button
       position: absolute
       left: 50%
@@ -257,37 +309,34 @@ export default {
         padding-left: 3px
     .vjs-big-play-button:hover
       background-color: white
-
-    // play, fullscreen buttons
+    // control bar buttons
     .vjs-button
       width: 50px
       font-size: 14px
       transition: ease-in-out 0.15s
-      // button icon position
       .vjs-icon-placeholder::before
-         line-height: 2.1em
-
+         line-height: 2.1em // button icon position
+    // play button in control bar
     .vjs-play-control
       background-color: $white-on-white
-
+    // progress bar
     .vjs-progress-control
       .vjs-slider
         background-color: transparent
         height: 100%
         .vjs-slider-bar::before
-          display: none
+          display: none // hide dot
         .vjs-load-progress
-          display: none
+          display: none // hide buffering progress
         .vjs-play-progress
-          background-color: $white-on-white
-
+          background-color: $white-on-white // disable default
       .vjs-progress-holder
         margin: 0
-
+    // remaining time
     .vjs-remaining-time
       display: none
 
-    // custom buttons
+    // buttons
     .vjs-tagger-button
       background: $white
       color: black
@@ -302,39 +351,53 @@ export default {
       transition: ease-in-out 0.15s
     .vjs-tagger-button:hover
       background-color: white
-
-    .vjs-create-tag-button
-      display: none
+    // navigation buttons
+    .vjs-navigation-buttons
+      display: flex
+      margin: 8px
+      .vjs-tagger-button
+        margin: 8px
+    // centered buttons
+    .vjs-center-buttons
       position: absolute
       top: 50%
       left: 50%
-      transform: translate(-50%, calc(-50% + 40px))
+      transform: translate(calc(-50% - 8px), calc(-50% + 40px))
 
-    #vjs-canvas-container
-      position: absolute
+    // create tag button
+    .vjs-create-tag-button
       display: none
+    // cropper navigation buttons
+    .vjs-cropper-navigation-buttons
+      position: absolute
+      bottom: 0
+      left: 50%
+      transform: translate(calc(-50% - 8px), calc(100% + 16px))
+    // range navigation buttons
+    .vjs-range-navigation-buttons
+      display: none
+
+    // canvas
+    .vjs-canvas-container
+      position: absolute
       top: 0
       left: 0
       height: 100%
       width: 100%
       background-color: black
-
-      #vjs-canvas
+      .vjs-canvas
         max-width: 100% // required for Cropper.js
 
-    .vjs-cropper-buttons
-      position: absolute
+  // only show when paused
+  .vjs-has-started.vjs-paused
+    .vjs-create-tag-button, .vjs-range-navigation-buttons
       display: flex
-      bottom: 0
-      left: 50%
-      margin: 8px
-      transform: translate(calc(-50% - 8px), calc(100% + 16px))
-      .vjs-tagger-button
-        margin: 8px
 
-  .vjs-paused.vjs-has-started .vjs-create-tag-button
-      display: block
+  // hide elements programmatically
+  .hide
+    display: none !important
 
+  // Cropper.js
   .cropper-container
     position: absolute
 </style>
