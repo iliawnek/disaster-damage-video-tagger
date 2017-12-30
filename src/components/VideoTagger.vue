@@ -7,6 +7,8 @@ let cropper
 let canvas
 let canvasContainer
 let rangeNavigationButtons
+let cropTimeMarker
+let rangeBar
 
 export default {
   name: 'video-tagger',
@@ -14,6 +16,7 @@ export default {
   data () {
     return {
       crop: null,
+      range: null,
       stage: 0,
       stages: [
         'play',
@@ -79,7 +82,16 @@ export default {
           this.saveCrop()
         }
         if (entered('range-start')) {
-          this.startRangeSelection()
+          this.startRangeStartSelection()
+        }
+        if (left('range-start')) {
+          this.saveRangeStart()
+        }
+        if (entered('range-end')) {
+          this.startRangeEndSelection()
+        }
+        if (left('range-end')) {
+          this.saveRangeEnd()
         }
       } else { // clicked 'back'
         if (left('crop')) {
@@ -117,8 +129,45 @@ export default {
     videoElement () {
       return this.player().children_[0]
     },
+    slider () {
+      return document.getElementsByClassName('vjs-slider')[0]
+    },
     player () {
       return this.$refs.videoPlayer.player
+    },
+
+    currentTimePercentage () {
+      return this.player().currentTime() / this.player().duration()
+    },
+    cropTimePercentage () {
+      if (this.crop && this.crop.time) {
+        return this.crop.time / this.player().duration()
+      }
+    },
+    startTimePercentage () {
+      if (this.range && this.range.start) {
+        return this.range.start / this.player().duration()
+      }
+    },
+
+    // player listeners
+    playerTimeUpdated () {
+      // update range bar
+      if (this.currentStageName === 'range-start') {
+        // don't allow times beyond crop time to be selected
+        if (this.player().currentTime() > this.crop.time) {
+          this.player().currentTime(this.crop.time)
+        }
+        rangeBar.style.left = this.percentageAsString(this.currentTimePercentage())
+        rangeBar.style.width = this.percentageAsString(this.cropTimePercentage() - this.currentTimePercentage())
+      }
+      if (this.currentStageName === 'range-end') {
+        // don't allow times before crop time to be selected
+        if (this.player().currentTime() < this.crop.time) {
+          this.player().currentTime(this.crop.time)
+        }
+        rangeBar.style.width = this.percentageAsString(this.currentTimePercentage() - this.startTimePercentage())
+      }
     },
 
     // element visibility
@@ -127,6 +176,11 @@ export default {
     },
     hide (element) {
       element.classList.add('hide')
+    },
+
+    // utility
+    percentageAsString (percentage) {
+      return `${percentage * 100}%`
     },
 
     // button generators
@@ -176,6 +230,8 @@ export default {
       this.buildCanvas()
       this.buildCreateTagButton()
       this.buildRangeSelectionNavigationButtons()
+      this.buildRangeBar()
+      this.buildCropTimeMarker()
     },
 
     // playback
@@ -232,7 +288,10 @@ export default {
     },
     saveCrop () {
       const cropData = cropper.getData(true)
-      this.crop = {...cropData}
+      this.crop = {
+        ...cropData,
+        time: this.player().currentTime(),
+      }
       this.endCrop()
     },
     endCrop () {
@@ -241,6 +300,7 @@ export default {
     },
     resumeCrop () {
       this.buildCropper(this.crop)
+      this.player().currentTime(this.crop.time)
     },
 
     // range selection
@@ -251,8 +311,32 @@ export default {
       this.videojs().appendChild(rangeNavigationButtons)
       this.hide(rangeNavigationButtons)
     },
-    startRangeSelection () {
+    buildCropTimeMarker () {
+      cropTimeMarker = document.createElement('div')
+      cropTimeMarker.classList.add('vjs-crop-time-marker')
+      this.slider().appendChild(cropTimeMarker)
+      this.hide(cropTimeMarker)
+    },
+    buildRangeBar () {
+      rangeBar = document.createElement('div')
+      rangeBar.classList.add('vjs-range-bar')
+      this.slider().appendChild(rangeBar)
+      this.hide(rangeBar)
+    },
+    startRangeStartSelection () {
       this.show(rangeNavigationButtons)
+      this.show(cropTimeMarker)
+      this.show(rangeBar)
+      cropTimeMarker.style.left = this.percentageAsString(this.cropTimePercentage())
+    },
+    startRangeEndSelection () {
+      this.player().currentTime(this.crop.time)
+    },
+    saveRangeStart () {
+      this.range = {start: this.player().currentTime()}
+    },
+    saveRangeEnd () {
+      this.range.end = this.player().currentTime()
     },
     endRangeSelection () {
       this.hide(rangeNavigationButtons)
@@ -267,6 +351,7 @@ export default {
   v-if="isVideoLoaded"
   :options="playerOptions"
   @ready="buildInitialUI"
+  @timeupdate="playerTimeUpdated"
   )
 </template>
 
@@ -375,6 +460,20 @@ export default {
     // range navigation buttons
     .vjs-range-navigation-buttons
       display: none
+
+    // crop time marker
+    .vjs-crop-time-marker
+      position: absolute
+      top: 25%
+      height: 50%
+      width: 3px
+      transform: translateX(-50%)
+      background-color: black
+    // range bar
+    .vjs-range-bar
+      position: absolute
+      background-color: $red
+      height: 100%
 
     // canvas
     .vjs-canvas-container
