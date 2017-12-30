@@ -272,12 +272,12 @@ export default {
 
 <style lang="sass">
   @import '~cropperjs/dist/cropper.css'
-  $white: rgba(255,255,255,0.6)
-  $white-on-white: rgba(255,255,255,0.5)
+  $blue: #2196f3
+  $red: #f44336
 
   // big play button
   .video-js:hover .vjs-big-play-button
-      background-color: $white // disable default
+      background-color: white // disable default
   .vjs-has-started.vjs-paused .vjs-big-play-button
     display: block
     transform: translate(-50%, calc(-50% - 50px))
@@ -286,10 +286,8 @@ export default {
     // control bar
     .vjs-control-bar
       height: 50px
-      background-color: $white
+      background-color: white
       color: black
-    .vjs-control-bar:hover .vjs-button
-        background-color: white // disable default
     // big play button
     .vjs-big-play-button
       position: absolute
@@ -300,7 +298,7 @@ export default {
       height: 80px
       border-radius: 50%
       border: none
-      background-color: $white
+      background-color: white
       color: black
       transition: ease-in-out 0.15s !important
       .vjs-icon-placeholder::before
@@ -316,9 +314,9 @@ export default {
       transition: ease-in-out 0.15s
       .vjs-icon-placeholder::before
          line-height: 2.1em // button icon position
-    // play button in control bar
-    .vjs-play-control
-      background-color: $white-on-white
+    .vjs-button:hover
+      background-color: $red
+      color: white
     // progress bar
     .vjs-progress-control
       .vjs-slider
@@ -329,7 +327,7 @@ export default {
         .vjs-load-progress
           display: none // hide buffering progress
         .vjs-play-progress
-          background-color: $white-on-white // disable default
+          background-color: $blue
       .vjs-progress-holder
         margin: 0
     // remaining time
@@ -338,7 +336,7 @@ export default {
 
     // buttons
     .vjs-tagger-button
-      background: $white
+      background: white
       color: black
       font-family: Roboto, sans-serif
       font-size: 16px
@@ -350,7 +348,8 @@ export default {
       line-height: 1em
       transition: ease-in-out 0.15s
     .vjs-tagger-button:hover
-      background-color: white
+      background-color: $red
+      color: white
     // navigation buttons
     .vjs-navigation-buttons
       display: flex
