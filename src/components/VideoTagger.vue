@@ -82,26 +82,32 @@ export default {
           this.saveCrop()
         }
         if (entered('range-start')) {
-          this.startRangeStartSelection()
+          this.startRangeStart()
         }
         if (left('range-start')) {
           this.saveRangeStart()
         }
         if (entered('range-end')) {
-          this.startRangeEndSelection()
+          this.startRangeEnd()
         }
         if (left('range-end')) {
           this.saveRangeEnd()
         }
       } else { // clicked 'back'
         if (left('crop')) {
-          this.endCrop()
+          this.cancelCrop()
         }
         if (entered('crop')) {
           this.resumeCrop()
         }
         if (left('range-start')) {
-          this.endRangeSelection()
+          this.cancelRangeStart()
+        }
+        if (entered('range-start')) {
+          this.resumeRangeStart()
+        }
+        if (left('range-end')) {
+          this.cancelRangeEnd()
         }
       }
     },
@@ -142,11 +148,15 @@ export default {
     cropTimePercentage () {
       if (this.crop && this.crop.time) {
         return this.crop.time / this.player().duration()
+      } else {
+        return 0
       }
     },
     startTimePercentage () {
       if (this.range && this.range.start) {
         return this.range.start / this.player().duration()
+      } else {
+        return 0
       }
     },
 
@@ -154,19 +164,10 @@ export default {
     playerTimeUpdated () {
       // update range bar
       if (this.currentStageName === 'range-start') {
-        // don't allow times beyond crop time to be selected
-        if (this.player().currentTime() > this.crop.time) {
-          this.player().currentTime(this.crop.time)
-        }
-        rangeBar.style.left = this.percentageAsString(this.currentTimePercentage())
-        rangeBar.style.width = this.percentageAsString(this.cropTimePercentage() - this.currentTimePercentage())
+        this.updateRangeBarOnNewStart()
       }
       if (this.currentStageName === 'range-end') {
-        // don't allow times before crop time to be selected
-        if (this.player().currentTime() < this.crop.time) {
-          this.player().currentTime(this.crop.time)
-        }
-        rangeBar.style.width = this.percentageAsString(this.currentTimePercentage() - this.startTimePercentage())
+        this.updateRangeBarOnNewEnd()
       }
     },
 
@@ -229,7 +230,7 @@ export default {
     buildInitialUI () {
       this.buildCanvas()
       this.buildCreateTagButton()
-      this.buildRangeSelectionNavigationButtons()
+      this.buildRangeNavigationButtons()
       this.buildRangeBar()
       this.buildCropTimeMarker()
     },
@@ -294,17 +295,21 @@ export default {
       }
       this.endCrop()
     },
-    endCrop () {
-      cropper.destroy()
-      this.hide(canvasContainer)
+    cancelCrop () {
+      this.endCrop()
+      this.crop = null
     },
     resumeCrop () {
       this.buildCropper(this.crop)
       this.player().currentTime(this.crop.time)
     },
+    endCrop () {
+      cropper.destroy()
+      this.hide(canvasContainer)
+    },
 
     // range selection
-    buildRangeSelectionNavigationButtons () {
+    buildRangeNavigationButtons () {
       rangeNavigationButtons = this.buildNavigationButtons({
         className: 'vjs-center-buttons vjs-range-navigation-buttons',
       })
@@ -323,13 +328,29 @@ export default {
       this.slider().appendChild(rangeBar)
       this.hide(rangeBar)
     },
-    startRangeStartSelection () {
+    updateRangeBarOnNewStart () {
+      // don't allow times beyond crop time to be selected
+      if (this.player().currentTime() > this.crop.time) {
+        this.player().currentTime(this.crop.time)
+      }
+      rangeBar.style.left = this.percentageAsString(this.currentTimePercentage())
+      rangeBar.style.width = this.percentageAsString(this.cropTimePercentage() - this.currentTimePercentage())
+    },
+    updateRangeBarOnNewEnd () {
+      // don't allow times before crop time to be selected
+      if (this.player().currentTime() < this.crop.time) {
+        this.player().currentTime(this.crop.time)
+      }
+      rangeBar.style.width = this.percentageAsString(this.currentTimePercentage() - this.startTimePercentage())
+    },
+
+    startRangeStart () {
       this.show(rangeNavigationButtons)
       this.show(cropTimeMarker)
       this.show(rangeBar)
       cropTimeMarker.style.left = this.percentageAsString(this.cropTimePercentage())
     },
-    startRangeEndSelection () {
+    startRangeEnd () {
       this.player().currentTime(this.crop.time)
     },
     saveRangeStart () {
@@ -338,8 +359,26 @@ export default {
     saveRangeEnd () {
       this.range.end = this.player().currentTime()
     },
-    endRangeSelection () {
+    cancelRangeStart () {
+      this.endRange()
+      this.range = null
+      this.updateRangeBarOnNewStart() // reset range bar
+    },
+    cancelRangeEnd () {
+      // remove range end time
+      this.range = {
+        start: this.range.start,
+      }
+    },
+    resumeRangeStart () {
+      this.player().currentTime(this.range.start)
+    },
+    resumeRangeEnd () {
+    },
+    endRange () {
       this.hide(rangeNavigationButtons)
+      this.hide(cropTimeMarker)
+      this.hide(rangeBar)
     },
   },
 }
