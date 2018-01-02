@@ -1,5 +1,5 @@
 <script>
-import {mapState} from 'vuex'
+import {mapState, mapGetters, mapMutations} from 'vuex'
 import Cropper from 'cropperjs'
 
 let createTagButton
@@ -11,30 +11,18 @@ let cropTimeMarker
 let rangeBar
 
 export default {
-  name: 'video-tagger',
-
-  data () {
-    return {
-      crop: null,
-      range: null,
-      stage: 0,
-      stages: [
-        'play',
-        'crop',
-        'range-start',
-        'range-end',
-        'type',
-        'sub-type',
-        'description',
-        'done',
-      ],
-    }
-  },
+  name: 'video-tagger-player',
 
   computed: {
     ...mapState({
       video: (state) => state.video.video,
       isVideoLoaded: (state) => state.video.isVideoLoaded,
+      stage: (state) => state.tagger.stage,
+      crop: (state) => state.tagger.crop,
+      range: (state) => state.tagger.range,
+    }),
+    ...mapGetters({
+      currentStageName: 'tagger/currentStageName',
     }),
     playerOptions () {
       return {
@@ -48,12 +36,6 @@ export default {
         },
         fluid: true,
       }
-    },
-    currentStageName () {
-      return this.getStageName(this.stage)
-    },
-    lastStageIndex () {
-      return this.stages.length - 1
     },
   },
 
@@ -93,6 +75,9 @@ export default {
         if (left('range-end')) {
           this.saveRangeEnd()
         }
+        if (entered('dialog')) {
+          console.log('dialog time')
+        }
       } else { // clicked 'back'
         if (left('crop')) {
           this.cancelCrop()
@@ -109,20 +94,27 @@ export default {
         if (left('range-end')) {
           this.cancelRangeEnd()
         }
+        if (entered('range-end')) {
+          this.resumeRangeEnd()
+        }
       }
     },
   },
 
   methods: {
-    // stages
-    nextStage () {
-      this.stage = (this.stage + 1) % this.stages.length
-    },
-    previousStage () {
-      this.stage = this.stage === 0 ? this.stage : (this.stage - 1)
-    },
+    ...mapMutations({
+      nextStage: 'tagger/nextStage',
+      previousStage: 'tagger/previousStage',
+      setCrop: 'tagger/setCrop',
+      clearCrop: 'tagger/clearCrop',
+      setRangeStart: 'tagger/setRangeStart',
+      setRangeEnd: 'tagger/setRangeEnd',
+      clearRangeStart: 'tagger/clearRangeStart',
+      clearRangeEnd: 'tagger/clearRangeEnd',
+    }),
+
     getStageName (stage) {
-      return this.stages[stage]
+      return this.$store.getters['tagger/getStageName'](stage)
     },
 
     // frequently-accessed elements
@@ -142,6 +134,7 @@ export default {
       return this.$refs.videoPlayer.player
     },
 
+    // slider bar percentages
     currentTimePercentage () {
       return this.player().currentTime() / this.player().duration()
     },
@@ -158,6 +151,9 @@ export default {
       } else {
         return 0
       }
+    },
+    percentageAsString (percentage) {
+      return `${percentage * 100}%`
     },
 
     // player listeners
@@ -177,11 +173,6 @@ export default {
     },
     hide (element) {
       element.classList.add('hide')
-    },
-
-    // utility
-    percentageAsString (percentage) {
-      return `${percentage * 100}%`
     },
 
     // button generators
@@ -289,15 +280,15 @@ export default {
     },
     saveCrop () {
       const cropData = cropper.getData(true)
-      this.crop = {
+      this.setCrop({
         ...cropData,
         time: this.player().currentTime(),
-      }
+      })
       this.endCrop()
     },
     cancelCrop () {
       this.endCrop()
-      this.crop = null
+      this.clearCrop()
     },
     resumeCrop () {
       this.buildCropper(this.crop)
@@ -354,26 +345,24 @@ export default {
       this.player().currentTime(this.crop.time)
     },
     saveRangeStart () {
-      this.range = {start: this.player().currentTime()}
+      this.setRangeStart(this.player().currentTime())
     },
     saveRangeEnd () {
-      this.range.end = this.player().currentTime()
+      this.setRangeEnd(this.player().currentTime())
     },
     cancelRangeStart () {
       this.endRange()
-      this.range = null
+      this.clearRangeStart()
       this.updateRangeBarOnNewStart() // reset range bar
     },
     cancelRangeEnd () {
-      // remove range end time
-      this.range = {
-        start: this.range.start,
-      }
+      this.clearRangeEnd()
     },
     resumeRangeStart () {
       this.player().currentTime(this.range.start)
     },
     resumeRangeEnd () {
+      this.player().currentTime(this.range.end)
     },
     endRange () {
       this.hide(rangeNavigationButtons)
@@ -385,13 +374,14 @@ export default {
 </script>
 
 <template lang="pug">
-  video-player(
-  ref="videoPlayer"
-  v-if="isVideoLoaded"
-  :options="playerOptions"
-  @ready="buildInitialUI"
-  @timeupdate="playerTimeUpdated"
-  )
+  div
+    video-player(
+    ref="videoPlayer"
+    v-if="isVideoLoaded"
+    :options="playerOptions"
+    @ready="buildInitialUI"
+    @timeupdate="playerTimeUpdated"
+    )
 </template>
 
 <style lang="sass">

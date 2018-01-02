@@ -1,12 +1,12 @@
 <script>
 import {mapActions} from 'vuex'
-import VideoTagger from '@/components/VideoTagger'
+import VideoTaggerPlayer from '@/components/VideoTaggerPlayer'
 
 export default {
   name: 'Video',
 
   components: {
-    'video-tagger': VideoTagger,
+    'video-tagger-player': VideoTaggerPlayer,
   },
 
   created () {
@@ -24,7 +24,7 @@ export default {
 
 <template lang="pug">
   #video
-    video-tagger
+    video-tagger-player
 </template>
 
 <style scoped lang="sass">
