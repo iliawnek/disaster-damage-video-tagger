@@ -59,7 +59,6 @@ export default {
         this.tweetLoading = true
         try {
           const response = await serverless.get('/tweetInfo', {params})
-          console.log(response)
           const {data} = response
           this.tweetLoading = false
           return {
