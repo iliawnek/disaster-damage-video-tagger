@@ -397,6 +397,7 @@ export default {
 <style lang="sass">
   @import '~cropperjs/dist/cropper.css'
   $blue: #2196f3
+  $light-blue: #B5D9F5
   $red: #f44336
 
   // big play button
@@ -448,8 +449,11 @@ export default {
         height: 100%
         .vjs-slider-bar::before
           display: none // hide dot
+        // buffered bar
         .vjs-load-progress
-          display: none // hide buffering progress
+          div
+            background-color: $light-blue
+        // played bar
         .vjs-play-progress
           background-color: $blue
       .vjs-progress-holder
