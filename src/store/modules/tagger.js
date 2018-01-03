@@ -52,6 +52,11 @@ export default {
     clearRangeEnd: (state) => {
       state.range.end = null
     },
+    resetTagger: (state) => {
+      state.crop = null
+      state.range.start = null
+      state.range.end = null
+    },
     // stages
     nextStage: (state) => {
       state.stage = (state.stage + 1) % stages.length

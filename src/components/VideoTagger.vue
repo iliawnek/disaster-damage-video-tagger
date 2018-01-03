@@ -88,6 +88,7 @@ export default {
         }
         if (entered('play')) {
           this.resetTagger()
+          this.endRange()
         }
       } else { // clicked 'back'
         if (left('crop')) {
@@ -122,6 +123,7 @@ export default {
       setRangeEnd: 'tagger/setRangeEnd',
       clearRangeStart: 'tagger/clearRangeStart',
       clearRangeEnd: 'tagger/clearRangeEnd',
+      resetTagger: 'tagger/resetTagger',
     }),
 
     getStageName (stage) {
@@ -383,6 +385,9 @@ export default {
       }
       rangeBar.style.width = this.percentageAsString(this.currentTimePercentage() - this.startTimePercentage())
     },
+    resetRangeBar () {
+      rangeBar.style.width = 0
+    },
 
     startRangeStart () {
       this.show(rangeNavigationButtons)
@@ -402,7 +407,6 @@ export default {
     cancelRangeStart () {
       this.endRange()
       this.clearRangeStart()
-      this.updateRangeBarOnNewStart() // reset range bar
     },
     cancelRangeEnd () {
       this.clearRangeEnd()
@@ -417,13 +421,7 @@ export default {
       this.hide(rangeNavigationButtons)
       this.hide(cropTimeMarker)
       this.hide(rangeBar)
-    },
-
-    // reset
-    resetTagger () {
-      this.hide(rangeNavigationButtons)
-      this.hide(cropTimeMarker)
-      this.hide(rangeBar)
+      this.resetRangeBar()
     },
   },
 }
