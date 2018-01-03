@@ -138,7 +138,7 @@ export default {
 
   computed: {
     ...mapState({
-      images: (state) => state.tagger.crop.images,
+      images: (state) => state.tagger.crop && state.tagger.crop.images,
     }),
     ...mapGetters({
       currentStageName: 'tagger/currentStageName',
@@ -186,7 +186,7 @@ export default {
     :md-click-outside-to-close="false"
     )
       md-dialog-title Create new tag
-      img(:src="images.cropped")
+      img(v-if="images" :src="images.cropped")
       form(novalidate @submit.prevent="validateTag")
         md-dialog-content
           md-field(:class="getValidationClass('type')")

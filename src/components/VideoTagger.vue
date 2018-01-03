@@ -322,8 +322,12 @@ export default {
     saveCrop () {
       const cropData = cropper.getData(true)
       this.setCrop({
-        ...cropData,
+        position: cropData,
         time: this.player().currentTime(),
+        images: {
+          cropped: this.captureCroppedImage(cropData),
+          highlighted: this.captureHighlightedImage(cropData),
+        },
       })
       this.endCrop()
     },
