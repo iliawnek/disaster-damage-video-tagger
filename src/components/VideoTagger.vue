@@ -474,7 +474,8 @@ export default {
         line-height: 2em
         padding-left: 3px
     .vjs-big-play-button:hover
-      background-color: white
+      background-color: $red
+      color: white
     // control bar buttons
     .vjs-button
       width: 50px
