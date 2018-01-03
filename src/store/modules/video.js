@@ -54,11 +54,9 @@ export default {
       }
     ),
 
-    loadVideo ({dispatch, commit, state}, {videoId}) {
-      if (!state.isVideoLoaded && !state.isVideoLoading) {
-        commit('setIsVideoLoading')
-        dispatch('setVideoRef', {ref: videosRef.child(videoId), commit})
-      }
+    loadVideo ({dispatch, commit}, {videoId}) {
+      commit('setIsVideoLoading')
+      dispatch('setVideoRef', {ref: videosRef.child(videoId), commit})
     },
 
     setVideosRef: firebaseAction(
