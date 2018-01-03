@@ -9,7 +9,19 @@ const stages = [
 export default {
   namespaced: true,
   state: {
-    crop: null,
+    crop: {
+      position: {
+        x: null,
+        y: null,
+        width: null,
+        height: null,
+      },
+      time: null,
+      images: {
+        cropped: null,
+        highlighted: null,
+      },
+    },
     range: {
       start: null,
       end: null,
@@ -27,8 +39,14 @@ export default {
   },
   mutations: {
     // tag
-    setCrop: (state, {width, height, x, y, time}) => {
-      state.crop = {width, height, x, y, time}
+    setCrop: (state, {position: {x, y, width, height}, time, images: {cropped, highlighted}}) => {
+      state.crop.position.x = x
+      state.crop.position.y = y
+      state.crop.position.width = width
+      state.crop.position.height = height
+      state.crop.time = time
+      state.crop.images.cropped = cropped
+      state.crop.images.highlighted = highlighted
     },
     clearCrop: (state) => {
       state.crop = null

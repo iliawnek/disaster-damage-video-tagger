@@ -1,5 +1,5 @@
 <script>
-import {mapGetters, mapMutations} from 'vuex'
+import {mapState, mapGetters, mapMutations} from 'vuex'
 import {required} from 'vuelidate/lib/validators'
 
 export default {
@@ -137,6 +137,9 @@ export default {
   },
 
   computed: {
+    ...mapState({
+      images: (state) => state.tagger.crop.images,
+    }),
     ...mapGetters({
       currentStageName: 'tagger/currentStageName',
     }),
@@ -183,6 +186,7 @@ export default {
     :md-click-outside-to-close="false"
     )
       md-dialog-title Create new tag
+      img(:src="images.cropped")
       form(novalidate @submit.prevent="validateTag")
         md-dialog-content
           md-field(:class="getValidationClass('type')")

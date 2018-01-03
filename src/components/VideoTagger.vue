@@ -275,14 +275,48 @@ export default {
         ready: onReady,
       })
     },
-    takeScreenshot () {
+    captureFullFrame () {
       const context = canvas.getContext('2d')
       canvas.width = parseInt(this.videoElement().videoWidth)
       canvas.height = parseInt(this.videoElement().videoHeight)
       context.drawImage(this.videoElement(), 0, 0, canvas.width, canvas.height)
     },
+    captureCroppedImage ({x, y, width, height}) {
+      const cropCanvas = document.createElement('canvas') // not rendered
+      const context = cropCanvas.getContext('2d')
+      cropCanvas.width = width
+      cropCanvas.height = height
+      context.drawImage(canvas, -x, -y, canvas.width, canvas.height)
+      return cropCanvas.toDataURL('image/jpeg')
+    },
+    captureHighlightedImage ({x, y, width, height}) {
+      // copy full frame into new canvas
+      const highlightCanvas = document.createElement('canvas') // not rendered
+      const context = highlightCanvas.getContext('2d')
+      highlightCanvas.width = canvas.width
+      highlightCanvas.height = canvas.height
+      context.drawImage(canvas, 0, 0, canvas.width, canvas.height)
+
+      // draw dark overlay
+      context.globalAlpha = 0.5
+      context.fillStyle = 'black'
+      context.fillRect(0, 0, x, canvas.height) // left bar
+      context.fillRect(x + width, 0, canvas.width - x + width, canvas.height) // right bar
+      context.fillRect(x, 0, width, y) // top bar
+      context.fillRect(x, y + height, width, canvas.height - y - height) // bottom bar
+
+      // draw lines
+      context.strokeStyle = 'white'
+      context.lineWidth = 2
+      context.strokeRect(x, 0, 0, canvas.height)
+      context.strokeRect(x + width, 0, 0, canvas.height)
+      context.strokeRect(0, y, canvas.width, 0)
+      context.strokeRect(0, y + height, canvas.width, 0)
+
+      return highlightCanvas.toDataURL('image/jpeg')
+    },
     startCrop () {
-      this.takeScreenshot()
+      this.captureFullFrame()
       this.buildCropper()
     },
     saveCrop () {
@@ -298,7 +332,7 @@ export default {
       this.clearCrop()
     },
     resumeCrop () {
-      this.buildCropper(this.crop)
+      this.buildCropper(this.crop.position)
       this.player().currentTime(this.crop.time)
     },
     endCrop () {
