@@ -83,6 +83,9 @@ export default {
         if (left('range-end')) {
           this.saveRangeEnd()
         }
+        if (entered('dialog')) {
+          this.player().exitFullscreen()
+        }
         if (entered('play')) {
           this.resetTagger()
         }
