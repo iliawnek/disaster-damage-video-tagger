@@ -21,6 +21,7 @@ export default {
       stage: (state) => state.tagger.stage,
       crop: (state) => state.tagger.crop,
       range: (state) => state.tagger.range,
+      lastStageIndex: (state) => state.tagger.lastStageIndex,
     }),
     ...mapGetters({
       currentStageName: 'tagger/currentStageName',
@@ -82,9 +83,9 @@ export default {
         if (left('range-end')) {
           this.saveRangeEnd()
         }
-        // if (entered('dialog')) {
-        //   this.isVideoTaggerDialogOpen = true
-        // }
+        if (entered('play')) {
+          this.resetTagger()
+        }
       } else { // clicked 'back'
         if (left('crop')) {
           this.cancelCrop()
@@ -410,6 +411,13 @@ export default {
       this.player().currentTime(this.range.end)
     },
     endRange () {
+      this.hide(rangeNavigationButtons)
+      this.hide(cropTimeMarker)
+      this.hide(rangeBar)
+    },
+
+    // reset
+    resetTagger () {
       this.hide(rangeNavigationButtons)
       this.hide(cropTimeMarker)
       this.hide(rangeBar)

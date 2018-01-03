@@ -1,5 +1,5 @@
 <script>
-import {mapState, mapGetters, mapMutations} from 'vuex'
+import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
 import {required} from 'vuelidate/lib/validators'
 
 export default {
@@ -143,8 +143,18 @@ export default {
     ...mapGetters({
       currentStageName: 'tagger/currentStageName',
     }),
-    showDialog () {
+    isCurrentStageDialog () {
       return this.currentStageName === 'dialog'
+    },
+    isCurrentStageDone () {
+      return this.currentStageName === 'done'
+    },
+    shouldDialogBeOpen () {
+      return this.isCurrentStageDialog || this.isCurrentStageDone
+    },
+    getDialogTitle () {
+      if (this.isCurrentStageDialog) return 'Create new tag'
+      if (this.isCurrentStageDone) return 'Tag created'
     },
   },
 
@@ -152,6 +162,10 @@ export default {
     ...mapMutations({
       previousStage: 'tagger/previousStage',
       nextStage: 'tagger/nextStage',
+    }),
+
+    ...mapActions({
+      saveNewTag: 'tagger/saveNewTag',
     }),
 
     getValidationClass (fieldName, subFieldName) {
@@ -167,10 +181,11 @@ export default {
       this.$v.$reset()
     },
 
-    validateTag () {
+    submitForm () {
       this.$v.$touch()
       if (!this.$v.$invalid) {
-        // TODO: save tag
+        this.saveNewTag()
+        this.nextStage()
       }
     },
   },
@@ -180,14 +195,14 @@ export default {
 <template lang="pug">
   div
     md-dialog(
-    :md-active.sync="showDialog"
+    :md-active.sync="shouldDialogBeOpen"
     @md-closed="clearForm"
     :md-close-on-esc="false"
     :md-click-outside-to-close="false"
     )
-      md-dialog-title Create new tag
+      md-dialog-title {{getDialogTitle}}
       img(v-if="images" :src="images.cropped")
-      form(novalidate @submit.prevent="validateTag")
+      form(v-if="isCurrentStageDialog" novalidate @submit.prevent="submitForm")
         md-dialog-content
           md-field(:class="getValidationClass('type')")
             label(for="type") Type
@@ -341,5 +356,11 @@ export default {
 
         md-dialog-actions
           md-button.md-secondary(@click="previousStage") Back
-          md-button.md-primary(type="submit") Done
+          md-button.md-primary(type="submit") Create
+
+      div(v-else-if="isCurrentStageDone")
+        md-dialog-content This tag has been successfully created!
+        md-dialog-actions
+          md-button.md-primary(@click="nextStage") Done
+
 </template>

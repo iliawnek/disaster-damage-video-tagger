@@ -1,33 +1,28 @@
+import {db, storage} from '^/firebase'
+import {fromPairs} from 'lodash'
+
+const tagsRef = db.ref('tags')
+
 const stages = [
   'play',
   'crop',
   'range-start',
   'range-end',
   'dialog',
+  'done',
 ]
 
 export default {
   namespaced: true,
   state: {
-    crop: {
-      position: {
-        x: null,
-        y: null,
-        width: null,
-        height: null,
-      },
-      time: null,
-      images: {
-        cropped: null,
-        highlighted: null,
-      },
-    },
+    crop: null,
     range: {
       start: null,
       end: null,
     },
     stage: 0,
     lastStageIndex: stages.length - 1,
+    uploading: false,
   },
   getters: {
     getStageName: () => (stage) => {
@@ -39,14 +34,8 @@ export default {
   },
   mutations: {
     // tag
-    setCrop: (state, {position: {x, y, width, height}, time, images: {cropped, highlighted}}) => {
-      state.crop.position.x = x
-      state.crop.position.y = y
-      state.crop.position.width = width
-      state.crop.position.height = height
-      state.crop.time = time
-      state.crop.images.cropped = cropped
-      state.crop.images.highlighted = highlighted
+    setCrop: (state, crop) => {
+      state.crop = crop
     },
     clearCrop: (state) => {
       state.crop = null
@@ -69,6 +58,51 @@ export default {
     },
     previousStage: (state) => {
       state.stage = state.stage === 0 ? state.stage : (state.stage - 1)
+    },
+    // images
+    setUploading: (state, uploading) => {
+      state.uploading = uploading
+    },
+  },
+  actions: {
+    uploadImages ({state, commit}, newTagId) {
+      return Promise.all(
+        Object.entries(state.crop.images).map(([imageType, dataURL]) => {
+          return new Promise((resolve, reject) => {
+            const path = `tags/${imageType}/${newTagId}.jpg`
+            const uploadTask = storage.ref(path).putString(dataURL, 'data_url')
+            uploadTask.on('state_changed', {
+              error: (error) => {
+                reject(error)
+              },
+              complete: () => {
+                resolve([imageType, uploadTask.snapshot.downloadURL])
+              },
+            })
+          })
+        })
+      )
+    },
+
+    async saveNewTag ({rootState, state, commit, dispatch}) {
+      // get new tag ID
+      const videoId = rootState.video.video['.key']
+      const newTagRef = tagsRef.child(videoId).push()
+      const newTagId = newTagRef.key
+
+      // upload images
+      commit('setUploading', true)
+      const imageURLs = fromPairs(await dispatch('uploadImages', newTagId))
+      commit('setUploading', false)
+
+      newTagRef.set({
+        crop: {
+          position: state.crop.position,
+          time: state.crop.time,
+          images: imageURLs,
+        },
+        range: state.range,
+      })
     },
   },
 }
