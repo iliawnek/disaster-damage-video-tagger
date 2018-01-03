@@ -22,7 +22,7 @@
     "videojs-contrib-hls": "^5.12.2",
     "vue": "^2.5.2",
     "vue-async-computed": "^3.3.1",
-    "vue-material": "^1.0.0-beta-4",
+    "vue-material": "^1.0.0-beta-7",
     "vue-router": "^3.0.1",
     "vue-video-player": "^4.0.6",
     "vuefire": "^1.4.4",

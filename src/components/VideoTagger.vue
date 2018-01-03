@@ -1,5 +1,6 @@
 <script>
 import {mapState, mapGetters, mapMutations} from 'vuex'
+import {mapBoolean} from '@/utilities'
 import Cropper from 'cropperjs'
 
 let createTagButton
@@ -23,6 +24,12 @@ export default {
     }),
     ...mapGetters({
       currentStageName: 'tagger/currentStageName',
+    }),
+    ...mapBoolean({
+      namespace: 'ui',
+      key: 'isVideoTaggerDialogOpen',
+      setTrue: 'openVideoTaggerDialog',
+      setFalse: 'closeVideoTaggerDialog',
     }),
     playerOptions () {
       return {
@@ -75,9 +82,9 @@ export default {
         if (left('range-end')) {
           this.saveRangeEnd()
         }
-        if (entered('dialog')) {
-          console.log('dialog time')
-        }
+        // if (entered('dialog')) {
+        //   this.isVideoTaggerDialogOpen = true
+        // }
       } else { // clicked 'back'
         if (left('crop')) {
           this.cancelCrop()
