@@ -139,6 +139,7 @@ export default {
   computed: {
     ...mapState({
       images: (state) => state.tagger.crop && state.tagger.crop.images,
+      uploading: (state) => state.tagger.uploading,
     }),
     ...mapGetters({
       currentStageName: 'tagger/currentStageName',
@@ -155,6 +156,14 @@ export default {
     getDialogTitle () {
       if (this.isCurrentStageDialog) return 'Create new tag'
       if (this.isCurrentStageDone) return 'Tag created'
+    },
+  },
+
+  watch: {
+    uploading (newUploading, oldUploading) {
+      if (oldUploading && !newUploading) {
+        this.nextStage()
+      }
     },
   },
 
@@ -185,7 +194,6 @@ export default {
       this.$v.$touch()
       if (!this.$v.$invalid) {
         this.saveNewTag()
-        this.nextStage()
       }
     },
   },
@@ -200,6 +208,8 @@ export default {
     :md-close-on-esc="false"
     :md-click-outside-to-close="false"
     )
+      .overlay-progress(v-if="uploading")
+        md-progress-spinner(md-mode="indeterminate")
       md-dialog-title {{getDialogTitle}}
       img(v-if="images" :src="images.cropped")
       form(v-if="isCurrentStageDialog" novalidate @submit.prevent="submitForm")
@@ -364,3 +374,17 @@ export default {
           md-button.md-primary(@click="nextStage") Done
 
 </template>
+
+<style scoped lang="sass">
+  .overlay-progress
+    position: absolute
+    left: 0
+    right: 0
+    width: 100%
+    height: 100%
+    background-color: rgba(255,255,255,0.8)
+    z-index: 5 // just enough overlay all dialog UI elements
+    display: flex
+    justify-content: center
+    align-items: center
+</style>
