@@ -12,7 +12,7 @@ let cropTimeMarker
 let rangeBar
 
 export default {
-  name: 'video-tagger-player',
+  name: 'video-tagger',
 
   computed: {
     ...mapState({
