@@ -193,7 +193,15 @@ export default {
     submitForm () {
       this.$v.$touch()
       if (!this.$v.$invalid) {
-        this.saveNewTag()
+        const {type, description} = this.form
+        const formToSave = {
+          type,
+          ...this.form[type],
+        }
+        if (description) {
+          formToSave.description = description
+        }
+        this.saveNewTag(formToSave)
       }
     },
   },

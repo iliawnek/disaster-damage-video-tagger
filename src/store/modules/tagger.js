@@ -84,7 +84,7 @@ export default {
       )
     },
 
-    async saveNewTag ({rootState, state, commit, dispatch}) {
+    async saveNewTag ({rootState, state, commit, dispatch}, details) {
       // get new tag ID
       const videoId = rootState.video.video['.key']
       const newTagRef = tagsRef.child(videoId).push()
@@ -102,6 +102,7 @@ export default {
           images: imageURLs,
         },
         range: state.range,
+        details,
       })
     },
   },
