@@ -17,8 +17,9 @@ export default {
 
 <template lang="pug">
   .tag-list(v-if="areTagsLoaded")
+    // tags reversed to put newest on top
     tag-card(
-    v-for="tag in tags"
+    v-for="tag in [...tags].reverse()"
     :key="tag['.key']"
     :tag="tag"
     )
