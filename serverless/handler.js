@@ -3,14 +3,13 @@ const youtubedl = require('youtube-dl')
 
 module.exports.tweetInfo = (event, context, callback) => {
   const tweetUrl = event.queryStringParameters.tweetUrl
-  youtubedl.exec(
+  youtubedl.getInfo(
     tweetUrl,
     [
-      '-g',
       '-f',
       'best[protocol=m3u8]',
     ],
-    (error, url) => {
+    (error, info) => {
       const response = {
         headers: {
           'Access-Control-Allow-Origin': '*',
@@ -22,7 +21,7 @@ module.exports.tweetInfo = (event, context, callback) => {
       }
       else {
         response.statusCode = 200
-        response.body = url.slice(0, -1) // remove newline
+        response.body = JSON.stringify(info)
       }
       callback(null, response)
     }
