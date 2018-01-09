@@ -14,10 +14,13 @@ let rangeBar
 export default {
   name: 'video-tagger',
 
+  props: [
+    'video',
+    'isVideoLoaded',
+  ],
+
   computed: {
     ...mapState({
-      video: (state) => state.video.video,
-      isVideoLoaded: (state) => state.video.isVideoLoaded,
       stage: (state) => state.tagger.stage,
       crop: (state) => state.tagger.crop,
       range: (state) => state.tagger.range,

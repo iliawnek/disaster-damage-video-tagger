@@ -3,6 +3,7 @@ import {firebaseAction} from 'vuexfire'
 
 const videosRef = db.ref('videos')
 const eventsRef = db.ref('events')
+const tagsRef = db.ref('tags')
 
 export default {
   namespaced: true,
@@ -14,10 +15,15 @@ export default {
     videos: [],
     areVideosLoaded: false,
     areVideosLoading: false,
+    tags: [],
+    areTagsLoaded: false,
+    areTagsLoading: false,
   },
 
   getters: {
     doVideosExist: (state) => state.videos.length > 0,
+
+    doTagsExist: (state) => state.tags.length > 0,
 
     getLinkToVideo: () => (video) => {
       return `/video/${video['.key']}`
@@ -29,7 +35,6 @@ export default {
       state.isVideoLoading = false
       state.isVideoLoaded = true
     },
-
     setIsVideoLoading (state) {
       state.isVideoLoading = true
     },
@@ -37,9 +42,15 @@ export default {
       state.areVideosLoading = false
       state.areVideosLoaded = true
     },
-
     setAreVideosLoading (state) {
       state.areVideosLoading = true
+    },
+    setAreTagsLoaded (state) {
+      state.areTagsLoading = false
+      state.areTagsLoaded = true
+    },
+    setAreTagsLoading (state) {
+      state.areTagsLoading = true
     },
   },
 
@@ -74,6 +85,21 @@ export default {
         commit('setAreVideosLoading')
         dispatch('setVideosRef', {ref: videosRef, commit})
       }
+    },
+
+    setTagsRef: firebaseAction(
+      ({bindFirebaseRef}, {ref, commit}) => {
+        bindFirebaseRef('tags', ref, {
+          readyCallback: () => {
+            commit('setAreTagsLoaded')
+          },
+        })
+      }
+    ),
+
+    loadTags ({dispatch, commit}, {videoId}) {
+      commit('setAreTagsLoading')
+      dispatch('setTagsRef', {ref: tagsRef.child(videoId), commit})
     },
 
     saveNewVideo (context, {video}) {
