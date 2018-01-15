@@ -39,6 +39,14 @@ export default {
     currentStageName: (state, getters) => {
       return getters.getStageName(state.stage)
     },
+    getTagById: (state) => (tagId) => {
+      return state.tags.find((tag) => tag['.key'] === tagId)
+    },
+    getTagsByVideoIds: (state, getters) => (videoIds) => {
+      const unjoined = videoIds.map((videoId) => getters.getTagsByVideoId(videoId))
+      const [first, ...rest] = unjoined
+      return first.concat(...rest)
+    },
     getTagsByVideoId: (state) => (videoId) => {
       return state.tags.filter((tag) => tag.video === videoId)
     },

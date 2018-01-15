@@ -33,6 +33,11 @@ export default {
       return state.agencies.find((agency) => agency['.key'] === agencyId)
     },
 
+    getAgenciesByIds: (state, getters) => (agencyIds) => {
+      const agencies = agencyIds.map((agencyId) => getters.getAgencyById(agencyId))
+      return agencies === {} ? null : agencies
+    },
+
     getAgencyAdmins: (state) => (agency) => {
       return Object.keys(agency.admins)
     },

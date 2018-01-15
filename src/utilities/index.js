@@ -14,6 +14,16 @@ export function mapBoolean ({namespace, key, setTrue, setFalse}) {
   }
 }
 
+export function mapGettersWithParams (paramGetters) {
+  const returnObject = {...paramGetters}
+  Object.entries(returnObject).forEach(([key, val]) => {
+    returnObject[key] = function (...params) {
+      return this.$store.getters[val](...params)
+    }
+  })
+  return returnObject
+}
+
 // export function isYouTubeUrl (url) {
 //   const {hostname} = urlParse(url)
 //   return [

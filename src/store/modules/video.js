@@ -20,6 +20,11 @@ export default {
       return state.videos.find((video) => video['.key'] === videoId)
     },
 
+    getVideosByIds: (state, getters) => (videoIds) => {
+      const videos = videoIds.map((videoId) => getters.getVideoById(videoId))
+      return videos === {} ? null : videos
+    },
+
     getLinkToVideo: () => (video) => {
       return `/video/${video['.key']}`
     },
