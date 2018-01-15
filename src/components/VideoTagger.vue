@@ -21,13 +21,13 @@ export default {
 
   computed: {
     ...mapState({
-      stage: (state) => state.tagger.stage,
-      crop: (state) => state.tagger.crop,
-      range: (state) => state.tagger.range,
-      lastStageIndex: (state) => state.tagger.lastStageIndex,
+      stage: (state) => state.tag.stage,
+      crop: (state) => state.tag.crop,
+      range: (state) => state.tag.range,
+      lastStageIndex: (state) => state.tag.lastStageIndex,
     }),
     ...mapGetters({
-      currentStageName: 'tagger/currentStageName',
+      currentStageName: 'tag/currentStageName',
     }),
     ...mapBoolean({
       namespace: 'ui',
@@ -117,19 +117,19 @@ export default {
 
   methods: {
     ...mapMutations({
-      nextStage: 'tagger/nextStage',
-      previousStage: 'tagger/previousStage',
-      setCrop: 'tagger/setCrop',
-      clearCrop: 'tagger/clearCrop',
-      setRangeStart: 'tagger/setRangeStart',
-      setRangeEnd: 'tagger/setRangeEnd',
-      clearRangeStart: 'tagger/clearRangeStart',
-      clearRangeEnd: 'tagger/clearRangeEnd',
-      resetTagger: 'tagger/resetTagger',
+      nextStage: 'tag/nextStage',
+      previousStage: 'tag/previousStage',
+      setCrop: 'tag/setCrop',
+      clearCrop: 'tag/clearCrop',
+      setRangeStart: 'tag/setRangeStart',
+      setRangeEnd: 'tag/setRangeEnd',
+      clearRangeStart: 'tag/clearRangeStart',
+      clearRangeEnd: 'tag/clearRangeEnd',
+      resetTagger: 'tag/resetTagger',
     }),
 
     getStageName (stage) {
-      return this.$store.getters['tagger/getStageName'](stage)
+      return this.$store.getters['tag/getStageName'](stage)
     },
 
     // frequently-accessed elements
@@ -432,7 +432,7 @@ export default {
 <template lang="pug">
   video-player(
   ref="videoPlayer"
-  v-if="isVideoLoaded"
+  v-if="video"
   :options="playerOptions"
   @ready="buildInitialUI"
   @timeupdate="playerTimeUpdated"

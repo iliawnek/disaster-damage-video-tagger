@@ -1,4 +1,5 @@
 import {db, storage} from '^/firebase'
+import {firebaseAction} from 'vuexfire'
 import {fromPairs} from 'lodash'
 
 const tagsRef = db.ref('tags')
@@ -15,6 +16,7 @@ const stages = [
 export default {
   namespaced: true,
   state: {
+    // tagger
     crop: null,
     range: {
       start: null,
@@ -23,17 +25,26 @@ export default {
     stage: 0,
     lastStageIndex: stages.length - 1,
     uploading: false,
+
+    // tags
+    tags: [],
+    areTagsLoaded: false,
+    areTagsLoading: false,
   },
   getters: {
+    doTagsExist: (state) => state.tags.length > 0,
     getStageName: () => (stage) => {
       return stages[stage]
     },
     currentStageName: (state, getters) => {
       return getters.getStageName(state.stage)
     },
+    getTagsByVideoId: (state) => (videoId) => {
+      return state.tags.filter((tag) => tag.video === videoId)
+    },
   },
   mutations: {
-    // tag
+    // tagger
     setCrop: (state, crop) => {
       state.crop = crop
     },
@@ -57,6 +68,7 @@ export default {
       state.range.start = null
       state.range.end = null
     },
+
     // stages
     nextStage: (state) => {
       state.stage = (state.stage + 1) % stages.length
@@ -64,9 +76,19 @@ export default {
     previousStage: (state) => {
       state.stage = state.stage === 0 ? state.stage : (state.stage - 1)
     },
+
     // images
     setUploading: (state, uploading) => {
       state.uploading = uploading
+    },
+
+    // tags
+    setAreTagsLoaded (state) {
+      state.areTagsLoading = false
+      state.areTagsLoaded = true
+    },
+    setAreTagsLoading (state) {
+      state.areTagsLoading = true
     },
   },
   actions: {
@@ -89,10 +111,9 @@ export default {
       )
     },
 
-    async saveNewTag ({rootState, state, commit, dispatch}, details) {
+    async saveNewTag ({state, commit, dispatch}, {details, videoId}) {
       // get new tag ID
-      const videoId = rootState.video.video['.key']
-      const newTagRef = tagsRef.child(videoId).push()
+      const newTagRef = tagsRef.push()
       const newTagId = newTagRef.key
 
       // upload images
@@ -101,6 +122,7 @@ export default {
       commit('setUploading', false)
 
       newTagRef.set({
+        video: videoId,
         crop: {
           position: state.crop.position,
           time: state.crop.time,
@@ -109,6 +131,23 @@ export default {
         range: state.range,
         details,
       })
+    },
+
+    setTagsRef: firebaseAction(
+      ({bindFirebaseRef}, {ref, commit}) => {
+        bindFirebaseRef('tags', ref, {
+          readyCallback: () => {
+            commit('setAreTagsLoaded')
+          },
+        })
+      }
+    ),
+
+    loadTags ({state, dispatch, commit}) {
+      if (!state.areTagsLoaded && !state.areTagsLoading) {
+        commit('setAreTagsLoading')
+        dispatch('setTagsRef', {ref: tagsRef, commit})
+      }
     },
   },
 }

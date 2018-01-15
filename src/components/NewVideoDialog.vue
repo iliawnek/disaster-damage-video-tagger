@@ -59,13 +59,15 @@ export default {
         this.tweetLoading = true
         try {
           const response = await serverless.get('/tweetInfo', {params})
-          const {url, width, height} = response.data
+          console.log(response.data)
+          const {url, width, height, thumbnail} = response.data
           this.tweetLoading = false
           return {
             video: {
               url,
               width,
               height,
+              thumbnail,
             },
           }
         } catch (error) {
@@ -115,6 +117,7 @@ export default {
             url: this.tweet.video.url,
             width: this.tweet.video.width,
             height: this.tweet.video.height,
+            thumbnail: this.tweet.video.thumbnail,
             event: this.form.event,
           },
         })

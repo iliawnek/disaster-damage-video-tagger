@@ -10,13 +10,12 @@ export default {
 
   props: [
     'tags',
-    'areTagsLoaded',
   ],
 }
 </script>
 
 <template lang="pug">
-  .tag-list(v-if="areTagsLoaded")
+  .tag-list(v-if="tags")
     // tags reversed to put newest on top
     tag-card(
     v-for="tag in [...tags].reverse()"

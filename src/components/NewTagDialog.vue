@@ -138,11 +138,11 @@ export default {
 
   computed: {
     ...mapState({
-      images: (state) => state.tagger.crop && state.tagger.crop.images,
-      uploading: (state) => state.tagger.uploading,
+      images: (state) => state.tag.crop && state.tag.crop.images,
+      uploading: (state) => state.tag.uploading,
     }),
     ...mapGetters({
-      currentStageName: 'tagger/currentStageName',
+      currentStageName: 'tag/currentStageName',
     }),
     isCurrentStageDialog () {
       return this.currentStageName === 'dialog'
@@ -169,12 +169,12 @@ export default {
 
   methods: {
     ...mapMutations({
-      previousStage: 'tagger/previousStage',
-      nextStage: 'tagger/nextStage',
+      previousStage: 'tag/previousStage',
+      nextStage: 'tag/nextStage',
     }),
 
     ...mapActions({
-      saveNewTag: 'tagger/saveNewTag',
+      saveNewTag: 'tag/saveNewTag',
     }),
 
     getValidationClass (fieldName, subFieldName) {
@@ -212,7 +212,10 @@ export default {
         if (description) {
           formToSave.description = description
         }
-        this.saveNewTag(formToSave)
+        this.saveNewTag({
+          details: formToSave,
+          videoId: this.$route.params.videoId,
+        })
       }
     },
   },

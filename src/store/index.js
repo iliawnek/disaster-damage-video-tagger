@@ -5,7 +5,7 @@ import auth from '@/store/modules/auth'
 import agency from '@/store/modules/agency'
 import event from '@/store/modules/event'
 import video from '@/store/modules/video'
-import tagger from '@/store/modules/tagger'
+import tag from '@/store/modules/tag'
 import {firebaseMutations} from 'vuexfire'
 
 Vue.use(Vuex)
@@ -18,7 +18,7 @@ export default new Vuex.Store({
     agency,
     event,
     video,
-    tagger,
+    tag,
   },
   mutations: {
     ...firebaseMutations,

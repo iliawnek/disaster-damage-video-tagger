@@ -14,34 +14,56 @@ export default {
   },
 
   created () {
+    // get video and tags if already loaded
     const {videoId} = this.$route.params
-    this.loadVideo({videoId})
+    this.video = this.getVideoById(videoId)
+    this.tags = this.getTagsByVideoId(videoId)
+
+    // load videos and tags if not already loaded
+    this.loadVideos()
+    this.loadTags()
+  },
+
+  data () {
+    return {
+      video: null,
+      tags: null,
+    }
   },
 
   computed: {
     ...mapState({
-      video: (state) => state.video.video,
-      isVideoLoaded: (state) => state.video.isVideoLoaded,
-      tags: (state) => state.video.tags,
-      areTagsLoaded: (state) => state.video.areTagsLoaded,
+      areVideosLoaded: (state) => state.video.areVideosLoaded,
+      areTagsLoaded: (state) => state.tag.areTagsLoaded,
     }),
   },
 
   watch: {
-    isVideoLoaded (newVal, oldVal) {
-      // once video loads...
+    areVideosLoaded (newVal, oldVal) {
       if (newVal && !oldVal) {
-        const videoId = this.video['.key']
-        this.loadTags({videoId})
+        const {videoId} = this.$route.params
+        this.video = this.getVideoById(videoId)
+      }
+    },
+    areTagsLoaded (newVal, oldVal) {
+      if (newVal && !oldVal) {
+        const {videoId} = this.$route.params
+        this.tags = this.getTagsByVideoId(videoId)
       }
     },
   },
 
   methods: {
     ...mapActions({
-      loadVideo: 'video/loadVideo',
-      loadTags: 'video/loadTags',
+      loadVideos: 'video/loadVideos',
+      loadTags: 'tag/loadTags',
     }),
+    getVideoById (videoId) {
+      return this.$store.getters['video/getVideoById'](videoId)
+    },
+    getTagsByVideoId (videoId) {
+      return this.$store.getters['tag/getTagsByVideoId'](videoId)
+    },
   },
 }
 </script>
@@ -50,12 +72,10 @@ export default {
   #video
     video-tagger(
     :video="video"
-    :isVideoLoaded="isVideoLoaded"
     )
     new-tag-dialog
     tag-list(
     :tags="tags"
-    :areTagsLoaded="areTagsLoaded"
     )
 </template>
 
