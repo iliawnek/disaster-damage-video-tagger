@@ -45,7 +45,6 @@ export default {
         controlBar: {
           volumePanel: false,
         },
-        fluid: true,
       }
     },
   },
@@ -431,14 +430,13 @@ export default {
 </script>
 
 <template lang="pug">
-  div
-    video-player(
-    ref="videoPlayer"
-    v-if="isVideoLoaded"
-    :options="playerOptions"
-    @ready="buildInitialUI"
-    @timeupdate="playerTimeUpdated"
-    )
+  video-player(
+  ref="videoPlayer"
+  v-if="isVideoLoaded"
+  :options="playerOptions"
+  @ready="buildInitialUI"
+  @timeupdate="playerTimeUpdated"
+  )
 </template>
 
 <style lang="sass">
@@ -455,6 +453,9 @@ export default {
     transform: translate(-50%, calc(-50% - 50px))
 
   .video-js
+    width: 100%
+    height: 50vh
+
     // control bar
     .vjs-control-bar
       height: 50px
