@@ -24,7 +24,7 @@ export default {
       },
       description: {
         required,
-        maxLength: maxLength(200),
+        maxLength: maxLength(800),
       },
       website: {
         url,
@@ -98,10 +98,10 @@ export default {
         md-textarea(
         name="description"
         v-model="form.description"
-        md-counter="200"
+        md-counter="800"
         )
         span.md-error(v-if="!$v.form.description.required") An agency must have a description.
-        span.md-error(v-else-if="!$v.form.name.maxLength") Cannot be longer than 200 characters.
+        span.md-error(v-else-if="!$v.form.name.maxLength") Cannot be longer than 800 characters.
 
       md-field(:class="getValidationClass('website')")
         label(for="website") Website URL

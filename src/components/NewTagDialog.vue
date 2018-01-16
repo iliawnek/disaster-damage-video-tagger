@@ -1,6 +1,6 @@
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
-import {required} from 'vuelidate/lib/validators'
+import {required, maxLength} from 'vuelidate/lib/validators'
 
 export default {
   name: 'new-tag-dialog',
@@ -104,6 +104,7 @@ export default {
     const validations = {
       form: {
         type: {required},
+        description: {maxLength: maxLength(800)},
       },
     }
     if (this.form.type === 'people') {
@@ -131,7 +132,7 @@ export default {
         form: {required},
       }
     } else if (this.form.type === 'other') {
-      validations.form.description = {required}
+      validations.form.description.required = required
     }
     return validations
   },
