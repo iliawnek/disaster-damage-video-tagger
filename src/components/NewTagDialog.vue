@@ -381,7 +381,6 @@ export default {
           md-textarea(
           v-model="form.description"
           name="description"
-          md-autogrow
           )
           span.md-error(v-if="$v.form.description && !$v.form.description.required") Required.
 
