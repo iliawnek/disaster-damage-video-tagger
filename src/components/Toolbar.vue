@@ -20,7 +20,7 @@ export default {
 </script>
 
 <template lang="pug">
-  md-toolbar.md-primary
+  md-toolbar
       md-button.md-icon-button(@click="openNavigationDrawer")
         md-icon menu
       h3.md-title {{this.$route.name}}
