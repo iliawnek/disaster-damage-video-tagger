@@ -38,7 +38,7 @@ export default {
       return agencies === {} ? null : agencies
     },
 
-    getAgencyAdmins: (state) => (agency) => {
+    getAgencyAdmins: () => (agency) => {
       return Object.keys(agency.admins)
     },
 
