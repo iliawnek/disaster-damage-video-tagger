@@ -1,6 +1,9 @@
 <script>
 import {mapState, mapActions} from 'vuex'
 import {mapGettersWithParams} from '@/utilities'
+import EventHeader from '@/components/EventHeader'
+import VideoList from '@/components/VideoList'
+import TagList from '@/components/TagList'
 
 export default {
   name: 'Event',
@@ -11,6 +14,12 @@ export default {
     this.loadAgencies()
     this.loadVideos()
     this.loadTags()
+  },
+
+  components: {
+    'event-header': EventHeader,
+    'video-list': VideoList,
+    'tag-list': TagList,
   },
 
   data () {
@@ -87,24 +96,21 @@ export default {
 
 <template lang="pug">
   .event(v-if="event")
-    h1 event
-    ul
-      li name → {{event.name}}
-      li id → {{event['.key']}}
-
-    h1 agencies
-    ul
-      li(v-for="agency in agencies") {{agency.name}}
-
-    h1 videos
-    ul
-      li(v-for="video in videos")
-        img(:src="video.thumbnail")
-
-    h1 tags
-    ul
-      li(v-for="tag in tags")
-        img(:src="tag.crop.images.highlighted")
+    event-header(
+    :event="event"
+    :image="videos && videos[0].thumbnail"
+    )
+    md-tabs.md-primary(md-alignment="centered")
+      md-tab(md-label="Videos")
+        video-list(
+        v-if="videos"
+        :videos="videos"
+        )
+      md-tab(md-label="Tags")
+        tag-list(
+        v-if="tags"
+        :tags="tags"
+        )
 </template>
 
 <style scoped lang="sass">
