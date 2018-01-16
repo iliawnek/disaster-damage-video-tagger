@@ -1,11 +1,20 @@
 <script>
+import {mapGettersWithParams} from '@/utilities'
+
 export default {
   name: 'event-header',
 
   props: [
     'event',
+    'agencies',
     'image',
   ],
+
+  methods: {
+    ...mapGettersWithParams({
+      getLinkToAgency: 'agency/getLinkToAgency',
+    }),
+  },
 }
 </script>
 
@@ -18,6 +27,11 @@ export default {
     // text
     .name {{event.name}}
     .description {{event.description}}
+    .agencies
+      div Relief managed by:
+      span.agency(v-for="(agency, index) in agencies")
+        router-link.agency-link(:to="getLinkToAgency(agency)") {{agency.name}}
+        span(v-if="index < agencies.length - 1") &nbsp;&nbsp;•&nbsp;&nbsp;
 </template>
 
 <style scoped lang="sass">
@@ -43,18 +57,26 @@ export default {
     background-color: rgba(0,0,0,0.6)
 
   .text
-    color: white
+    color: white !important
+  .content
     z-index: 1
-    margin: 8px
+    margin: 16px
   .name
-    @extend .text
+    @extend .text, .content
     font-size: 2.5em
     line-height: 1.2em
     text-transform: uppercase
     font-weight: bold
   .description
-    @extend .text
+    @extend .text, .content
     font-size: 1.1em
-    max-width: 500px
+    max-width: 600px
     line-height: 1.5em
+  .agencies
+    @extend .text, .content
+    font-size: 0.9em
+  .agency
+    font-weight: bold
+  .agency-link
+    @extend .text
 </style>

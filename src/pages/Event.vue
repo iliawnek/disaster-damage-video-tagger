@@ -98,6 +98,7 @@ export default {
   .event(v-if="event")
     event-header(
     :event="event"
+    :agencies="agencies"
     :image="videos && videos[0].thumbnail"
     )
     md-tabs.md-primary(md-alignment="centered")
