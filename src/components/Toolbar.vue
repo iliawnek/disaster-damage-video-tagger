@@ -23,7 +23,7 @@ export default {
   md-toolbar
       md-button.md-icon-button(@click="openNavigationDrawer")
         md-icon menu
-      h3.md-title {{this.$route.name}}
+      h3.md-title Disaster Damage Video Tagger
       md-button(v-if="!isSignedIn" @click="openUserDrawer") Sign in or register
       md-button.md-icon-button(v-if="isSignedIn" @click="openUserDrawer")
         md-icon person
