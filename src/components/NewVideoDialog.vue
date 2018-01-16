@@ -109,7 +109,7 @@ export default {
       this.tweet = null
     },
 
-    validateVideo () {
+    submitForm () {
       this.$v.$touch()
       if (!this.$v.$invalid) {
         this.saveNewVideo({
@@ -140,37 +140,36 @@ export default {
     message="Only Twitter videos are currently supported."
     icon="warning"
     )
-    form(novalidate @submit.prevent="validateVideo")
-      md-dialog-content
+    md-dialog-content
 
-        md-field(:class="getValidationClass('url')")
-          label(for="url") Tweet URL
-          md-input(
-          name="url"
-          id="url"
-          v-model="form.url"
-          )
-          span.md-error(v-if="!$v.form.url.required") A video must have a tweet URL.
-          span.md-error(v-else-if="!$v.form.url.url") Invalid URL.
-          span.md-error(v-else-if="!$v.form.url.tweetUrl") URL does not link to a tweet.
-          span.md-error(v-else-if="!$v.tweet.required && !tweetLoading") Tweet does not contain a video.
+      md-field(:class="getValidationClass('url')")
+        label(for="url") Tweet URL
+        md-input(
+        name="url"
+        id="url"
+        v-model="form.url"
+        )
+        span.md-error(v-if="!$v.form.url.required") A video must have a tweet URL.
+        span.md-error(v-else-if="!$v.form.url.url") Invalid URL.
+        span.md-error(v-else-if="!$v.form.url.tweetUrl") URL does not link to a tweet.
+        span.md-error(v-else-if="!$v.tweet.required && !tweetLoading") Tweet does not contain a video.
 
-        md-field(:class="getValidationClass('event')")
-          label(for="event") Event
-          md-select(
-          v-model="form.event"
-          name="event"
-          id="event"
-          md-dense
-          )
-            md-option(
-            v-for="(id, name) in eventIdsByName"
-            :key="id"
-            :value="id"
-            ) {{name}}
-          span.md-error(v-if="!$v.form.event.required") A video must be assigned to an event.
+      md-field(:class="getValidationClass('event')")
+        label(for="event") Event
+        md-select(
+        v-model="form.event"
+        name="event"
+        id="event"
+        md-dense
+        )
+          md-option(
+          v-for="(id, name) in eventIdsByName"
+          :key="id"
+          :value="id"
+          ) {{name}}
+        span.md-error(v-if="!$v.form.event.required") A video must be assigned to an event.
 
-      md-dialog-actions
-        md-button.md-secondary(type="submit" @click="isNewVideoDialogOpen = false") Cancel
-        md-button.md-primary(type="submit" :disabled="tweetLoading") Submit
+    md-dialog-actions
+      md-button.md-secondary(@click="isNewVideoDialogOpen = false") Cancel
+      md-button.md-primary(@click="submitForm" :disabled="tweetLoading") Submit
 </template>
