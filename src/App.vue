@@ -62,4 +62,8 @@ html
 // required because dropdown menus don't render properly within dialogs
 .md-menu-content
   z-index: 1000 !important
+
+// minimum width on all dialogs
+.md-dialog
+  min-width: 400px
 </style>
