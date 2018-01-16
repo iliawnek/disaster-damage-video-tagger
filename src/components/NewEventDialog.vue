@@ -88,7 +88,6 @@ export default {
           },
         })
         // close form
-        this.clearForm()
         this.isNewEventDialogOpen = false
       }
     },
