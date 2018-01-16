@@ -1,7 +1,7 @@
 <script>
 import {mapActions} from 'vuex'
 import {mapBoolean} from '@/utilities'
-import {required, minLength} from 'vuelidate/lib/validators'
+import {required, minLength, maxLength, url} from 'vuelidate/lib/validators'
 
 export default {
   name: 'new-agency-dialog',
@@ -10,6 +10,8 @@ export default {
     return {
       form: {
         name: null,
+        description: null,
+        website: null,
       },
     }
   },
@@ -19,6 +21,13 @@ export default {
       name: {
         required,
         minLength: minLength(3),
+      },
+      description: {
+        required,
+        maxLength: maxLength(200),
+      },
+      website: {
+        url,
       },
     },
   },
@@ -49,9 +58,11 @@ export default {
     clearForm () {
       this.$v.$reset()
       this.form.name = null
+      this.form.description = null
+      this.form.url = null
     },
 
-    validateAgency () {
+    submitForm () {
       this.$v.$touch()
       if (!this.$v.$invalid) {
         this.saveNewAgency({
@@ -72,20 +83,37 @@ export default {
   :md-click-outside-to-close="false"
   )
     md-dialog-title Create new agency
-    form(novalidate @submit.prevent="validateAgency")
+    form(novalidate @submit.prevent="submitForm")
       md-dialog-content
         md-field(:class="getValidationClass('name')")
           label(for="agency-name") Agency name
           md-input(
           name="agency-name"
-          id="agency-name"
           v-model="form.name"
           )
           span.md-error(v-if="!$v.form.name.required") An agency must have a name.
-          span.md-error(v-else-if="!$v.form.name.minlength") Must be at least 3 letters long.
+          span.md-error(v-else-if="!$v.form.name.minLength") Must be at least 3 letters long.
+
+        md-field(:class="getValidationClass('description')")
+          label(for="description") Description
+          md-textarea(
+          name="description"
+          v-model="form.description"
+          md-counter="200"
+          )
+          span.md-error(v-if="!$v.form.description.required") An agency must have a description.
+          span.md-error(v-else-if="!$v.form.name.maxLength") Cannot be longer than 200 characters.
+
+        md-field(:class="getValidationClass('website')")
+          label(for="website") Website URL
+          md-input(
+          website="website"
+          v-model="form.website"
+          )
+          span.md-error(v-if="!$v.form.website.url") Not a valid URL.
 
       md-dialog-actions
-        md-button.md-secondary(type="submit" @click="isNewAgencyDialogOpen = false") Cancel
+        md-button.md-secondary(@click="isNewAgencyDialogOpen = false") Cancel
         md-button.md-primary(type="submit") Create
 </template>
 
