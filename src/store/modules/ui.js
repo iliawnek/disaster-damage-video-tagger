@@ -1,24 +1,17 @@
 export default {
   namespaced: true,
   state: {
-    isNavigationDrawerOpen: false,
-    isUserDrawerOpen: false,
+    isDrawerOpen: false,
     isNewAgencyDialogOpen: false,
     isNewEventDialogOpen: false,
     isNewVideoDialogOpen: false,
   },
   mutations: {
-    openNavigationDrawer: (state) => {
-      state.isNavigationDrawerOpen = true
+    openDrawer: (state) => {
+      state.isDrawerOpen = true
     },
-    closeNavigationDrawer: (state) => {
-      state.isNavigationDrawerOpen = false
-    },
-    openUserDrawer: (state) => {
-      state.isUserDrawerOpen = true
-    },
-    closeUserDrawer: (state) => {
-      state.isUserDrawerOpen = false
+    closeDrawer: (state) => {
+      state.isDrawerOpen = false
     },
     openNewAgencyDialog: (state) => {
       state.isNewAgencyDialogOpen = true

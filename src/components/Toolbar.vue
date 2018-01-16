@@ -12,8 +12,7 @@ export default {
 
   methods: {
     ...mapMutations({
-      openNavigationDrawer: 'ui/openNavigationDrawer',
-      openUserDrawer: 'ui/openUserDrawer',
+      openDrawer: 'ui/openDrawer',
     }),
   },
 }
@@ -21,12 +20,10 @@ export default {
 
 <template lang="pug">
   md-toolbar
-      md-button.md-icon-button(@click="openNavigationDrawer")
+      md-button.md-icon-button(@click="openDrawer")
         md-icon menu
       h3.md-title Disaster Damage Video Tagger
-      md-button(v-if="!isSignedIn" @click="openUserDrawer") Sign in or register
-      md-button.md-icon-button(v-if="isSignedIn" @click="openUserDrawer")
-        md-icon person
+      md-button(v-if="!isSignedIn" @click="openDrawer") Sign in or register
 </template>
 
 <style scoped lang="sass">
