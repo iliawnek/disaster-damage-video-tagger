@@ -75,7 +75,7 @@ export default {
         v-for="agency in currentUsersAgencies"
         :key="agency['.key']"
         :to="getLinkToAgency(agency)"
-        @click="click"
+        @click="click()"
         )
           span {{agency.name}}
           kl-label(
@@ -87,10 +87,10 @@ export default {
     // navigation
     md-list
       md-subheader Navigation
-      md-list-item(to="/" @click="click")
+      md-list-item(to="/" @click="click()")
         md-icon home
         span.md-list-item-text Home
-      md-list-item(to="/browse" @click="click")
+      md-list-item(to="/browse" @click="click()")
         md-icon view_comfy
         span.md-list-item-text Browse
 </template>
