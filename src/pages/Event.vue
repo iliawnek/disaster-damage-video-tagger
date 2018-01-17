@@ -28,6 +28,7 @@ export default {
       agencies: null,
       videos: null,
       tags: null,
+      activeTab: 'videos',
     }
   },
 
@@ -90,6 +91,9 @@ export default {
     loadEventsTags () {
       this.tags = this.getTagsByVideoIds(Object.keys(this.event.videos))
     },
+    handleTabChange (tab) {
+      this.activeTab = tab
+    },
   },
 }
 </script>
@@ -101,24 +105,18 @@ export default {
     :agencies="agencies"
     :image="videos && videos[0].thumbnail"
     )
-    md-tabs.md-primary(md-alignment="centered")
-      md-tab(md-label="Videos")
-        video-list(
-        v-if="videos"
-        :videos="videos"
-        )
-      md-tab(md-label="Tags")
-        tag-list(
-        v-if="tags"
-        :tags="tags"
-        )
+    md-tabs.md-primary(md-alignment="centered" @md-changed="handleTabChange")
+      md-tab(id="videos" md-label="Videos")
+      md-tab(id="tags" md-label="Tags")
+    video-list(
+    v-if="videos && (activeTab === 'videos')"
+    :videos="videos"
+    )
+    tag-list(
+    v-if="tags && (activeTab === 'tags')"
+    :tags="tags"
+    )
 </template>
 
 <style scoped lang="sass">
-  img
-    width: 160px
-    height: 90px
-    object-fit: contain
-    background-color: black
-    margin-bottom: 8px
 </style>
