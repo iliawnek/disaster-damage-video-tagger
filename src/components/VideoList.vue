@@ -19,10 +19,14 @@ export default {
     video-card(
     v-for="video in videos"
     :key="video['.key']"
-    :image="video.thumbnail"
+    :video="video"
     )
 </template>
 
 <style scoped lang="sass">
-
+  .video-list
+    display: flex
+    justify-content: center
+    flex-wrap: wrap
+    margin: 16px
 </style>
