@@ -4,6 +4,7 @@ import {mapGettersWithParams} from '@/utilities'
 import EventHeader from '@/components/EventHeader'
 import VideoList from '@/components/VideoList'
 import TagList from '@/components/TagList'
+import AddSpeedDial from '@/components/AddSpeedDial'
 
 export default {
   name: 'Event',
@@ -17,9 +18,10 @@ export default {
   },
 
   components: {
-    'event-header': EventHeader,
-    'video-list': VideoList,
-    'tag-list': TagList,
+    EventHeader,
+    VideoList,
+    TagList,
+    AddSpeedDial,
   },
 
   data () {
@@ -109,14 +111,17 @@ export default {
       md-tab(id="videos" md-label="Videos")
       md-tab(id="tags" md-label="Tags")
     video-list(
-    v-if="videos && (activeTab === 'videos')"
+    v-if="activeTab === 'videos'"
     :videos="videos"
     )
     tag-list(
     v-if="tags && (activeTab === 'tags')"
     :tags="tags"
     )
+    add-speed-dial
 </template>
 
 <style scoped lang="sass">
+  .event
+    margin-bottom: 100px // prevent add-speed-dial from obscuring content
 </style>

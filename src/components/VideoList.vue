@@ -1,5 +1,6 @@
 <script>
 import VideoCard from '@/components/VideoCard'
+import {mapState, mapMutations} from 'vuex'
 
 export default {
   name: 'video-list',
@@ -11,16 +12,39 @@ export default {
   props: [
     'videos',
   ],
+
+  computed: {
+    ...mapState({
+      areVideosLoaded: (state) => state.video.areVideosLoaded,
+    }),
+    doVideosExist () {
+      return this.videos && this.videos.length > 0
+    },
+  },
+
+  methods: {
+    ...mapMutations({
+      openNewVideoDialog: 'ui/openNewVideoDialog',
+    }),
+  },
 }
 </script>
 
 <template lang="pug">
-  .video-list
-    video-card(
-    v-for="video in videos"
-    :key="video['.key']"
-    :video="video"
+  div
+    md-empty-state(
+    v-if="!doVideosExist && areVideosLoaded"
+    md-icon="video_library"
+    md-label="We're out of videos!"
+    md-description="You can submit a video now, or check here later."
     )
+      md-button.md-raised.md-primary(@click="openNewVideoDialog") Submit video
+    .video-list
+      video-card(
+      v-for="video in videos"
+      :key="video['.key']"
+      :video="video"
+      )
 </template>
 
 <style scoped lang="sass">

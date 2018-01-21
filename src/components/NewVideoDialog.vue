@@ -82,6 +82,20 @@ export default {
     },
   },
 
+  watch: {
+    isNewVideoDialogOpen (newVal, oldVal) {
+      // when new video dialog opens...
+      if (!oldVal && newVal) {
+        // if on event page...
+        if (this.$route.params.eventId) {
+          // pre-fill form with event
+          const {eventId} = this.$route.params
+          this.form.event = eventId
+        }
+      }
+    },
+  },
+
   methods: {
     ...mapActions({
       saveNewVideo: 'video/saveNewVideo',

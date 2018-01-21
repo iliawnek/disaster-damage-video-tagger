@@ -27,5 +27,6 @@ export default {
 </template>
 
 <style scoped lang="sass">
-
+  .md-speed-dial
+    position: fixed
 </style>
