@@ -3,6 +3,7 @@ import {firebaseAction} from 'vuexfire'
 import {fromPairs} from 'lodash'
 
 const tagsRef = db.ref('tags')
+const videosRef = db.ref('videos')
 
 const stages = [
   'play',
@@ -139,6 +140,10 @@ export default {
         range: state.range,
         details,
       })
+
+      // add new tag to video's tags index
+      const videoTagsIndex = videosRef.child(videoId).child('tags')
+      videoTagsIndex.child(newTagId).set(true)
     },
 
     setTagsRef: firebaseAction(
