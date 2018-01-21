@@ -22,11 +22,12 @@ export default {
   md-toolbar
       md-button.md-icon-button(@click="openDrawer")
         md-icon menu
-      h3.md-title Disaster Damage Video Tagger
+      router-link.md-title(to="/") Disaster Damage Video Tagger
       md-button(v-if="!isSignedIn" @click="openDrawer") Sign in or register
 </template>
 
 <style scoped lang="sass">
   .md-title
     flex: 1
+    text-decoration: none !important
 </style>

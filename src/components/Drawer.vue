@@ -87,12 +87,15 @@ export default {
     // navigation
     md-list
       md-subheader Navigation
-      md-list-item(to="/" @click="click()")
-        md-icon home
-        span.md-list-item-text Home
-      md-list-item(to="/browse" @click="click()")
-        md-icon view_comfy
-        span.md-list-item-text Browse
+      md-list-item(to="/browse/videos" @click="click()")
+        md-icon play_circle_filled
+        span.md-list-item-text Videos
+      md-list-item(to="/browse/events" @click="click()")
+        md-icon event
+        span.md-list-item-text Events
+      md-list-item(to="/browse/agencies" @click="click()")
+        md-icon people
+        span.md-list-item-text Agencies
 </template>
 
 <style scoped lang="sass">

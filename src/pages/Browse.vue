@@ -17,6 +17,9 @@ export default {
 
   created () {
     this.loadVideos()
+
+    // activate tab based on route
+    this.activeTab = this.$route.name.toLowerCase()
   },
 
   data () {
