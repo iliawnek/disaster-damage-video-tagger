@@ -101,7 +101,7 @@ export default {
     margin-top: 1em
     overflow: hidden
     line-height: 1.3em
-    height: 2.6em
+    max-height: 2.6em
   .event
     margin-top: 0.5em
     font-size: 0.8em
