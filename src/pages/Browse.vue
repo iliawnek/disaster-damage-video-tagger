@@ -18,8 +18,6 @@ export default {
   created () {
     this.loadVideos()
     this.loadEvents()
-
-    // activate tab based on route
     this.activeTab = this.$route.name.toLowerCase()
   },
 
@@ -27,6 +25,14 @@ export default {
     return {
       activeTab: 'videos',
     }
+  },
+
+  watch: {
+    $route (newVal, oldVal) {
+      if (newVal.name !== oldVal.name) {
+        this.activeTab = this.$route.name.toLowerCase()
+      }
+    },
   },
 
   computed: {
