@@ -37,6 +37,7 @@ export default {
     text-align: center
     position: relative
     overflow: hidden
+    border-radius: 4px
 
   .background
     position: absolute

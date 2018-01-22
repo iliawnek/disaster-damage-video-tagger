@@ -51,6 +51,7 @@ export default {
     height: 100%
     object-fit: cover
     background-color: black
+    border-radius: 4px
   .overlay
     position: absolute
     top: 0

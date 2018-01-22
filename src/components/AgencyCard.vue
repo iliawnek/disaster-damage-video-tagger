@@ -45,11 +45,13 @@ export default {
     position: relative
     height: 150px
     cursor: pointer
+    border-radius: 4px
   img
     width: 100%
     height: 100%
     object-fit: cover
     background-color: white
+    border-radius: 4px
   .overlay
     position: absolute
     top: 0
