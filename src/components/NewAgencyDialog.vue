@@ -19,6 +19,10 @@ export default {
         website: null,
       },
       image: null,
+      cropperContainerStyle: {
+        width: '400px',
+        height: '400px',
+      },
     }
   },
 
@@ -149,13 +153,15 @@ export default {
         v-if="image"
         ref="cropper"
         :src="image"
-        :view-mode="2"
+        :view-mode="0"
         :aspect-ratio="1"
         :guides="false"
         :center="false"
         :auto-crop="true"
         :auto-crop-area="1"
+        :movable="false"
         :zoomable="false"
+        :container-style="cropperContainerStyle"
         )
 
       md-field(:class="getValidationClass('website')")
@@ -173,5 +179,6 @@ export default {
 
 <style scoped lang="sass">
   .cropper
-    margin-bottom: 16px
+    display: flex
+    justify-content: center
 </style>
