@@ -74,8 +74,8 @@ export default {
       const {cropper} = this.$refs
       if (cropper) {
         const canvas = cropper.getCroppedCanvas({
-          width: 500,
-          height: 500,
+          width: 150,
+          height: 150,
         })
         return canvas.toDataURL()
       }
