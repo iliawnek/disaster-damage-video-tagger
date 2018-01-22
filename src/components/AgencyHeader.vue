@@ -22,7 +22,7 @@ export default {
     align-items: center
     text-align: center
     padding: 32px 16px
-    background-color: #666
+    background-color: #333
   .text
     margin: 16px
     color: white
