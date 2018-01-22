@@ -44,6 +44,19 @@ export default {
         return randomVideo && randomVideo.thumbnail
       }
     },
+
+    countVideosInEvent: () => (event) => {
+      return (event && event.videos) ? Object.keys(event.videos).length : 0
+    },
+
+    countTagsInEvent: (state, getters, rootState, rootGetters) => (event) => {
+      if (event.videos) {
+        const videoIds = Object.keys(event.videos)
+        const tags = rootGetters['tag/getTagsByVideoIds'](videoIds)
+        return tags.length
+      }
+      return 0
+    },
   },
 
   mutations: {

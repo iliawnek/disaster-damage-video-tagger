@@ -9,9 +9,22 @@ export default {
     'image',
   ],
 
+  computed: {
+    videoCount () {
+      const count = this.countVideosInEvent(this.event)
+      return `${count} ${count === 1 ? 'video' : 'videos'}`
+    },
+    tagCount () {
+      const count = this.countTagsInEvent(this.event)
+      return `${count} ${count === 1 ? 'tag' : 'tags'}`
+    },
+  },
+
   methods: {
     ...mapGettersWithParams({
       getLinkToEvent: 'event/getLinkToEvent',
+      countVideosInEvent: 'event/countVideosInEvent',
+      countTagsInEvent: 'event/countTagsInEvent',
     }),
   },
 }
@@ -23,6 +36,10 @@ export default {
       img.image(v-if="image" :src="image")
       .overlay(:class="{'overlay-no-image': !image}")
       .name(:class="{'text-no-image': !image}") {{event.name}}
+      .statistics(:class="{'text-no-image': !image}")
+        | {{videoCount}}
+        | &nbsp;•&nbsp;
+        | {{tagCount}}
 </template>
 
 <style scoped lang="sass">
@@ -35,6 +52,7 @@ export default {
     display: flex
     align-items: center
     justify-content: center
+    flex-direction: column
     text-align: center
     position: relative
     overflow: hidden
@@ -66,6 +84,9 @@ export default {
     line-height: 1.2em
     text-transform: uppercase
     font-weight: bold
+  .statistics
+    @extend .text
+    margin-top: 0.5em
 
   .event-card:hover
     .overlay

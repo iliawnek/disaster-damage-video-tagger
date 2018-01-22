@@ -1,5 +1,5 @@
 <script>
-import {mapState, mapMutations} from 'vuex'
+import {mapState, mapMutations, mapActions} from 'vuex'
 import {mapGettersWithParams} from '@/utilities'
 import EventCard from '@/components/EventCard'
 
@@ -13,6 +13,10 @@ export default {
   props: [
     'events',
   ],
+
+  created () {
+    this.loadTags() // required for showing tag counts
+  },
 
   computed: {
     ...mapState({
@@ -29,6 +33,9 @@ export default {
     }),
     ...mapMutations({
       openNewEventDialog: 'ui/openNewEventDialog',
+    }),
+    ...mapActions({
+      loadTags: 'tag/loadTags',
     }),
   },
 }
