@@ -39,6 +39,12 @@ export default {
   },
 
   watch: {
+    // load new agency on route param change
+    $route (newVal, oldVal) {
+      const {agencyId: oldAgencyId} = oldVal.params
+      const {agencyId: newAgencyId} = newVal.params
+      if (newAgencyId !== oldAgencyId) this.loadAgency()
+    },
     areAgenciesLoaded (newVal, oldVal) {
       if (newVal && !oldVal) this.loadAgency()
     },
