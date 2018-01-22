@@ -43,7 +43,7 @@ export default {
     md-description="As soon as an event occurs, it will appear here."
     )
       md-button.md-raised.md-primary(@click="openNewEventDialog") Create new event
-    .event-list(v-else)
+    .event-list(v-if="doEventsExist")
       event-card(
       v-for="event in events"
       :key="event['.key']"

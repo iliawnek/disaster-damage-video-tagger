@@ -39,7 +39,7 @@ export default {
     md-description="There are no agencies in the system yet."
     )
       md-button.md-raised.md-primary(@click="openNewAgencyDialog") Create new agency
-    .agency-list(v-else)
+    .agency-list(v-if="doAgenciesExist")
       agency-card(
       v-for="agency in agencies"
       :key="agency['.key']"

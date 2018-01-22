@@ -39,7 +39,7 @@ export default {
     md-description="You can submit a video now, or check here later."
     )
       md-button.md-raised.md-primary(@click="openNewVideoDialog") Submit video
-    .video-list(v-else)
+    .video-list(v-if="doVideosExist")
       video-card(
       v-for="video in videos"
       :key="video['.key']"
