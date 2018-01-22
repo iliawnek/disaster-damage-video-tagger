@@ -181,4 +181,5 @@ export default {
   .cropper
     display: flex
     justify-content: center
+    margin-bottom: 16px
 </style>
