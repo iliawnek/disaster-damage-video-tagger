@@ -28,6 +28,10 @@ export default {
     getLinkToVideo: () => (video) => {
       return `/video/${video['.key']}`
     },
+
+    countTagsInVideo: () => (video) => {
+      return (video && video.tags) ? Object.keys(video.tags).length : 0
+    },
   },
 
   mutations: {

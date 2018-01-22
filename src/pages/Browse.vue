@@ -63,7 +63,7 @@ export default {
       md-tab(md-label="Videos" to="/browse/videos" id="videos")
       md-tab(md-label="Events" to="/browse/events" id="events")
       md-tab(md-label="Agencies" to="/browse/agencies" id="agencies")
-    video-list(v-if="activeTab === 'videos'" :videos="videos")
+    video-list(v-if="activeTab === 'videos'" :videos="videos" :showEvents="true")
     event-list(v-if="activeTab === 'events'" :events="events")
     agency-list(v-if="activeTab === 'agencies'" :agencies="agencies")
     router-view

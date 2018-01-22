@@ -1,6 +1,7 @@
 <script>
+import {mapState, mapMutations, mapActions} from 'vuex'
+import {mapGettersWithParams} from '@/utilities'
 import VideoCard from '@/components/VideoCard'
-import {mapState, mapMutations} from 'vuex'
 
 export default {
   name: 'video-list',
@@ -11,7 +12,12 @@ export default {
 
   props: [
     'videos',
+    'showEvents',
   ],
+
+  created () {
+    if (this.showEvents) this.loadEvents()
+  },
 
   computed: {
     ...mapState({
@@ -23,8 +29,14 @@ export default {
   },
 
   methods: {
+    ...mapGettersWithParams({
+      getEventById: 'event/getEventById',
+    }),
     ...mapMutations({
       openNewVideoDialog: 'ui/openNewVideoDialog',
+    }),
+    ...mapActions({
+      loadEvents: 'event/loadEvents',
     }),
   },
 }
@@ -44,6 +56,7 @@ export default {
       v-for="video in videos"
       :key="video['.key']"
       :video="video"
+      :event="showEvents && getEventById(video.event)"
       )
 </template>
 
