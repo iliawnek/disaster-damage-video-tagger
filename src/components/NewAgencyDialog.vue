@@ -2,9 +2,14 @@
 import {mapActions} from 'vuex'
 import {mapBoolean} from '@/utilities'
 import {required, minLength, maxLength, url} from 'vuelidate/lib/validators'
+import VueCropper from 'vue-cropperjs'
 
 export default {
   name: 'new-agency-dialog',
+
+  components: {
+    VueCropper,
+  },
 
   data () {
     return {
@@ -13,6 +18,7 @@ export default {
         description: null,
         website: null,
       },
+      image: null,
     }
   },
 
@@ -46,6 +52,31 @@ export default {
       saveNewAgency: 'agency/saveNewAgency',
     }),
 
+    handleImageChange (event) {
+      // get image data URL
+      const file = event.target.files[0]
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => {
+        // save image data URL
+        const dataURL = reader.result
+        this.image = dataURL
+        // update cropper if already initialised
+        if (this.$refs.cropper) this.$refs.cropper.replace(dataURL)
+      }
+    },
+
+    cropImage () {
+      const {cropper} = this.$refs
+      if (cropper) {
+        const canvas = cropper.getCroppedCanvas({
+          width: 500,
+          height: 500,
+        })
+        return canvas.toDataURL()
+      }
+    },
+
     getValidationClass (fieldName) {
       const field = this.$v.form[fieldName]
       if (field) {
@@ -59,7 +90,8 @@ export default {
       this.$v.$reset()
       this.form.name = null
       this.form.description = null
-      this.form.url = null
+      this.form.website = null
+      this.image = null
     },
 
     submitForm () {
@@ -67,6 +99,7 @@ export default {
       if (!this.$v.$invalid) {
         this.saveNewAgency({
           agency: this.form,
+          logo: this.cropImage(),
         })
         this.isNewAgencyDialogOpen = false
       }
@@ -103,6 +136,28 @@ export default {
         span.md-error(v-if="!$v.form.description.required") An agency must have a description.
         span.md-error(v-else-if="!$v.form.name.maxLength") Cannot be longer than 800 characters.
 
+      md-field
+        label(for="logo") Logo
+        md-file(
+        name="logo"
+        @change="handleImageChange"
+        accept="image/*"
+        )
+
+      .cropper
+        vue-cropper(
+        v-if="image"
+        ref="cropper"
+        :src="image"
+        :view-mode="2"
+        :aspect-ratio="1"
+        :guides="false"
+        :center="false"
+        :auto-crop="true"
+        :auto-crop-area="1"
+        :zoomable="false"
+        )
+
       md-field(:class="getValidationClass('website')")
         label(for="website") Website URL
         md-input(
@@ -117,5 +172,6 @@ export default {
 </template>
 
 <style scoped lang="sass">
-
+  .cropper
+    margin-bottom: 16px
 </style>

@@ -1,4 +1,4 @@
-import {db} from '^/firebase'
+import {db, storage} from '^/firebase'
 import {firebaseAction} from 'vuexfire'
 
 const agenciesRef = db.ref('agencies')
@@ -11,6 +11,7 @@ export default {
     agencies: [],
     areAgenciesLoaded: false,
     areAgenciesLoading: false,
+    uploading: false,
   },
 
   getters: {
@@ -61,6 +62,9 @@ export default {
       state.areAgenciesLoading = false
       state.areAgenciesLoaded = true
     },
+    setUploading: (state, uploading) => {
+      state.uploading = uploading
+    },
   },
 
   actions: {
@@ -81,17 +85,41 @@ export default {
       }
     },
 
-    saveNewAgency ({rootState}, {agency}) {
-      // save agency
+    uploadLogo (context, {dataURL, newAgencyId}) {
+      return new Promise((resolve, reject) => {
+        const path = `agency/${newAgencyId}.jpg`
+        const uploadTask = storage.ref(path).putString(dataURL, 'data_url')
+        uploadTask.on('state_changed', {
+          error: (error) => reject(error),
+          complete: () => resolve(uploadTask.snapshot.downloadURL),
+        })
+      })
+    },
+
+    async saveNewAgency ({rootState, commit, dispatch}, {agency, logo}) {
+      const agencyObject = {...agency}
+
+      // get new agency ID
       const newAgencyRef = agenciesRef.push()
       const newAgencyId = newAgencyRef.key
+
+      // upload logo
+      let logoURL
+      if (logo) {
+        commit('setUploading', true)
+        logoURL = await dispatch('uploadLogo', {
+          dataURL: logo,
+          newAgencyId,
+        })
+        commit('setUploading', false)
+      }
+
+      // save agency
       const uid = rootState.auth.user.uid
-      newAgencyRef.set({
-        ...agency,
-        admins: {
-          [uid]: true,
-        },
-      })
+      agencyObject.admins = {[uid]: true}
+      if (logoURL) agencyObject.logo = logoURL
+      newAgencyRef.set(agencyObject)
+
       // save user
       usersRef.child(uid).child('adminOf').update({
         [newAgencyId]: true,
