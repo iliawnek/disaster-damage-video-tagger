@@ -2,8 +2,8 @@
 import {mapState, mapActions} from 'vuex'
 import VideoList from '@/components/VideoList'
 import EventList from '@/components/EventList'
+import AgencyList from '@/components/AgencyList'
 import AddSpeedDial from '@/components/AddSpeedDial'
-import BrowseAgencies from '@/pages/BrowseAgencies'
 
 export default {
   name: 'Browse',
@@ -11,13 +11,14 @@ export default {
   components: {
     VideoList,
     EventList,
+    AgencyList,
     AddSpeedDial,
-    BrowseAgencies,
   },
 
   created () {
     this.loadVideos()
     this.loadEvents()
+    this.loadAgencies()
     this.activeTab = this.$route.name.toLowerCase()
   },
 
@@ -39,6 +40,7 @@ export default {
     ...mapState({
       videos: (state) => state.video.videos,
       events: (state) => state.event.events,
+      agencies: (state) => state.agency.agencies,
     }),
   },
 
@@ -46,6 +48,7 @@ export default {
     ...mapActions({
       loadVideos: 'video/loadVideos',
       loadEvents: 'event/loadEvents',
+      loadAgencies: 'agency/loadAgencies',
     }),
     handleTabChange (tab) {
       this.activeTab = tab
@@ -62,7 +65,7 @@ export default {
       md-tab(md-label="Agencies" to="/browse/agencies" id="agencies")
     video-list(v-if="activeTab === 'videos'" :videos="videos")
     event-list(v-if="activeTab === 'events'" :events="events")
-    browse-agencies(v-if="activeTab === 'agencies'")
+    agency-list(v-if="activeTab === 'agencies'" :agencies="agencies")
     router-view
     add-speed-dial
 </template>
