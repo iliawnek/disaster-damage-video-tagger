@@ -10,6 +10,7 @@ export default {
 
 <template lang="pug">
   md-content.agency-header.md-elevation-10
+    img.image.md-elevation-10(:src="agency.logo")
     .name {{agency.name}}
     .description {{agency.description}}
 </template>
@@ -23,8 +24,16 @@ export default {
     text-align: center
     padding: 32px 16px
     background-color: #333
-  .text
+  .content
     margin: 16px
+  .image
+    @extend .content
+    width: 100px
+    height: 100px
+    border-radius: 4px
+    background-color: white
+  .text
+    @extend .content
     color: white
   .name
     @extend .text
