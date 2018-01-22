@@ -19,7 +19,7 @@ export default {
 
 <template lang="pug">
   router-link.link(:to="getLinkToEvent(event)")
-    md-content.event-card.md-elevation-5
+    .event-card.md-elevation-5
       img.image(v-if="image" :src="image")
       .overlay(:class="{'overlay-no-image': !image}")
       .name(:class="{'text-no-image': !image}") {{event.name}}
@@ -29,7 +29,8 @@ export default {
   .link
     text-decoration: none !important
   .event-card
-    margin: 32px
+    margin-top: 12px
+    margin-bottom: 24px
     padding: 48px
     display: flex
     align-items: center

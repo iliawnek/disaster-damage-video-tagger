@@ -58,5 +58,5 @@ export default {
     justify-content: center
   .event-list
     margin: 16px
-    max-width: 1000px
+    width: 800px
 </style>
