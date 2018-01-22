@@ -3,8 +3,9 @@ import {mapGetters, mapActions} from 'vuex'
 import {required, url} from 'vuelidate/lib/validators'
 import {tweetUrl} from '@/validators'
 import {mapBoolean} from '@/utilities'
-import Message from '@/components/Message'
 import {serverless} from '@/utilities/api'
+import Message from '@/components/Message'
+import TweetPreview from '@/components/TweetPreview'
 
 export default {
   name: 'new-video-dialog',
@@ -21,6 +22,7 @@ export default {
 
   components: {
     message: Message,
+    TweetPreview,
   },
 
   validations: {
@@ -60,17 +62,8 @@ export default {
         try {
           const response = await serverless.get('/tweetInfo', {params})
           console.log(response.data)
-          const {url, width, height, thumbnail, title} = response.data
           this.tweetLoading = false
-          return {
-            video: {
-              url,
-              width,
-              height,
-              thumbnail,
-            },
-            title,
-          }
+          return response.data
         } catch (error) {
           this.tweetLoading = false
           return null
@@ -129,10 +122,10 @@ export default {
       if (!this.$v.$invalid) {
         this.saveNewVideo({
           video: {
-            url: this.tweet.video.url,
-            width: this.tweet.video.width,
-            height: this.tweet.video.height,
-            thumbnail: this.tweet.video.thumbnail,
+            url: this.tweet.url,
+            width: this.tweet.width,
+            height: this.tweet.height,
+            thumbnail: this.tweet.thumbnail,
             title: this.tweet.title,
             event: this.form.event,
           },
@@ -168,6 +161,8 @@ export default {
         span.md-error(v-else-if="!$v.form.url.url") Invalid URL.
         span.md-error(v-else-if="!$v.form.url.tweetUrl") URL does not link to a tweet.
         span.md-error(v-else-if="!$v.tweet.required && !tweetLoading") Tweet does not contain a video.
+
+      tweet-preview(v-if="tweet || tweetLoading" :tweet="tweet" :loading="tweetLoading")
 
       md-field(:class="getValidationClass('event')")
         label(for="event") Event
