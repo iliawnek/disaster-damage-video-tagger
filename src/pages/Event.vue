@@ -14,6 +14,7 @@ export default {
     this.loadEvent()
     this.loadAgencies()
     this.loadVideos()
+    this.loadImage()
     this.loadTags()
   },
 
@@ -30,6 +31,7 @@ export default {
       agencies: null,
       videos: null,
       tags: null,
+      image: null,
       activeTab: 'videos',
     }
   },
@@ -60,7 +62,10 @@ export default {
       if (newVal && !oldVal) this.loadEventsAgencies()
     },
     canEventsVideosBeLoaded (newVal, oldVal) {
-      if (newVal && !oldVal) this.loadEventsVideos()
+      if (newVal && !oldVal) {
+        this.loadEventsVideos()
+        this.loadImage()
+      }
     },
     canEventsTagsBeLoaded (newVal, oldVal) {
       if (newVal && !oldVal) this.loadEventsTags()
@@ -79,6 +84,7 @@ export default {
       getAgenciesByIds: 'agency/getAgenciesByIds',
       getVideosByIds: 'video/getVideosByIds',
       getTagsByVideoIds: 'tag/getTagsByVideoIds',
+      getImage: 'event/getImage',
     }),
     loadEvent () {
       const {eventId} = this.$route.params
@@ -93,6 +99,9 @@ export default {
     loadEventsTags () {
       this.tags = this.getTagsByVideoIds(Object.keys(this.event.videos))
     },
+    loadImage () {
+      this.image = this.getImage(this.event)
+    },
     handleTabChange (tab) {
       this.activeTab = tab
     },
@@ -105,7 +114,7 @@ export default {
     event-header(
     :event="event"
     :agencies="agencies"
-    :image="videos && videos[0].thumbnail"
+    :image="image"
     )
     md-tabs.md-primary(md-alignment="centered" @md-changed="handleTabChange")
       md-tab(id="videos" md-label="Videos")

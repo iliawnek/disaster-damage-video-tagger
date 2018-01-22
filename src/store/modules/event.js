@@ -28,8 +28,21 @@ export default {
       return state.events.find((event) => event['.key'] === eventId)
     },
 
+    getEventsByIds: (state, getters) => (eventIds) => {
+      const events = eventIds.map((eventId) => getters.getEventById(eventId))
+      return events === {} ? null : events
+    },
+
     getLinkToEvent: () => (event) => {
       return `/event/${event['.key']}`
+    },
+
+    getImage: (state, getters, rootState, rootGetters) => (event) => {
+      if (event && event.videos) {
+        const videos = rootGetters['video/getVideosByIds'](Object.keys(event.videos))
+        const randomVideo = videos[Math.floor(Math.random() * videos.length)]
+        return randomVideo && randomVideo.thumbnail
+      }
     },
   },
 
