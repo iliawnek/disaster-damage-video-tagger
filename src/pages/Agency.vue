@@ -16,15 +16,13 @@ export default {
 
   created () {
     this.loadAgencies()
-    this.loadAgency()
     this.loadEvents()
+    this.loadVideos() // for event card backgrounds
   },
 
   data () {
     return {
-      agency: null,
-      events: null,
-      activeTab: 'members',
+      activeTab: 'events',
     }
   },
 
@@ -33,23 +31,15 @@ export default {
       areAgenciesLoaded: (state) => state.agency.areAgenciesLoaded,
       areEventsLoaded: (state) => state.event.areEventsLoaded,
     }),
-    canAgencysEventsBeLoaded () {
-      return this.agency && this.agency.events && this.areEventsLoaded
+    agency () {
+      if (this.areAgenciesLoaded && this.$route.params.agencyId) {
+        return this.getAgencyById(this.$route.params.agencyId)
+      }
     },
-  },
-
-  watch: {
-    // load new agency on route param change
-    $route (newVal, oldVal) {
-      const {agencyId: oldAgencyId} = oldVal.params
-      const {agencyId: newAgencyId} = newVal.params
-      if (newAgencyId !== oldAgencyId) this.loadAgency()
-    },
-    areAgenciesLoaded (newVal, oldVal) {
-      if (newVal && !oldVal) this.loadAgency()
-    },
-    canAgencysEventsBeLoaded (newVal, oldVal) {
-      if (newVal && !oldVal) this.loadAgencysEvents()
+    events () {
+      if (this.areEventsLoaded && this.agency && this.agency.events) {
+        return this.getEventsByIds(Object.keys(this.agency.events))
+      }
     },
   },
 
@@ -57,18 +47,12 @@ export default {
     ...mapActions({
       loadAgencies: 'agency/loadAgencies',
       loadEvents: 'event/loadEvents',
+      loadVideos: 'video/loadVideos',
     }),
     ...mapGettersWithParams({
       getAgencyById: 'agency/getAgencyById',
       getEventsByIds: 'event/getEventsByIds',
     }),
-    loadAgency () {
-      const {agencyId} = this.$route.params
-      this.agency = this.getAgencyById(agencyId)
-    },
-    loadAgencysEvents () {
-      this.events = this.getEventsByIds(Object.keys(this.agency.events))
-    },
     handleTabChange (tab) {
       this.activeTab = tab
     },
@@ -80,8 +64,8 @@ export default {
   .agency(v-if="agency")
     agency-header(:agency="agency")
     md-tabs.md-primary(md-alignment="centered" @md-changed="handleTabChange")
-      md-tab(id="members" md-label="Members")
       md-tab(id="events" md-label="Events")
+      md-tab(id="members" md-label="Members")
     event-list(v-if="activeTab === 'events'" :events="events")
     add-speed-dial
 </template>

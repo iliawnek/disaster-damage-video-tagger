@@ -11,10 +11,8 @@ export default {
 
   created () {
     this.loadEvents()
-    this.loadEvent()
     this.loadAgencies()
     this.loadVideos()
-    this.loadImage()
     this.loadTags()
   },
 
@@ -27,11 +25,6 @@ export default {
 
   data () {
     return {
-      event: null,
-      agencies: null,
-      videos: null,
-      tags: null,
-      image: null,
       activeTab: 'videos',
     }
   },
@@ -43,32 +36,30 @@ export default {
       areVideosLoaded: (state) => state.video.areVideosLoaded,
       areTagsLoaded: (state) => state.tag.areTagsLoaded,
     }),
-    canEventsAgenciesBeLoaded () {
-      return this.event && this.event.agencies && this.areAgenciesLoaded
-    },
-    canEventsVideosBeLoaded () {
-      return this.event && this.event.videos && this.areVideosLoaded
-    },
-    canEventsTagsBeLoaded () {
-      return this.event && this.event.videos && this.areTagsLoaded
-    },
-  },
-
-  watch: {
-    areEventsLoaded (newVal, oldVal) {
-      if (newVal && !oldVal) this.loadEvent()
-    },
-    canEventsAgenciesBeLoaded (newVal, oldVal) {
-      if (newVal && !oldVal) this.loadEventsAgencies()
-    },
-    canEventsVideosBeLoaded (newVal, oldVal) {
-      if (newVal && !oldVal) {
-        this.loadEventsVideos()
-        this.loadImage()
+    event () {
+      if (this.areEventsLoaded && this.$route.params.eventId) {
+        return this.getEventById(this.$route.params.eventId)
       }
     },
-    canEventsTagsBeLoaded (newVal, oldVal) {
-      if (newVal && !oldVal) this.loadEventsTags()
+    agencies () {
+      if (this.areAgenciesLoaded && this.event && this.event.agencies) {
+        return this.getAgenciesByIds(Object.keys(this.event.agencies))
+      }
+    },
+    videos () {
+      if (this.areVideosLoaded && this.event && this.event.videos) {
+        return this.getVideosByIds(Object.keys(this.event.videos))
+      }
+    },
+    tags () {
+      if (this.areTagsLoaded && this.event && this.event.videos) {
+        return this.getTagsByVideoIds(Object.keys(this.event.videos))
+      }
+    },
+    image () {
+      if (this.event) {
+        return this.getImage(this.event)
+      }
     },
   },
 
@@ -86,22 +77,6 @@ export default {
       getTagsByVideoIds: 'tag/getTagsByVideoIds',
       getImage: 'event/getImage',
     }),
-    loadEvent () {
-      const {eventId} = this.$route.params
-      this.event = this.getEventById(eventId)
-    },
-    loadEventsAgencies () {
-      this.agencies = this.getAgenciesByIds(Object.keys(this.event.agencies))
-    },
-    loadEventsVideos () {
-      this.videos = this.getVideosByIds(Object.keys(this.event.videos))
-    },
-    loadEventsTags () {
-      this.tags = this.getTagsByVideoIds(Object.keys(this.event.videos))
-    },
-    loadImage () {
-      this.image = this.getImage(this.event)
-    },
     handleTabChange (tab) {
       this.activeTab = tab
     },

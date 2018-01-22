@@ -18,18 +18,8 @@ export default {
 
   created () {
     this.loadVideos()
-    this.loadVideo()
     this.loadTags()
-    this.loadVideosTags()
     this.loadEvents()
-  },
-
-  data () {
-    return {
-      video: null,
-      tags: null,
-      event: null,
-    }
   },
 
   computed: {
@@ -38,20 +28,23 @@ export default {
       areTagsLoaded: (state) => state.tag.areTagsLoaded,
       areEventsLoaded: (state) => state.event.areEventsLoaded,
     }),
-    canVideosEventBeLoaded () {
-      return this.video && this.video.event && this.areEventsLoaded
-    },
-  },
 
-  watch: {
-    areVideosLoaded (newVal, oldVal) {
-      if (newVal && !oldVal) this.loadVideo()
+    video () {
+      const {videoId} = this.$route.params
+      if (this.areVideosLoaded && videoId) {
+        return this.getVideoById(videoId)
+      }
     },
-    areTagsLoaded (newVal, oldVal) {
-      if (newVal && !oldVal) this.loadVideosTags()
+    tags () {
+      const {videoId} = this.$route.params
+      if (this.areTagsLoaded && videoId) {
+        return this.getTagsByVideoId(videoId)
+      }
     },
-    canVideosEventBeLoaded (newVal, oldVal) {
-      if (newVal && !oldVal) this.loadVideosEvent()
+    event () {
+      if (this.areEventsLoaded && this.video && this.video.event) {
+        return this.getEventById(this.video.event)
+      }
     },
   },
 
@@ -66,17 +59,6 @@ export default {
       getTagsByVideoId: 'tag/getTagsByVideoId',
       getEventById: 'event/getEventById',
     }),
-    loadVideo () {
-      const {videoId} = this.$route.params
-      this.video = this.getVideoById(videoId)
-    },
-    loadVideosTags () {
-      const {videoId} = this.$route.params
-      this.tags = this.getTagsByVideoId(videoId)
-    },
-    loadVideosEvent () {
-      this.event = this.getEventById(this.video.event)
-    },
   },
 }
 </script>
