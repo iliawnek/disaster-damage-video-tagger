@@ -29,9 +29,8 @@ export default {
       .agency-card.md-elevation-5
         img(v-if="agency.logo" :src="agency.logo")
         .overlay
-    router-link(:to="getLinkToAgency(agency)")
-      .name {{agency.name}}
-    .info {{eventCount}}
+    router-link.name(:to="getLinkToAgency(agency)") {{agency.name}}
+    .event-count {{eventCount}}
 </template>
 
 <style scoped lang="sass">
@@ -40,6 +39,8 @@ export default {
   .agency-card-container
     width: 150px
     margin: 12px
+    display: flex
+    flex-direction: column
 
   .agency-card
     position: relative
@@ -62,15 +63,18 @@ export default {
     transition: 0.2s ease-out
 
   .name
-    color: #333
+    color: #222 !important
     font-weight: bold
-    margin-top: 8px
+    margin-top: 1em
     text-overflow: clip
     overflow: hidden
     white-space: nowrap
-    font-size: 0.9em
-  .info
+    font-size: 1em
+    line-height: 1.3em
+  .event-count
+    margin-top: 0.5em
     font-size: 0.8em
+    color: #666
 
   .agency-card:hover
     .overlay
