@@ -63,6 +63,7 @@ export default {
   .name
     @extend .text
     font-size: 1.5em
+    line-height: 1.2em
     text-transform: uppercase
     font-weight: bold
 

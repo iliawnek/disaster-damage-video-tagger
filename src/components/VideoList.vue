@@ -69,5 +69,5 @@ export default {
     justify-content: center
     flex-wrap: wrap
     margin: 16px
-    max-width: 1000px
+    max-width: 1200px
 </style>
