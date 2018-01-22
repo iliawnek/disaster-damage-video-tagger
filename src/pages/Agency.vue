@@ -3,6 +3,7 @@ import {mapState, mapActions} from 'vuex'
 import {mapGettersWithParams} from '@/utilities'
 import AgencyHeader from '@/components/AgencyHeader'
 import EventList from '@/components/EventList'
+import AddSpeedDial from '@/components/AddSpeedDial'
 
 export default {
   name: 'Agency',
@@ -10,6 +11,7 @@ export default {
   components: {
     AgencyHeader,
     EventList,
+    AddSpeedDial,
   },
 
   created () {
@@ -75,7 +77,10 @@ export default {
       md-tab(id="members" md-label="Members")
       md-tab(id="events" md-label="Events")
     event-list(v-if="activeTab === 'events'" :events="events")
+    add-speed-dial
 </template>
 
 <style scoped lang="sass">
+  .agency
+    margin-bottom: 100px // prevent add-speed-dial from obscuring content
 </style>
