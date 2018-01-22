@@ -35,7 +35,7 @@ export default {
 </script>
 
 <template lang="pug">
-  div
+  .container
     md-empty-state(
     v-if="!doEventsExist && areEventsLoaded"
     md-icon="event"
@@ -53,6 +53,10 @@ export default {
 </template>
 
 <style scoped lang="sass">
+  .container
+    display: flex
+    justify-content: center
   .event-list
     margin: 16px
+    max-width: 1000px
 </style>

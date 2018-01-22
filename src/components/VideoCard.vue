@@ -24,7 +24,7 @@ export default {
 </script>
 
 <template lang="pug">
-  .container
+  .video-card-container
     router-link(:to="getLinkToVideo(video)")
       .video-card.md-elevation-5
         img(:src="video.thumbnail")
@@ -38,7 +38,7 @@ export default {
 <style scoped lang="sass">
   @import '../styles/theme'
 
-  .container
+  .video-card-container
     width: 240px
     margin: 12px
 

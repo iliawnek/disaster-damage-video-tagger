@@ -24,7 +24,7 @@ export default {
 </script>
 
 <template lang="pug">
-  .container
+  .agency-card-container
     router-link(:to="getLinkToAgency(agency)")
       .agency-card.md-elevation-5
         img(v-if="agency.logo" :src="agency.logo")
@@ -37,7 +37,7 @@ export default {
 <style scoped lang="sass">
   @import '../styles/theme'
 
-  .container
+  .agency-card-container
     width: 150px
     margin: 12px
 

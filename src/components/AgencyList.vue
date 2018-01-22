@@ -31,7 +31,7 @@ export default {
 </script>
 
 <template lang="pug">
-  div
+  .agency-list-container
     md-empty-state(
     v-if="!doAgenciesExist && areAgenciesLoaded"
     md-icon="people"
@@ -48,9 +48,13 @@ export default {
 </template>
 
 <style scoped lang="sass">
+  .agency-list-container
+    display: flex
+    justify-content: center
   .agency-list
     display: flex
     justify-content: center
     flex-wrap: wrap
     margin: 16px
+    max-width: 1000px
 </style>

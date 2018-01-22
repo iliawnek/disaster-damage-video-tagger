@@ -31,7 +31,7 @@ export default {
 </script>
 
 <template lang="pug">
-  div
+  .video-list-container
     md-empty-state(
     v-if="!doVideosExist && areVideosLoaded"
     md-icon="video_library"
@@ -48,9 +48,13 @@ export default {
 </template>
 
 <style scoped lang="sass">
+  .video-list-container
+    display: flex
+    justify-content: center
   .video-list
     display: flex
     justify-content: center
     flex-wrap: wrap
     margin: 16px
+    max-width: 1000px
 </style>
