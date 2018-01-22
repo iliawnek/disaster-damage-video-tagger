@@ -157,7 +157,6 @@ export default {
     icon="warning"
     )
     md-dialog-content
-
       md-field(:class="getValidationClass('url')")
         label(for="url") Tweet URL
         md-input(
@@ -189,3 +188,8 @@ export default {
       md-button.md-secondary(@click="isNewVideoDialogOpen = false") Cancel
       md-button.md-primary(@click="submitForm" :disabled="tweetLoading") Submit
 </template>
+
+<style scoped lang="sass">
+  .md-dialog-content
+    margin-top: 16px
+</style>
