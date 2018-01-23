@@ -54,6 +54,20 @@ export default {
     }),
   },
 
+  watch: {
+    isNewEventDialogOpen (newVal) {
+      // when new event dialog opens...
+      if (newVal) {
+        // if on agency page...
+        if (this.$route.params.agencyId) {
+          // pre-fill form with agency
+          const {agencyId} = this.$route.params
+          this.form.agencies = [agencyId]
+        }
+      }
+    },
+  },
+
   methods: {
     ...mapGettersWithParams({
       getLinkToEvent: 'event/getLinkToEvent',
