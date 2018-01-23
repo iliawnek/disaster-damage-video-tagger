@@ -13,9 +13,11 @@ export default {
     img.image.md-elevation-10(:src="agency.logo")
     .name {{agency.name}}
     .description {{agency.description}}
+    a.website(v-if="agency.website" :href="agency.website") {{agency.website}}
 </template>
 
 <style scoped lang="sass">
+  @import '../styles/theme'
   .agency-header
     display: flex
     flex-direction: column
@@ -46,4 +48,12 @@ export default {
     font-size: 1.1em
     max-width: 600px
     line-height: 1.5em
+  .website
+    @extend .text
+    font-size: 0.9em
+    font-weight: bold
+    text-decoration: none !important
+    color: white !important
+  .website:hover
+    color: $md-primary !important
 </style>
