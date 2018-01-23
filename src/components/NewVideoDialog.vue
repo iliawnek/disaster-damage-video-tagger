@@ -80,9 +80,9 @@ export default {
   },
 
   watch: {
-    isNewVideoDialogOpen (newVal, oldVal) {
+    isNewVideoDialogOpen (newVal) {
       // when new video dialog opens...
-      if (!oldVal && newVal) {
+      if (newVal) {
         // if on event page...
         if (this.$route.params.eventId) {
           // pre-fill form with event
