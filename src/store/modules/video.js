@@ -11,6 +11,7 @@ export default {
     videos: [],
     areVideosLoaded: false,
     areVideosLoading: false,
+    newVideoId: null, // used for snackbar
   },
 
   getters: {
@@ -26,7 +27,11 @@ export default {
     },
 
     getLinkToVideo: () => (video) => {
-      return `/video/${video['.key']}`
+      if (typeof video === 'string') {
+        return `/video/${video}`
+      } else {
+        return `/video/${video['.key']}`
+      }
     },
 
     countTagsInVideo: () => (video) => {
@@ -41,6 +46,9 @@ export default {
     },
     setAreVideosLoading (state) {
       state.areVideosLoading = true
+    },
+    setNewVideoId (state, value) {
+      state.newVideoId = value
     },
   },
 
@@ -62,10 +70,11 @@ export default {
       }
     },
 
-    saveNewVideo (context, {video}) {
+    saveNewVideo ({commit}, {video}) {
       // save video
       const newVideoRef = videosRef.push()
       const newVideoId = newVideoRef.key
+      commit('setNewVideoId', newVideoId)
       newVideoRef.set(video)
       // save event
       const eventId = video.event

@@ -11,6 +11,7 @@ export default {
     events: [],
     areEventsLoaded: false,
     areEventsLoading: false,
+    newEventId: null, // used for snackbar
   },
 
   getters: {
@@ -34,7 +35,11 @@ export default {
     },
 
     getLinkToEvent: () => (event) => {
-      return `/event/${event['.key']}`
+      if (typeof event === 'string') {
+        return `/event/${event}`
+      } else {
+        return `/event/${event['.key']}`
+      }
     },
 
     getImage: (state, getters, rootState, rootGetters) => (event) => {
@@ -68,6 +73,10 @@ export default {
     setAreEventsLoading (state) {
       state.areEventsLoading = true
     },
+
+    setNewEventId (state, value) {
+      state.newEventId = value
+    },
   },
 
   actions: {
@@ -88,10 +97,11 @@ export default {
       }
     },
 
-    saveNewEvent (context, {event}) {
+    saveNewEvent ({commit}, {event}) {
       // save event
       const newEventRef = eventsRef.push()
       const newEventId = newEventRef.key
+      commit('setNewEventId', newEventId)
       newEventRef.set(event)
       // save agencies
       const eventIds = Object.keys(event.agencies)

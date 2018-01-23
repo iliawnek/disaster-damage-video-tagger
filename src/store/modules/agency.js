@@ -12,6 +12,7 @@ export default {
     areAgenciesLoaded: false,
     areAgenciesLoading: false,
     uploading: false,
+    newAgencyId: null, // used for snackbar
   },
 
   getters: {
@@ -44,7 +45,11 @@ export default {
     },
 
     getLinkToAgency: () => (agency) => {
-      return `/agency/${agency['.key']}`
+      if (typeof agency === 'string') {
+        return `/agency/${agency}`
+      } else {
+        return `/agency/${agency['.key']}`
+      }
     },
 
     isCurrentUserAnAgencyAdmin: (state, getters, rootState, rootGetters) => (agency) => {
@@ -64,6 +69,9 @@ export default {
     },
     setUploading: (state, uploading) => {
       state.uploading = uploading
+    },
+    setNewAgencyId (state, value) {
+      state.newAgencyId = value
     },
   },
 
@@ -102,6 +110,7 @@ export default {
       // get new agency ID
       const newAgencyRef = agenciesRef.push()
       const newAgencyId = newAgencyRef.key
+      commit('setNewAgencyId', newAgencyId)
 
       // upload logo
       let logoURL

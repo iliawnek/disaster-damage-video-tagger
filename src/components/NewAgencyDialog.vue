@@ -1,6 +1,6 @@
 <script>
-import {mapActions} from 'vuex'
-import {mapBoolean} from '@/utilities'
+import {mapState, mapActions} from 'vuex'
+import {mapBoolean, mapGettersWithParams} from '@/utilities'
 import {required, minLength, maxLength, url} from 'vuelidate/lib/validators'
 import VueCropper from 'vue-cropperjs'
 
@@ -23,6 +23,7 @@ export default {
         width: '400px',
         height: '400px',
       },
+      showSnackbar: false,
     }
   },
 
@@ -43,6 +44,9 @@ export default {
   },
 
   computed: {
+    ...mapState({
+      newAgencyId: (state) => state.agency.newAgencyId,
+    }),
     ...mapBoolean({
       namespace: 'ui',
       key: 'isNewAgencyDialogOpen',
@@ -52,6 +56,10 @@ export default {
   },
 
   methods: {
+    ...mapGettersWithParams({
+      getLinkToAgency: 'agency/getLinkToAgency',
+    }),
+
     ...mapActions({
       saveNewAgency: 'agency/saveNewAgency',
     }),
@@ -106,6 +114,7 @@ export default {
           logo: this.cropImage(),
         })
         this.isNewAgencyDialogOpen = false
+        this.showSnackbar = true
       }
     },
   },
@@ -113,68 +122,77 @@ export default {
 </script>
 
 <template lang="pug">
-  md-dialog(
-  :md-active.sync="isNewAgencyDialogOpen"
-  @md-closed="clearForm"
-  :md-close-on-esc="false"
-  :md-click-outside-to-close="false"
-  )
-    md-dialog-title Create new agency
-    md-dialog-content
-      md-field(:class="getValidationClass('name')")
-        label(for="agency-name") Agency name
-        md-input(
-        name="agency-name"
-        v-model="form.name"
-        )
-        span.md-error(v-if="!$v.form.name.required") An agency must have a name.
-        span.md-error(v-else-if="!$v.form.name.minLength") Must be at least 3 letters long.
+  div
+    md-dialog(
+    :md-active.sync="isNewAgencyDialogOpen"
+    @md-closed="clearForm"
+    :md-close-on-esc="false"
+    :md-click-outside-to-close="false"
+    )
+      md-dialog-title Create new agency
+      md-dialog-content
+        md-field(:class="getValidationClass('name')")
+          label(for="agency-name") Agency name
+          md-input(
+          name="agency-name"
+          v-model="form.name"
+          )
+          span.md-error(v-if="!$v.form.name.required") An agency must have a name.
+          span.md-error(v-else-if="!$v.form.name.minLength") Must be at least 3 letters long.
 
-      md-field(:class="getValidationClass('description')")
-        label(for="description") Description
-        md-textarea(
-        name="description"
-        v-model="form.description"
-        md-counter="800"
-        )
-        span.md-error(v-if="!$v.form.description.required") An agency must have a description.
-        span.md-error(v-else-if="!$v.form.name.maxLength") Cannot be longer than 800 characters.
+        md-field(:class="getValidationClass('description')")
+          label(for="description") Description
+          md-textarea(
+          name="description"
+          v-model="form.description"
+          md-counter="800"
+          )
+          span.md-error(v-if="!$v.form.description.required") An agency must have a description.
+          span.md-error(v-else-if="!$v.form.name.maxLength") Cannot be longer than 800 characters.
 
-      md-field
-        label(for="logo") Logo
-        md-file(
-        name="logo"
-        @change="handleImageChange"
-        accept="image/*"
-        )
+        md-field
+          label(for="logo") Logo
+          md-file(
+          name="logo"
+          @change="handleImageChange"
+          accept="image/*"
+          )
 
-      .cropper
-        vue-cropper(
-        v-if="image"
-        ref="cropper"
-        :src="image"
-        :view-mode="0"
-        :aspect-ratio="1"
-        :guides="false"
-        :center="false"
-        :auto-crop="true"
-        :auto-crop-area="1"
-        :movable="false"
-        :zoomable="false"
-        :container-style="cropperContainerStyle"
-        )
+        .cropper
+          vue-cropper(
+          v-if="image"
+          ref="cropper"
+          :src="image"
+          :view-mode="0"
+          :aspect-ratio="1"
+          :guides="false"
+          :center="false"
+          :auto-crop="true"
+          :auto-crop-area="1"
+          :movable="false"
+          :zoomable="false"
+          :container-style="cropperContainerStyle"
+          )
 
-      md-field(:class="getValidationClass('website')")
-        label(for="website") Website URL
-        md-input(
-        website="website"
-        v-model="form.website"
-        )
-        span.md-error(v-if="!$v.form.website.url") Not a valid URL.
+        md-field(:class="getValidationClass('website')")
+          label(for="website") Website URL
+          md-input(
+          website="website"
+          v-model="form.website"
+          )
+          span.md-error(v-if="!$v.form.website.url") Not a valid URL.
 
-    md-dialog-actions
-      md-button.md-secondary(@click="isNewAgencyDialogOpen = false") Cancel
-      md-button.md-primary(@click="submitForm") Create
+      md-dialog-actions
+        md-button.md-secondary(@click="isNewAgencyDialogOpen = false") Cancel
+        md-button.md-primary(@click="submitForm") Create
+
+    md-snackbar(
+    :md-active.sync="showSnackbar"
+    :md-duration="5000"
+    )
+      span Agency has been successfully created.
+      router-link(v-if="newAgencyId" :to="getLinkToAgency(newAgencyId)")
+        md-button.md-primary(@click="showSnackbar = false") Go to agency
 </template>
 
 <style scoped lang="sass">

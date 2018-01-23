@@ -1,8 +1,8 @@
 <script>
-import {mapGetters, mapActions} from 'vuex'
+import {mapState, mapGetters, mapActions} from 'vuex'
 import {required, url} from 'vuelidate/lib/validators'
 import {tweetUrl} from '@/validators'
-import {mapBoolean} from '@/utilities'
+import {mapBoolean, mapGettersWithParams} from '@/utilities'
 import {serverless} from '@/utilities/api'
 import Message from '@/components/Message'
 import TweetPreview from '@/components/TweetPreview'
@@ -17,6 +17,7 @@ export default {
         event: null,
       },
       tweetLoading: false,
+      showSnackbar: false,
     }
   },
 
@@ -42,6 +43,9 @@ export default {
   },
 
   computed: {
+    ...mapState({
+      newVideoId: (state) => state.video.newVideoId,
+    }),
     ...mapGetters({
       eventIdsByName: 'event/eventIdsByName',
     }),
@@ -90,6 +94,10 @@ export default {
   },
 
   methods: {
+    ...mapGettersWithParams({
+      getLinkToVideo: 'video/getLinkToVideo',
+    }),
+
     ...mapActions({
       saveNewVideo: 'video/saveNewVideo',
       loadEvents: 'event/loadEvents',
@@ -131,6 +139,7 @@ export default {
           },
         })
         this.isNewVideoDialogOpen = false
+        this.showSnackbar = true
       }
     },
   },
@@ -138,50 +147,59 @@ export default {
 </script>
 
 <template lang="pug">
-  md-dialog(
-  :md-active.sync="isNewVideoDialogOpen"
-  @md-closed="clearForm"
-  :md-close-on-esc="false"
-  :md-click-outside-to-close="false"
-  )
-    md-dialog-title Submit video
-    message(
-    message="Only Twitter videos are currently supported."
-    icon="warning"
+  div
+    md-dialog(
+    :md-active.sync="isNewVideoDialogOpen"
+    @md-closed="clearForm"
+    :md-close-on-esc="false"
+    :md-click-outside-to-close="false"
     )
-    md-dialog-content
-      md-field(:class="getValidationClass('url')")
-        label(for="url") Tweet URL
-        md-input(
-        name="url"
-        id="url"
-        v-model="form.url"
-        )
-        span.md-error(v-if="!$v.form.url.required") A video must have a tweet URL.
-        span.md-error(v-else-if="!$v.form.url.url") Invalid URL.
-        span.md-error(v-else-if="!$v.form.url.tweetUrl") URL does not link to a tweet.
-        span.md-error(v-else-if="!$v.tweet.required && !tweetLoading") Tweet does not contain a video.
+      md-dialog-title Submit video
+      message(
+      message="Only Twitter videos are currently supported."
+      icon="warning"
+      )
+      md-dialog-content
+        md-field(:class="getValidationClass('url')")
+          label(for="url") Tweet URL
+          md-input(
+          name="url"
+          id="url"
+          v-model="form.url"
+          )
+          span.md-error(v-if="!$v.form.url.required") A video must have a tweet URL.
+          span.md-error(v-else-if="!$v.form.url.url") Invalid URL.
+          span.md-error(v-else-if="!$v.form.url.tweetUrl") URL does not link to a tweet.
+          span.md-error(v-else-if="!$v.tweet.required && !tweetLoading") Tweet does not contain a video.
 
-      tweet-preview(v-if="tweet || tweetLoading" :tweet="tweet" :loading="tweetLoading")
+        tweet-preview(v-if="tweet || tweetLoading" :tweet="tweet" :loading="tweetLoading")
 
-      md-field(:class="getValidationClass('event')")
-        label(for="event") Event
-        md-select(
-        v-model="form.event"
-        name="event"
-        id="event"
-        md-dense
-        )
-          md-option(
-          v-for="(id, name) in eventIdsByName"
-          :key="id"
-          :value="id"
-          ) {{name}}
-        span.md-error(v-if="!$v.form.event.required") A video must be assigned to an event.
+        md-field(:class="getValidationClass('event')")
+          label(for="event") Event
+          md-select(
+          v-model="form.event"
+          name="event"
+          id="event"
+          md-dense
+          )
+            md-option(
+            v-for="(id, name) in eventIdsByName"
+            :key="id"
+            :value="id"
+            ) {{name}}
+          span.md-error(v-if="!$v.form.event.required") A video must be assigned to an event.
 
-    md-dialog-actions
-      md-button.md-secondary(@click="isNewVideoDialogOpen = false") Cancel
-      md-button.md-primary(@click="submitForm" :disabled="tweetLoading") Submit
+      md-dialog-actions
+        md-button(@click="isNewVideoDialogOpen = false") Cancel
+        md-button.md-primary(@click="submitForm" :disabled="tweetLoading") Submit
+
+    md-snackbar(
+    :md-active.sync="showSnackbar"
+    :md-duration="5000"
+    )
+      span Video has been successfully submitted.
+      router-link(v-if="newVideoId" :to="getLinkToVideo(newVideoId)")
+        md-button.md-primary(@click="showSnackbar = false") Go to video
 </template>
 
 <style scoped lang="sass">
