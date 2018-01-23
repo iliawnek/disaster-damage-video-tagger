@@ -28,6 +28,9 @@ export default {
       setTrue: 'openDrawer',
       setFalse: 'closeDrawer',
     }),
+    isUserInAnyAgency () {
+      return this.currentUsersAgencies.length > 0
+    },
   },
 
   methods: {
@@ -56,32 +59,15 @@ export default {
     md-content.md-primary.not-signed-in(v-if="!isSignedIn")
       md-button.signin-button.md-raised(@click="signInWithGoogle") Enter with Google
 
-    div(v-if="isSignedIn")
-      // current user
-      md-list.user-section.md-double-line
-        md-list-item
-          md-avatar
-            img(:src="user.photoURL")
-          .md-list-item-text
-            span.display-name {{user.displayName}}
-            span.email {{user.email}}
-          md-button.md-raised(v-if="isSignedIn" @click="click(signOut)") Sign out
-      md-divider
-
-      // current user's agencies
-      md-list
-        md-subheader Your agencies
-        md-list-item(
-        v-for="agency in currentUsersAgencies"
-        :key="agency['.key']"
-        :to="getLinkToAgency(agency)"
-        @click="click()"
-        )
-          span {{agency.name}}
-          kl-label(
-          v-if="isCurrentUserAnAgencyAdmin(agency)"
-          text="Admin"
-          )
+    // current user
+    md-list.user-section.md-double-line(v-if="isSignedIn")
+      md-list-item
+        md-avatar
+          img(:src="user.photoURL")
+        .md-list-item-text
+          span.display-name {{user.displayName}}
+          span.email {{user.email}}
+        md-button.md-raised(v-if="isSignedIn" @click="click(signOut)") Sign out
     md-divider
 
     // navigation
@@ -96,6 +82,22 @@ export default {
       md-list-item(to="/browse/agencies" @click="click()")
         md-icon people
         span.md-list-item-text Agencies
+    md-divider
+
+    // current user's agencies
+    md-list(v-if="isSignedIn && isUserInAnyAgency")
+      md-subheader Your agencies
+      md-list-item(
+      v-for="agency in currentUsersAgencies"
+      :key="agency['.key']"
+      :to="getLinkToAgency(agency)"
+      @click="click()"
+      )
+        span {{agency.name}}
+        kl-label(
+        v-if="isCurrentUserAnAgencyAdmin(agency)"
+        text="Admin"
+        )
 </template>
 
 <style scoped lang="sass">
