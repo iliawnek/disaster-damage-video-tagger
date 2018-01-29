@@ -1,6 +1,5 @@
 <script>
 import {mapState, mapGetters, mapMutations} from 'vuex'
-import {mapBoolean} from '@/utilities'
 import Cropper from 'cropperjs'
 
 let createTagButton
@@ -16,8 +15,13 @@ export default {
 
   props: [
     'video',
-    'isVideoLoaded',
   ],
+
+  data () {
+    return {
+      url: this.video && this.video.url, // required since options on vue-video-player is not reactive
+    }
+  },
 
   computed: {
     ...mapState({
@@ -29,17 +33,11 @@ export default {
     ...mapGetters({
       currentStageName: 'tag/currentStageName',
     }),
-    ...mapBoolean({
-      namespace: 'ui',
-      key: 'isVideoTaggerDialogOpen',
-      setTrue: 'openVideoTaggerDialog',
-      setFalse: 'closeVideoTaggerDialog',
-    }),
     playerOptions () {
       return {
         sources: {
           type: 'application/x-mpegURL',
-          src: this.video.url,
+          src: this.url,
         },
         muted: true,
         controlBar: {
@@ -50,6 +48,11 @@ export default {
   },
 
   watch: {
+    video (newVideo) {
+      if (newVideo) {
+        this.url = newVideo.url // required since options on vue-video-player is not reactive
+      }
+    },
     stage (newStage, oldStage) {
       const newStageName = this.getStageName(newStage)
       const oldStageName = this.getStageName(oldStage)
