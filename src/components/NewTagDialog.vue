@@ -1,13 +1,13 @@
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
-
 import {tagTypeNames, tagTypeValues, tagForm, tagValidations} from '@/values/tagValues'
+import TagForm from '@/components/TagForm'
 
 export default {
   name: 'new-tag-dialog',
 
-  created () {
-    console.log(tagForm({includeDescription: true}))
+  components: {
+    TagForm,
   },
 
   data () {
@@ -65,19 +65,6 @@ export default {
       saveNewTag: 'tag/saveNewTag',
     }),
 
-    capitalise (word) {
-      return word.charAt(0).toUpperCase() + word.slice(1)
-    },
-
-    getValidationClass (fieldName, subFieldName) {
-      const field = subFieldName ? this.$v.form[fieldName][subFieldName] : this.$v.form[fieldName]
-      if (field) {
-        return {
-          'md-invalid': field.$error,
-        }
-      }
-    },
-
     clearForm () {
       this.$v.$reset()
       this.form = tagForm({includeDescription: true})
@@ -116,54 +103,14 @@ export default {
         md-progress-spinner(md-mode="indeterminate")
       md-dialog-title {{getDialogTitle}}
       img.crop-image(v-if="images" :src="images.cropped")
-      md-dialog-content(v-if="isCurrentStageDialog")
-        // type
-        md-field(:class="getValidationClass('type')")
-          label(for="type") Type
-          md-select(
-          v-model="form.type"
-          name="type"
-          md-dense
-          )
-            md-option(
-            v-for="type in types"
-            :key="type"
-            :value="type"
-            ) {{type}}
-          span.md-error(v-if="$v.form.type && !$v.form.type.required") Required.
 
-        // sub-types
-        div(
-        v-for="(subTypes, type) in values"
-        v-if="form.type === type"
-        :key="type"
-        )
-          md-field(
-          v-for="(options, subType) in subTypes"
-          :class="getValidationClass(type, subType)"
-          :key="`${type}-${subType}`"
-          )
-            label(:for="`${type}-${subType}`") {{capitalise(subType)}}
-            md-select(
-            v-model="form[type][subType]"
-            :name="`${type}-${subType}`"
-            md-dense
-            )
-              md-option(
-              v-for="option in options"
-              :key="option"
-              :value="option"
-              ) {{option}}
-            span.md-error(v-if="$v.form[type] && $v.form[type][subType].required") Required.
-
-        // description
-        md-field(:class="getValidationClass('description')")
-          label(for="description") Description
-          md-textarea(
-          v-model="form.description"
-          name="description"
-          )
-          span.md-error(v-if="$v.form.description && !$v.form.description.required") Required.
+      tag-form(
+      v-if="isCurrentStageDialog"
+      :form.sync="form"
+      :types="types"
+      :values="values"
+      :$v="$v"
+      )
 
       md-dialog-actions(v-if="isCurrentStageDialog")
         md-button.md-secondary(@click="previousStage") Back
