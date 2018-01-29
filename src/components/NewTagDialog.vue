@@ -1,6 +1,6 @@
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
-import {tagTypeNames, tagTypeValues, tagForm, tagValidations} from '@/values/tagValues'
+import {tagForm, tagValidations} from '@/values/tagValues'
 import TagForm from '@/components/TagForm'
 
 export default {
@@ -13,8 +13,6 @@ export default {
   data () {
     return {
       form: tagForm({includeDescription: true}),
-      types: tagTypeNames,
-      values: tagTypeValues,
     }
   },
 
@@ -107,13 +105,12 @@ export default {
       tag-form(
       v-if="isCurrentStageDialog"
       :form.sync="form"
-      :types="types"
-      :values="values"
       :$v="$v"
+      :showDescription="true"
       )
 
       md-dialog-actions(v-if="isCurrentStageDialog")
-        md-button.md-secondary(@click="previousStage") Back
+        md-button(@click="previousStage") Back
         md-button.md-primary(@click="submitForm") Create
 
       div(v-if="isCurrentStageDone")
