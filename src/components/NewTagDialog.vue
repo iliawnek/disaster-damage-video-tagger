@@ -1,140 +1,27 @@
 <script>
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
-import {required, maxLength} from 'vuelidate/lib/validators'
+
+import {tagTypeNames, tagTypeValues, tagForm, tagValidations} from '@/values/tagValues'
 
 export default {
   name: 'new-tag-dialog',
 
+  created () {
+    console.log(tagForm({includeDescription: true}))
+  },
+
   data () {
     return {
-      form: {
-        type: null,
-        people: {
-          amount: null,
-          state: null,
-          freedom: null,
-        },
-        water: {
-          form: null,
-        },
-        vehicle: {
-          state: null,
-        },
-        area: {
-          form: null,
-          shelter: null,
-          service: null,
-        },
-        damage: {
-          form: null,
-        },
-        description: null,
-      },
-      types: [
-        'people',
-        'water',
-        'vehicle',
-        'area',
-        'damage',
-        'other',
-      ],
-      people: {
-        amount: [
-          'one person',
-          'more than one person',
-        ],
-        state: [
-          'all healthy',
-          'some injured',
-          'some dead',
-          'mixed',
-        ],
-        freedom: [
-          'walking',
-          'unable to walk',
-          'trapped',
-        ],
-      },
-      water: {
-        form: [
-          'flood',
-          'natural environment',
-          'distributed safely',
-        ],
-      },
-      vehicle: {
-        state: [
-          'working',
-          'broken',
-          'unsure',
-        ],
-      },
-      area: {
-        form: [
-          'provided by relief effort',
-          'makeshift',
-        ],
-        shelter: [
-          'sheltered',
-          'not sheltered',
-        ],
-        service: [
-          'food',
-          'water',
-          'medical aid',
-          'human remains management',
-          'other supplies',
-        ],
-      },
-      damage: {
-        form: [
-          'fire',
-          'collapsed structure',
-          'unstable structure',
-          'road blockage',
-          'compromised bridge',
-          'damaged power or communication line',
-          'landslide',
-        ],
-      },
+      form: tagForm({includeDescription: true}),
+      types: tagTypeNames,
+      values: tagTypeValues,
     }
   },
 
   validations () {
-    const validations = {
-      form: {
-        type: {required},
-        description: {maxLength: maxLength(800)},
-      },
-    }
-    if (this.form.type === 'people') {
-      validations.form.people = {
-        amount: {required},
-        state: {required},
-        freedom: {required},
-      }
-    } else if (this.form.type === 'water') {
-      validations.form.water = {
-        form: {required},
-      }
-    } else if (this.form.type === 'vehicle') {
-      validations.form.vehicle = {
-        state: {required},
-      }
-    } else if (this.form.type === 'area') {
-      validations.form.area = {
-        form: {required},
-        shelter: {required},
-        service: {required},
-      }
-    } else if (this.form.type === 'damage') {
-      validations.form.damage = {
-        form: {required},
-      }
-    } else if (this.form.type === 'other') {
-      validations.form.description.required = required
-    }
-    return validations
+    return tagValidations({
+      selectedType: this.form.type,
+    })
   },
 
   computed: {
@@ -178,6 +65,10 @@ export default {
       saveNewTag: 'tag/saveNewTag',
     }),
 
+    capitalise (word) {
+      return word.charAt(0).toUpperCase() + word.slice(1)
+    },
+
     getValidationClass (fieldName, subFieldName) {
       const field = subFieldName ? this.$v.form[fieldName][subFieldName] : this.$v.form[fieldName]
       if (field) {
@@ -189,17 +80,7 @@ export default {
 
     clearForm () {
       this.$v.$reset()
-      this.form.type = null
-      this.form.people.amount = null
-      this.form.people.state = null
-      this.form.people.freedom = null
-      this.form.water.form = null
-      this.form.vehicle.state = null
-      this.form.area.form = null
-      this.form.area.shelter = null
-      this.form.area.service = null
-      this.form.damage.form = null
-      this.form.description = null
+      this.form = tagForm({includeDescription: true})
     },
 
     submitForm () {
@@ -236,6 +117,7 @@ export default {
       md-dialog-title {{getDialogTitle}}
       img.crop-image(v-if="images" :src="images.cropped")
       md-dialog-content(v-if="isCurrentStageDialog")
+        // type
         md-field(:class="getValidationClass('type')")
           label(for="type") Type
           md-select(
@@ -250,133 +132,31 @@ export default {
             ) {{type}}
           span.md-error(v-if="$v.form.type && !$v.form.type.required") Required.
 
-        div(v-if="form.type === 'people'")
-          md-field(:class="getValidationClass('people', 'amount')")
-            label(for="people-amount") Amount
+        // sub-types
+        div(
+        v-for="(subTypes, type) in values"
+        v-if="form.type === type"
+        :key="type"
+        )
+          md-field(
+          v-for="(options, subType) in subTypes"
+          :class="getValidationClass(type, subType)"
+          :key="`${type}-${subType}`"
+          )
+            label(:for="`${type}-${subType}`") {{capitalise(subType)}}
             md-select(
-            v-model="form.people.amount"
-            name="people-amount"
+            v-model="form[type][subType]"
+            :name="`${type}-${subType}`"
             md-dense
             )
               md-option(
-              v-for="option in people.amount"
+              v-for="option in options"
               :key="option"
               :value="option"
               ) {{option}}
-            span.md-error(v-if="$v.form.people && !$v.form.people.amount.required") Required.
-          md-field(:class="getValidationClass('people', 'state')")
-            label(for="people-state") State
-            md-select(
-            v-model="form.people.state"
-            name="people-state"
-            md-dense
-            )
-              md-option(
-              v-for="option in people.state"
-              :key="option"
-              :value="option"
-              ) {{option}}
-            span.md-error(v-if="$v.form.people && !$v.form.people.state.required") Required.
-          md-field(:class="getValidationClass('people', 'freedom')")
-            label(for="people-freedom") Freedom
-            md-select(
-            v-model="form.people.freedom"
-            name="people-freedom"
-            md-dense
-            )
-              md-option(
-              v-for="option in people.freedom"
-              :key="option"
-              :value="option"
-              ) {{option}}
-            span.md-error(v-if="$v.form.people && !$v.form.people.freedom.required") Required.
+            span.md-error(v-if="$v.form[type] && $v.form[type][subType].required") Required.
 
-        div(v-if="form.type === 'water'")
-          md-field(:class="getValidationClass('water', 'form')")
-            label(for="water-form") Form
-            md-select(
-            v-model="form.water.form"
-            name="water-form"
-            md-dense
-            )
-              md-option(
-              v-for="option in water.form"
-              :key="option"
-              :value="option"
-              ) {{option}}
-            span.md-error(v-if="$v.form.water && !$v.form.water.form.required") Required.
-
-        div(v-if="form.type === 'vehicle'")
-          md-field(:class="getValidationClass('vehicle', 'state')")
-            label(for="vehicle-state") State
-            md-select(
-            v-model="form.vehicle.state"
-            name="vehicle-state"
-            md-dense
-            )
-              md-option(
-              v-for="option in vehicle.state"
-              :key="option"
-              :value="option"
-              ) {{option}}
-            span.md-error(v-if="$v.form.vehicle && !$v.form.vehicle.state.required") Required.
-
-        div(v-if="form.type === 'area'")
-          md-field(:class="getValidationClass('area', 'form')")
-            label(for="area-form") Form
-            md-select(
-            v-model="form.area.form"
-            name="area-form"
-            md-dense
-            )
-              md-option(
-              v-for="option in area.form"
-              :key="option"
-              :value="option"
-              ) {{option}}
-            span.md-error(v-if="$v.form.area && !$v.form.area.form.required") Required.
-          md-field(:class="getValidationClass('area', 'shelter')")
-            label(for="area-shelter") Shelter
-            md-select(
-            v-model="form.area.shelter"
-            name="area-shelter"
-            md-dense
-            )
-              md-option(
-              v-for="option in area.shelter"
-              :key="option"
-              :value="option"
-              ) {{option}}
-            span.md-error(v-if="$v.form.area && !$v.form.area.shelter.required") Required.
-          md-field(:class="getValidationClass('area', 'service')")
-            label(for="area-service") Service
-            md-select(
-            v-model="form.area.service"
-            name="area-service"
-            md-dense
-            )
-              md-option(
-              v-for="option in area.service"
-              :key="option"
-              :value="option"
-              ) {{option}}
-            span.md-error(v-if="$v.form.area && !$v.form.area.service.required") Required.
-
-        div(v-if="form.type === 'damage'")
-          md-field(:class="getValidationClass('damage', 'form')")
-            label(for="damage-form") Form
-            md-select(
-            v-model="form.damage.form"
-            name="damage-form"
-            md-dense
-            )
-              md-option(
-              v-for="option in damage.form"
-              :key="option"
-              :value="option"
-              ) {{option}}
-            span.md-error(v-if="$v.form.damage && !$v.form.damage.form.required") Required.
-
+        // description
         md-field(:class="getValidationClass('description')")
           label(for="description") Description
           md-textarea(
