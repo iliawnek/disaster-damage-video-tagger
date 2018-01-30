@@ -1,5 +1,6 @@
 <script>
 import {tagTypeNames, tagTypeValues} from '@/values/tagValues'
+import {capitalise} from '@/utilities'
 
 export default {
   name: 'tag-form',
@@ -21,7 +22,6 @@ export default {
 
   created () {
     this.$emit('update:form', this.localForm)
-    console.log('created!')
   },
 
   methods: {
@@ -36,8 +36,8 @@ export default {
       }
     },
 
-    capitalise (word) {
-      return word.charAt(0).toUpperCase() + word.slice(1)
+    capitalise (string) {
+      return capitalise(string)
     },
   },
 }
@@ -88,7 +88,7 @@ export default {
             :value="option"
             ) {{option}}
           span.md-error(v-if="$v && !$v.form[type][subType].required") Required.
-        md-button(v-if="clearable" @click="localForm[type][subType] = null").md-icon-button
+        md-button(v-if="clearable && localForm[type][subType]" @click="localForm[type][subType] = null").md-icon-button
           md-icon close
 
     // description
