@@ -65,7 +65,17 @@ export default {
 
     clearForm () {
       this.$v.$reset()
-      this.form = tagForm({includeDescription: true})
+      this.form.type = null
+      this.form.people.amount = null
+      this.form.people.state = null
+      this.form.people.freedom = null
+      this.form.water.form = null
+      this.form.vehicle.state = null
+      this.form.area.form = null
+      this.form.area.shelter = null
+      this.form.area.service = null
+      this.form.damage.form = null
+      this.form.description = null
     },
 
     submitForm () {
