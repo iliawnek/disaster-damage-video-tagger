@@ -18,7 +18,7 @@ export default {
 </script>
 
 <template lang="pug">
-  md-content.video-info(v-if="video && event")
+  md-content.video-info.md-elevation-5(v-if="video && event")
     .title {{video.title}}
     .event
       | in&nbsp;
@@ -28,22 +28,25 @@ export default {
 <style scoped lang="sass">
   @import '../styles/theme'
   .video-info
-    margin: 16px
+    padding: 32px
+    margin-bottom: 16px
     display: flex
     align-items: center
     flex-direction: column
     text-align: center
-    background-color: transparent
+    background-color: #333
   .text
     margin: 4px
   .title
     @extend .text
     font-weight: bold
     font-size: 1.2em
+    color: white
     line-height: 1.2em
+    max-width: 600px
   .event
     @extend .text
-    color: #666
+    color: #aaa
     font-size: 1em
   .event-link
     color: inherit !important
