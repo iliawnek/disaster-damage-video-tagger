@@ -282,6 +282,8 @@ export default {
         rotatable: false,
         scalable: false,
         toggleDragModeOnDblclick: false,
+        autoCropArea: 0.5,
+
         data: crop, // load existing crop if it exists
         ready: onReady,
       })
