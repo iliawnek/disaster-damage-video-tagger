@@ -84,63 +84,72 @@ export default {
 </script>
 
 <template lang="pug">
-  .tag-list
-    .tag-list-header
-      div
-        .tag-list-title {{tagCountText}}
-        .tag-list-subtitle {{tagListHelpText}}
-      md-button.md-accent.md-raised(@click="isFilterDialogOpen = true") Filter
+  .tag-list-container
+    .tag-list-content
+      .tag-list-header
+        div
+          .tag-list-title {{tagCountText}}
+          .tag-list-subtitle {{tagListHelpText}}
+        md-button.md-accent.md-raised(@click="isFilterDialogOpen = true") Filter
 
-    md-dialog(
-    :md-active.sync="isFilterDialogOpen"
-    )
-      md-dialog-title Filter tags
-      tag-form(
-      :form.sync="filter"
-      :clearable="true"
+      md-dialog(
+      :md-active.sync="isFilterDialogOpen"
       )
-      md-dialog-actions
-        md-button(@click="clearForm") Clear all
-        md-button.md-primary(@click="isFilterDialogOpen = false") Done
+        md-dialog-title Filter tags
+        tag-form(
+        :form.sync="filter"
+        :clearable="true"
+        )
+        md-dialog-actions
+          md-button(@click="clearForm") Clear all
+          md-button.md-primary(@click="isFilterDialogOpen = false") Done
 
-    md-table(v-if="doTagsExist" md-card)
-      md-table-row
-        md-table-head Play video
-        md-table-head Image
-        md-table-head Type
-        template(v-if="filter.type")
-          md-table-head(
-          v-for="subType in Object.keys(filter[filter.type])"
-          :key="subType"
-          ) {{capitalise(subType)}}
-        md-table-head Description
-      md-table-row(v-for="tag in filteredTags" :key="tag['.key']")
-        md-table-cell
-          md-button.md-icon-button.md-raised.md-accent
-            md-icon play_arrow
-        md-table-cell
-          img.thumbnail(:src="tag.crop.images.highlighted")
-        md-table-cell {{tag.details.type}}
-        template(v-if="filter.type")
-          md-table-cell(
-          v-for="subType in Object.keys(filter[filter.type])"
-          :key="subType"
-          ) {{tag.details[subType]}}
-        md-table-cell {{tag.details.description}}
+      md-table.tag-list-table(v-if="doTagsExist" md-card)
+        md-table-row
+          md-table-head
+          md-table-head Image
+          md-table-head Type
+          template(v-if="filter.type")
+            md-table-head(
+            v-for="subType in Object.keys(filter[filter.type])"
+            :key="subType"
+            ) {{capitalise(subType)}}
+          md-table-head Description
+        md-table-row(v-for="tag in filteredTags" :key="tag['.key']")
+          md-table-cell
+            md-button.md-icon-button.md-raised.md-accent.md-dense
+              md-icon play_arrow
+          md-table-cell
+            img.thumbnail(:src="tag.crop.images.highlighted")
+          md-table-cell {{tag.details.type}}
+          template(v-if="filter.type")
+            md-table-cell(
+            v-for="subType in Object.keys(filter[filter.type])"
+            :key="subType"
+            ) {{tag.details[subType]}}
+          md-table-cell {{tag.details.description}}
 </template>
 
 <style scoped lang="sass">
+  .tag-list-container
+    display: flex
+    justify-content: center
+  .tag-list-content
+    max-width: 1200px
+    margin: 32px
   .tag-list-header
     display: flex
     align-items: center
     justify-content: space-between
-    margin: 16px
+    margin-bottom: 16px
   .tag-list-title
     font-size: 1.2em
     font-weight: bold
   .tag-list-subtitle
     font-size: 0.9em
   .thumbnail
-    height: 50px
+    height: 40px
+    width: 40px
+    margin: 4px
     object-fit: cover
 </style>
