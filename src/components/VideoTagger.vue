@@ -434,9 +434,12 @@ export default {
       this.hide(rangeBar)
     },
     buildRangeHandle () {
+      // handle
       rangeHandle = document.createElement('div')
       rangeHandle.classList.add('vjs-progress-handle')
+      // icon
       rangeHandle.innerText = '↔'
+      // add to player
       this.playProgress().appendChild(rangeHandle)
       this.hide(rangeHandle)
     },
@@ -512,7 +515,7 @@ export default {
 <style lang="sass">
   @import '~cropperjs/dist/cropper.css'
   @import '../styles/theme'
-  $light-blue: #B5D9F5
+  $grey: #555
   $shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 5px 8px 0 rgba(0,0,0,.14), 0 1px 14px 0 rgba(0,0,0,.12)
 
   // big play button
@@ -530,8 +533,8 @@ export default {
     // control bar
     .vjs-control-bar
       height: 50px
-      background-color: white
-      color: black
+      background-color: $md-dark
+      color: white
       box-shadow: $shadow
     .vjs-control-bar:hover
       opacity: 1
@@ -568,9 +571,9 @@ export default {
       color: white
     // progress bar
     .vjs-progress-holder
-      font-size: 1.7em !important // range handle arrow font size
+      font-size: 2em !important // range handle arrow font size
     .vjs-progress-holder:hover
-      font-size: 1.7em !important // range handle arrow font size
+      font-size: 2em !important // range handle arrow font size
     .vjs-progress-control
       .vjs-slider
         background-color: transparent
@@ -580,7 +583,7 @@ export default {
         // buffered bar
         .vjs-load-progress
           div
-            background-color: $light-blue
+            background-color: $grey
         // played bar
         .vjs-play-progress
           background-color: $md-primary
@@ -688,17 +691,19 @@ export default {
       height: 50%
       width: 3px
       transform: translateX(-50%)
-      background-color: black
+      background-color: $md-dark
     // range bar
     .vjs-range-bar
       position: absolute
       background-color: $md-accent
       height: 100%
+      box-sizing: border-box !important
+      box-shadow: $shadow
     .vjs-progress-handle
       position: absolute
       right: 0
-      width: 24px
-      height: 24px
+      width: 28px
+      height: 28px
       border-radius: 100%
       top: 50%
       transform: translate(50%, -50%)
@@ -706,6 +711,8 @@ export default {
       background-color: white
       box-shadow: $shadow
       z-index: 1
+      color: black
+      font-weight: bold
 
     // canvas
     .vjs-canvas-container
