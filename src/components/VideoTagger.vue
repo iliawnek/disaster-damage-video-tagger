@@ -9,6 +9,7 @@ let canvasContainer
 let rangeNavigationButtons
 let cropTimeMarker
 let rangeBar
+let instructionBar
 
 export default {
   name: 'video-tagger',
@@ -45,6 +46,13 @@ export default {
         },
       }
     },
+    instruction () {
+      const name = this.currentStageName
+      if (name === 'play') return 'When you spot something, pause the video to create a new tag.'
+      if (name === 'crop') return 'Drag and resize the box to cover what you want to tag.'
+      if (name === 'range-start') return 'Move the marker to when the tag enters the frame.'
+      if (name === 'range-end') return 'Move the marker to when the tag leaves the frame.'
+    },
   },
 
   watch: {
@@ -54,6 +62,15 @@ export default {
       }
     },
     stage (newStage, oldStage) {
+      // update instruction text
+      console.log(this.instruction)
+      if (this.instruction) {
+        this.show(instructionBar)
+        instructionBar.innerText = this.instruction
+      } else {
+        this.hide(instructionBar)
+      }
+
       const newStageName = this.getStageName(newStage)
       const oldStageName = this.getStageName(oldStage)
       const restarted = newStage === 0 && oldStage === this.lastStageIndex
@@ -75,6 +92,7 @@ export default {
         }
         if (left('crop')) {
           this.saveCrop()
+          instructionBar.classList.remove('vjs-instruction-bar-hide')
         }
         if (entered('range-start')) {
           this.startRangeStart()
@@ -98,6 +116,7 @@ export default {
       } else { // clicked 'back'
         if (left('crop')) {
           this.cancelCrop()
+          instructionBar.classList.remove('vjs-instruction-bar-hide')
         }
         if (entered('crop')) {
           this.resumeCrop()
@@ -235,6 +254,14 @@ export default {
       return navigationButtons
     },
 
+    buildInstructionBar () {
+      instructionBar = document.createElement('div')
+      instructionBar.classList.add('vjs-instruction-bar')
+      instructionBar.classList.add('vjs-control-bar') // enables auto-hide when cursor is idle
+      instructionBar.innerText = this.instruction
+      this.videojs().appendChild(instructionBar)
+    },
+
     // initialise player UI
     buildInitialUI () {
       this.buildCanvas()
@@ -242,6 +269,7 @@ export default {
       this.buildRangeNavigationButtons()
       this.buildRangeBar()
       this.buildCropTimeMarker()
+      this.buildInstructionBar()
     },
 
     // playback
@@ -286,6 +314,12 @@ export default {
 
         data: crop, // load existing crop if it exists
         ready: onReady,
+        // make instruction bar semi-transparent when crop box is on top
+        crop (event) {
+          const {top} = event.target.cropper.cropBoxData
+          if (top < 50) instructionBar.classList.add('vjs-instruction-bar-hide')
+          else instructionBar.classList.remove('vjs-instruction-bar-hide')
+        },
       })
     },
     captureFullFrame () {
@@ -460,6 +494,7 @@ export default {
   .video-js
     width: 100%
     height: 50vh
+    font-family: Roboto, sans-serif
 
     // control bar
     .vjs-control-bar
@@ -516,11 +551,23 @@ export default {
     .vjs-remaining-time
       display: none
 
+    // instruction bar
+    .vjs-instruction-bar
+      position: absolute
+      display: flex
+      justify-content: center
+      align-items: center
+      top: 0
+      font-weight: bold
+      font-size: 16px
+      transition: ease-in-out 0.15s
+    .vjs-instruction-bar-hide
+      opacity: 0.3
+
     // buttons
     .vjs-tagger-button
       background: white
       color: black
-      font-family: Roboto, sans-serif
       font-size: 16px
       font-weight: bold
       text-transform: uppercase
@@ -595,4 +642,6 @@ export default {
   // Cropper.js
   .cropper-container
     position: absolute
+    .cropper-crop-box
+      z-index: 1 !important
 </style>
