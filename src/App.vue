@@ -51,6 +51,7 @@ export default {
 @import url('//fonts.googleapis.com/icon?family=Material+Icons')
 
 @import '~video.js/dist/video-js.css'
+@import '~vue-image-lightbox/dist/vue-image-lightbox.min.css'
 
 html
   $font-stack: Roboto, sans-serif

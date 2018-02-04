@@ -11,12 +11,16 @@ import VueVideoPlayer from 'vue-video-player'
 /* eslint-disable no-unused-vars */
 import videojsContribHls from 'videojs-contrib-hls/dist/videojs-contrib-hls'
 import AsyncComputed from 'vue-async-computed'
+import VueLazyLoad from 'vue-lazyload'
+import VueTouch from 'vue-touch'
 
 Vue.use(VueFire)
 Vue.use(VueMaterial)
 Vue.use(Vuelidate)
 Vue.use(VueVideoPlayer)
 Vue.use(AsyncComputed)
+Vue.use(VueLazyLoad)
+Vue.use(VueTouch)
 
 Vue.config.productionTip = false
 

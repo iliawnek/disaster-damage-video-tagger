@@ -2,12 +2,14 @@
 import {tagForm} from '@/values/tagValues'
 import TagForm from '@/components/TagForm'
 import {capitalise} from '@/utilities'
+import Lightbox from 'vue-image-lightbox'
 
 export default {
   name: 'tag-list',
 
   components: {
     TagForm,
+    Lightbox,
   },
 
   props: [
@@ -45,6 +47,14 @@ export default {
         }
       })
     },
+    filteredTagImages () {
+      return this.filteredTags && this.filteredTags.map((tag) => {
+        return {
+          src: tag.crop.images.highlighted,
+          thumb: tag.crop.images.highlighted,
+        }
+      })
+    },
     totalCount () {
       return this.tags ? this.tags.length : 0
     },
@@ -78,6 +88,10 @@ export default {
 
     capitalise (string) {
       return capitalise(string)
+    },
+
+    showImage (index) {
+      this.$refs.lightbox.showImage(index)
     },
   },
 }
@@ -115,12 +129,12 @@ export default {
             :key="subType"
             ) {{capitalise(subType)}}
           md-table-head Description
-        md-table-row(v-for="tag in filteredTags" :key="tag['.key']")
+        md-table-row(v-for="(tag, index) in filteredTags" :key="tag['.key']")
           md-table-cell
             md-button.md-icon-button.md-raised.md-accent.md-dense
               md-icon play_arrow
           md-table-cell
-            img.thumbnail(:src="tag.crop.images.highlighted")
+            img.thumbnail(:src="tag.crop.images.highlighted" @click="showImage(index)")
           md-table-cell {{tag.details.type}}
           template(v-if="filter.type")
             md-table-cell(
@@ -128,6 +142,13 @@ export default {
             :key="subType"
             ) {{tag.details[subType]}}
           md-table-cell {{tag.details.description}}
+
+      lightbox(
+      v-if="filteredTagImages"
+      :images="filteredTagImages"
+      :showLightBox="false"
+      ref="lightbox"
+      )
 </template>
 
 <style scoped lang="sass">
@@ -152,4 +173,7 @@ export default {
     width: 40px
     margin: 4px
     object-fit: cover
+    cursor: pointer
+  .md-button // fix button showing above lightbox
+    z-index: 0
 </style>
