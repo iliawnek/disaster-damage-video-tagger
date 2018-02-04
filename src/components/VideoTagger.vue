@@ -215,7 +215,8 @@ export default {
     // button generators
     buildButton ({className, label, onClick}) {
       const button = document.createElement('div')
-      button.className = `vjs-tagger-button ${className}`
+      button.classList.add('vjs-tagger-button')
+      if (className) button.classList.add(className)
       button.innerText = label
       button.addEventListener('click', onClick)
       return button
@@ -480,9 +481,9 @@ export default {
 
 <style lang="sass">
   @import '~cropperjs/dist/cropper.css'
-  $blue: #2196f3
+  @import '../styles/theme'
   $light-blue: #B5D9F5
-  $red: #f44336
+  $shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 5px 8px 0 rgba(0,0,0,.14), 0 1px 14px 0 rgba(0,0,0,.12)
 
   // big play button
   .video-js:hover .vjs-big-play-button
@@ -501,6 +502,7 @@ export default {
       height: 50px
       background-color: white
       color: black
+      box-shadow: $shadow
     // big play button
     .vjs-big-play-button
       position: absolute
@@ -514,12 +516,13 @@ export default {
       background-color: white
       color: black
       transition: ease-in-out 0.15s !important
+      box-shadow: $shadow
       .vjs-icon-placeholder::before
         font-size: 40px
         line-height: 2em
         padding-left: 3px
     .vjs-big-play-button:hover
-      background-color: $red
+      background-color: $md-accent
       color: white
     // control bar buttons
     .vjs-button
@@ -529,7 +532,7 @@ export default {
       .vjs-icon-placeholder::before
          line-height: 2.1em // button icon position
     .vjs-button:hover
-      background-color: $red
+      background-color: $md-accent
       color: white
     // progress bar
     .vjs-progress-control
@@ -544,7 +547,7 @@ export default {
             background-color: $light-blue
         // played bar
         .vjs-play-progress
-          background-color: $blue
+          background-color: $md-primary
       .vjs-progress-holder
         margin: 0
     // remaining time
@@ -553,6 +556,8 @@ export default {
 
     // instruction bar
     .vjs-instruction-bar
+      background-color: $md-dark
+      color: white
       position: absolute
       display: flex
       justify-content: center
@@ -561,6 +566,7 @@ export default {
       font-weight: bold
       font-size: 16px
       transition: ease-in-out 0.15s
+      box-shadow: $shadow
     .vjs-instruction-bar-hide
       opacity: 0.3
 
@@ -568,16 +574,18 @@ export default {
     .vjs-tagger-button
       background: white
       color: black
-      font-size: 16px
+      font-size: 15px
       font-weight: bold
       text-transform: uppercase
       user-select: none
       cursor: pointer
-      padding: 16px
+      padding: 14px 20px
       line-height: 1em
       transition: ease-in-out 0.15s
+      border-radius: 2px
+      box-shadow: $shadow
     .vjs-tagger-button:hover
-      background-color: $red
+      background-color: $md-accent
       color: white
     // navigation buttons
     .vjs-navigation-buttons
@@ -616,7 +624,7 @@ export default {
     // range bar
     .vjs-range-bar
       position: absolute
-      background-color: $red
+      background-color: $md-accent
       height: 100%
 
     // canvas
