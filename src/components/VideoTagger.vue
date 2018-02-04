@@ -170,8 +170,8 @@ export default {
     controlBar () {
       return document.getElementsByClassName('vjs-control-bar')[0]
     },
-    fullscreenControl () {
-      return document.getElementsByClassName('vjs-fullscreen-control')[0]
+    playbackRateControl () {
+      return document.getElementsByClassName('vjs-playback-rate')[0]
     },
 
     // slider bar percentages
@@ -284,8 +284,8 @@ export default {
         player().currentTime(player().currentTime() + 0.05)
       })
       // insert buttons into control bar
-      this.controlBar().insertBefore(backFrame, this.fullscreenControl())
-      this.controlBar().insertBefore(forwardFrame, this.fullscreenControl())
+      this.controlBar().insertBefore(backFrame, this.playbackRateControl())
+      this.controlBar().insertBefore(forwardFrame, this.playbackRateControl())
     },
 
     // initialise player UI
