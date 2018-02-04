@@ -52,6 +52,7 @@ export default {
         return {
           src: tag.crop.images.highlighted,
           thumb: tag.crop.images.highlighted,
+          caption: `Tag #${tag.number}`,
         }
       })
     },
@@ -98,7 +99,7 @@ export default {
 </script>
 
 <template lang="pug">
-  .tag-list-container
+  .tag-list-container(v-if="doTagsExist")
     .tag-list-content
       .tag-list-header
         div
@@ -118,9 +119,11 @@ export default {
           md-button(@click="clearForm") Clear all
           md-button.md-primary(@click="isFilterDialogOpen = false") Done
 
-      md-table.tag-list-table(v-if="doTagsExist" md-card)
+      md-table.tag-list-table(md-card)
+        // header row
         md-table-row
           md-table-head
+          md-table-head #
           md-table-head Image
           md-table-head Type
           template(v-if="filter.type")
@@ -129,10 +132,13 @@ export default {
             :key="subType"
             ) {{capitalise(subType)}}
           md-table-head Description
+
+        // tag rows
         md-table-row(v-for="(tag, index) in filteredTags" :key="tag['.key']")
           md-table-cell
             md-button.md-icon-button.md-raised.md-accent.md-dense
               md-icon play_arrow
+          md-table-cell {{`#${tag.number}`}}
           md-table-cell
             img.thumbnail(:src="tag.crop.images.highlighted" @click="showImage(index)")
           md-table-cell {{tag.details.type}}
@@ -141,12 +147,13 @@ export default {
             v-for="subType in Object.keys(filter[filter.type])"
             :key="subType"
             ) {{tag.details[subType]}}
-          md-table-cell {{tag.details.description}}
+          md-table-cell {{tag.details.description || '—'}}
 
       lightbox(
       v-if="filteredTagImages"
       :images="filteredTagImages"
       :showLightBox="false"
+      :showCaption="true"
       ref="lightbox"
       )
 </template>

@@ -34,8 +34,10 @@ export default {
       }
     },
 
-    countTagsInVideo: () => (video) => {
-      return (video && video.tags) ? Object.keys(video.tags).length : 0
+    countTagsInVideo: (state, getters) => (video) => {
+      // resolve if video param is videoId
+      const videoObject = typeof video === 'string' ? getters.getVideoById(video) : video
+      return (videoObject && videoObject.tags) ? Object.keys(videoObject.tags).length : 0
     },
   },
 

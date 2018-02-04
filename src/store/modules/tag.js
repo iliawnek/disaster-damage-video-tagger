@@ -120,7 +120,7 @@ export default {
       )
     },
 
-    async saveNewTag ({state, commit, dispatch}, {details, videoId}) {
+    async saveNewTag ({state, commit, dispatch, rootGetters}, {details, videoId}) {
       // get new tag ID
       const newTagRef = tagsRef.push()
       const newTagId = newTagRef.key
@@ -130,7 +130,11 @@ export default {
       const imageURLs = fromPairs(await dispatch('uploadImages', newTagId))
       commit('setUploading', false)
 
+      // get tag number
+      const number = rootGetters['video/countTagsInVideo'](videoId) + 1
+
       newTagRef.set({
+        number,
         video: videoId,
         crop: {
           position: state.crop.position,
