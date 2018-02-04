@@ -9,6 +9,7 @@ let canvasContainer
 let rangeNavigationButtons
 let cropTimeMarker
 let rangeBar
+let rangeHandle
 let instructionBar
 
 export default {
@@ -50,8 +51,8 @@ export default {
       const name = this.currentStageName
       if (name === 'play') return 'When you spot something, pause the video to create a new tag.'
       if (name === 'crop') return 'Drag and resize the box to cover what you want to tag.'
-      if (name === 'range-start') return 'Move the marker to when the tag enters the frame.'
-      if (name === 'range-end') return 'Move the marker to when the tag leaves the frame.'
+      if (name === 'range-start') return 'Navigate the video to when the tag enters the frame.'
+      if (name === 'range-end') return 'Navigate the video to when the tag leaves the frame.'
     },
   },
 
@@ -63,7 +64,6 @@ export default {
     },
     stage (newStage, oldStage) {
       // update instruction text
-      console.log(this.instruction)
       if (this.instruction) {
         this.show(instructionBar)
         instructionBar.innerText = this.instruction
@@ -170,6 +170,9 @@ export default {
     player () {
       return this.$refs.videoPlayer.player
     },
+    playProgress () {
+      return document.getElementsByClassName('vjs-play-progress')[0]
+    },
 
     // slider bar percentages
     currentTimePercentage () {
@@ -269,6 +272,7 @@ export default {
       this.buildCreateTagButton()
       this.buildRangeNavigationButtons()
       this.buildRangeBar()
+      this.buildRangeHandle()
       this.buildCropTimeMarker()
       this.buildInstructionBar()
     },
@@ -412,6 +416,13 @@ export default {
       this.slider().appendChild(rangeBar)
       this.hide(rangeBar)
     },
+    buildRangeHandle () {
+      rangeHandle = document.createElement('div')
+      rangeHandle.classList.add('vjs-progress-handle')
+      rangeHandle.innerText = '↔'
+      this.playProgress().appendChild(rangeHandle)
+      this.hide(rangeHandle)
+    },
     updateRangeBarOnNewStart () {
       // don't allow times beyond crop time to be selected
       if (this.player().currentTime() > this.crop.time) {
@@ -435,6 +446,7 @@ export default {
       this.show(rangeNavigationButtons)
       this.show(cropTimeMarker)
       this.show(rangeBar)
+      this.show(rangeHandle)
       cropTimeMarker.style.left = this.percentageAsString(this.cropTimePercentage())
     },
     startRangeEnd () {
@@ -463,6 +475,7 @@ export default {
       this.hide(rangeNavigationButtons)
       this.hide(cropTimeMarker)
       this.hide(rangeBar)
+      this.hide(rangeHandle)
       this.resetRangeBar()
     },
   },
@@ -535,6 +548,10 @@ export default {
       background-color: $md-accent
       color: white
     // progress bar
+    .vjs-progress-holder
+      font-size: 1.7em !important // range handle arrow font size
+    .vjs-progress-holder:hover
+      font-size: 1.7em !important // range handle arrow font size
     .vjs-progress-control
       .vjs-slider
         background-color: transparent
@@ -626,6 +643,18 @@ export default {
       position: absolute
       background-color: $md-accent
       height: 100%
+    .vjs-progress-handle
+      position: absolute
+      right: 0
+      width: 24px
+      height: 24px
+      border-radius: 100%
+      top: 50%
+      transform: translate(50%, -50%)
+      cursor: ew-resize
+      background-color: white
+      box-shadow: $shadow
+      z-index: 1
 
     // canvas
     .vjs-canvas-container
