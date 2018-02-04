@@ -167,6 +167,12 @@ export default {
     playProgress () {
       return document.getElementsByClassName('vjs-play-progress')[0]
     },
+    controlBar () {
+      return document.getElementsByClassName('vjs-control-bar')[0]
+    },
+    fullscreenControl () {
+      return document.getElementsByClassName('vjs-fullscreen-control')[0]
+    },
 
     // slider bar percentages
     currentTimePercentage () {
@@ -252,6 +258,7 @@ export default {
       return navigationButtons
     },
 
+    // instruction bar
     buildInstructionBar () {
       instructionBar = document.createElement('div')
       instructionBar.classList.add('vjs-instruction-bar')
@@ -259,8 +266,31 @@ export default {
       this.videojs().appendChild(instructionBar)
     },
 
+    // frame-by-frame controls
+    buildFrameByFrameControls () {
+      // create buttons
+      const backFrame = document.createElement('button')
+      const forwardFrame = document.createElement('button')
+      backFrame.classList.add('vjs-button', 'vjs-control', 'vjs-frame-control')
+      forwardFrame.classList.add('vjs-button', 'vjs-control', 'vjs-frame-control')
+      backFrame.innerText = '-1'
+      forwardFrame.innerText = '+1'
+      // click listeners
+      const player = this.player
+      backFrame.addEventListener('click', function () {
+        player().currentTime(player().currentTime() - 0.05)
+      })
+      forwardFrame.addEventListener('click', function () {
+        player().currentTime(player().currentTime() + 0.05)
+      })
+      // insert buttons into control bar
+      this.controlBar().insertBefore(backFrame, this.fullscreenControl())
+      this.controlBar().insertBefore(forwardFrame, this.fullscreenControl())
+    },
+
     // initialise player UI
     buildInitialUI () {
+      this.buildFrameByFrameControls()
       this.buildCanvas()
       this.buildCreateTagButton()
       this.buildRangeNavigationButtons()
@@ -579,6 +609,10 @@ export default {
       font-size: 1em
       font-weight: bold
       line-height: 50px
+
+    // frame-by-frame control
+    .vjs-frame-control
+      font-weight: bold
 
     // instruction bar
     .vjs-instruction-bar
