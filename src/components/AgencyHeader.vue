@@ -25,7 +25,7 @@ export default {
     align-items: center
     text-align: center
     padding: 32px 16px
-    background-color: #333
+    background-color: $md-dark
   .content
     margin: 16px
   .image

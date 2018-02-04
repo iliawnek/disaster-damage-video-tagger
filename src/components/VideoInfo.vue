@@ -34,7 +34,7 @@ export default {
     align-items: center
     flex-direction: column
     text-align: center
-    background-color: #333
+    background-color: $md-dark
   .text
     margin: 4px
   .title
