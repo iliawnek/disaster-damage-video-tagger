@@ -64,7 +64,7 @@ export default {
 </script>
 
 <template lang="pug">
-  #video
+  #video(v-if="video")
     video-tagger(:video="video")
     video-info(:video="video" :event="event")
     tag-list(:tags="tags")
