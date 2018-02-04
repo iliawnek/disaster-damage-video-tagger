@@ -51,8 +51,8 @@ export default {
       const name = this.currentStageName
       if (name === 'play') return 'When you spot something, pause the video to create a new tag.'
       if (name === 'crop') return 'Drag and resize the box to cover what you want to tag.'
-      if (name === 'range-start') return 'Navigate the video to when the tag enters the frame.'
-      if (name === 'range-end') return 'Navigate the video to when the tag leaves the frame.'
+      if (name === 'range-start') return 'Navigate the video to when the tag enters the frame, then pause the video to continue.'
+      else return 'Navigate the video to when the tag leaves the frame, then pause the video to continue.'
     },
   },
 
@@ -64,12 +64,7 @@ export default {
     },
     stage (newStage, oldStage) {
       // update instruction text
-      if (this.instruction) {
-        this.show(instructionBar)
-        instructionBar.innerText = this.instruction
-      } else {
-        this.hide(instructionBar)
-      }
+      instructionBar.innerText = this.instruction
 
       const newStageName = this.getStageName(newStage)
       const oldStageName = this.getStageName(oldStage)
@@ -92,7 +87,6 @@ export default {
         }
         if (left('crop')) {
           this.saveCrop()
-          instructionBar.classList.remove('vjs-instruction-bar-hide')
         }
         if (entered('range-start')) {
           this.startRangeStart()
@@ -116,7 +110,6 @@ export default {
       } else { // clicked 'back'
         if (left('crop')) {
           this.cancelCrop()
-          instructionBar.classList.remove('vjs-instruction-bar-hide')
         }
         if (entered('crop')) {
           this.resumeCrop()
@@ -261,7 +254,6 @@ export default {
     buildInstructionBar () {
       instructionBar = document.createElement('div')
       instructionBar.classList.add('vjs-instruction-bar')
-      instructionBar.classList.add('vjs-control-bar') // enables auto-hide when cursor is idle
       instructionBar.innerText = this.instruction
       this.videojs().appendChild(instructionBar)
     },
@@ -319,12 +311,6 @@ export default {
 
         data: crop, // load existing crop if it exists
         ready: onReady,
-        // make instruction bar semi-transparent when crop box is on top
-        crop (event) {
-          const {top} = event.target.cropper.cropBoxData
-          if (top < 50) instructionBar.classList.add('vjs-instruction-bar-hide')
-          else instructionBar.classList.remove('vjs-instruction-bar-hide')
-        },
       })
     },
     captureFullFrame () {
@@ -503,7 +489,7 @@ export default {
       background-color: white // disable default
   .vjs-has-started.vjs-paused .vjs-big-play-button
     display: block
-    transform: translate(-50%, calc(-50% - 50px))
+    transform: translate(-50%, calc(-50% - 40px))
 
   .video-js
     width: 100%
@@ -516,14 +502,16 @@ export default {
       background-color: white
       color: black
       box-shadow: $shadow
+    .vjs-control-bar:hover
+      opacity: 1
     // big play button
     .vjs-big-play-button
       position: absolute
       left: 50%
       top: 50%
       transform: translate(-50%, -50%)
-      width: 80px
-      height: 80px
+      width: 60px
+      height: 60px
       border-radius: 50%
       border: none
       background-color: white
@@ -531,7 +519,7 @@ export default {
       transition: ease-in-out 0.15s !important
       box-shadow: $shadow
       .vjs-icon-placeholder::before
-        font-size: 40px
+        font-size: 30px
         line-height: 2em
         padding-left: 3px
     .vjs-big-play-button:hover
@@ -573,17 +561,25 @@ export default {
 
     // instruction bar
     .vjs-instruction-bar
+      position: absolute
+      top: 16px
+      left: 50%
+      transform: translateX(-50%)
       background-color: $md-dark
       color: white
-      position: absolute
       display: flex
       justify-content: center
       align-items: center
-      top: 0
       font-weight: bold
-      font-size: 16px
+      font-size: 14px
+      line-height: 1.2em
       transition: ease-in-out 0.15s
       box-shadow: $shadow
+      text-align: center
+      padding: 16px
+      opacity: 0
+    .vjs-instruction-bar:hover
+      opacity: 1
     .vjs-instruction-bar-hide
       opacity: 0.3
 
@@ -591,7 +587,7 @@ export default {
     .vjs-tagger-button
       background: white
       color: black
-      font-size: 15px
+      font-size: 14px
       font-weight: bold
       text-transform: uppercase
       user-select: none
@@ -615,7 +611,7 @@ export default {
       position: absolute
       top: 50%
       left: 50%
-      transform: translate(calc(-50% - 8px), calc(-50% + 40px))
+      transform: translate(calc(-50% - 8px), calc(-50% + 30px))
 
     // create tag button
     .vjs-create-tag-button
@@ -667,10 +663,20 @@ export default {
       .vjs-canvas
         max-width: 100% // required for Cropper.js
 
-  // only show when paused
+  // video started and user inactive
+  .vjs-has-started.vjs-user-inactive
+    .vjs-instruction-bar
+      opacity: 0
+  // video started and paused
   .vjs-has-started.vjs-paused
     .vjs-create-tag-button, .vjs-range-navigation-buttons
       display: flex
+    .vjs-instruction-bar, .vjs-control-bar
+      opacity: 1
+  // video started and playing
+  .vjs-has-started
+    .vjs-instruction-bar, .vjs-control-bar
+      opacity: 0.7
 
   // hide elements programmatically
   .hide
