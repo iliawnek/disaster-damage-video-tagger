@@ -45,6 +45,7 @@ export default {
         controlBar: {
           volumePanel: false,
         },
+        playbackRates: [0.25, 0.5, 1.0, 2.0],
       }
     },
     instruction () {
@@ -558,6 +559,26 @@ export default {
     // remaining time
     .vjs-remaining-time
       display: none
+    // playback rate
+    .vjs-playback-rate
+      .vjs-menu
+        .vjs-menu-content
+          bottom: 29px
+          background-color: $md-dark
+          color: white
+          width: 50px
+          font-family: Roboto, sans-serif
+          font-size: 0.8em !important
+          font-weight: bold
+          .vjs-menu-item
+            line-height: 2em
+          .vjs-selected
+            background-color: white
+            color: black
+    .vjs-playback-rate-value
+      font-size: 1em
+      font-weight: bold
+      line-height: 50px
 
     // instruction bar
     .vjs-instruction-bar
