@@ -93,11 +93,16 @@ export default {
         this.player().play()
         this.show(rangeBar)
         this.setRangeBarToTag(tag)
+        this.show(cropTimeMarker)
+        this.setCropTimeMarkerToTag(tag)
+        this.hide(this.playProgress())
         this.show(closeTagButton)
         window.scroll(0, 0)
       } else {
         this.hide(rangeBar)
         this.resetRangeBar()
+        this.hide(cropTimeMarker)
+        this.show(this.playProgress())
         this.hide(closeTagButton)
       }
     },
@@ -552,12 +557,6 @@ export default {
       }
       rangeBar.style.width = this.percentageAsString(this.currentTimePercentage() - this.startTimePercentage())
     },
-    setRangeBarToTag (tag) {
-      const leftPercentage = this.timeAsPercentage(tag.range.start)
-      const widthPercentage = this.timeAsPercentage(tag.range.end) - leftPercentage
-      rangeBar.style.left = this.percentageAsString(leftPercentage)
-      rangeBar.style.width = this.percentageAsString(widthPercentage)
-    },
     resetRangeBar () {
       rangeBar.style.width = 0
     },
@@ -567,6 +566,7 @@ export default {
       this.show(cropTimeMarker)
       this.show(rangeBar)
       this.show(rangeHandle)
+      this.hide(this.playProgress())
       cropTimeMarker.style.left = this.percentageAsString(this.cropTimePercentage())
     },
     startRangeEnd () {
@@ -596,7 +596,19 @@ export default {
       this.hide(cropTimeMarker)
       this.hide(rangeBar)
       this.hide(rangeHandle)
+      this.show(this.playProgress())
       this.resetRangeBar()
+    },
+
+    // range bar when tagging
+    setRangeBarToTag (tag) {
+      const leftPercentage = this.timeAsPercentage(tag.range.start)
+      const widthPercentage = this.timeAsPercentage(tag.range.end) - leftPercentage
+      rangeBar.style.left = this.percentageAsString(leftPercentage)
+      rangeBar.style.width = this.percentageAsString(widthPercentage)
+    },
+    setCropTimeMarkerToTag (tag) {
+      cropTimeMarker.style.left = this.percentageAsString(this.timeAsPercentage(tag.crop.time))
     },
   },
 }
@@ -678,18 +690,21 @@ export default {
       font-size: 2em !important // range handle arrow font size
     .vjs-progress-control
       .vjs-slider
-        background-color: transparent
+        background-color: #444
         height: 100%
         .vjs-slider-bar::before
           display: none // hide dot
-        // buffered bar
+        // load progress
         .vjs-load-progress
           div
             background-color: $grey
-        // played bar
+        // play progress
         .vjs-play-progress
           background-color: $md-primary
           transition: 0.15s ease-in-out
+        .vjs-play-progress.hide
+          display: block !important // override default .hide behaviour
+          background-color: transparent
       .vjs-progress-holder
         margin: 0
     // remaining time
@@ -722,7 +737,7 @@ export default {
       right: 0
       height: 100%
       width: 3px
-      background-color: white
+      background-color: white !important
       transform: translateX(50%)
       z-index: 1
     // frame-by-frame control
@@ -808,16 +823,17 @@ export default {
     // crop time marker
     .vjs-crop-time-marker
       position: absolute
-      top: 25%
-      height: 50%
+      top: 30%
+      height: 40%
       width: 3px
       transform: translateX(-50%)
       background-color: $md-dark
     // range bar
     .vjs-range-bar
       position: absolute
-      background-color: $md-accent
-      height: 100%
+      background-color: $md-primary
+      height: 60%
+      top: 20%
       box-sizing: border-box !important
       box-shadow: $shadow
       transition: 0.15s ease-in-out
