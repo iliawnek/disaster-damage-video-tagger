@@ -86,7 +86,7 @@ export default {
     },
     tagListHelpText () {
       return this.filter.type
-        ? 'List is filtered. Remove filter to show all tags.'
+        ? 'List is filtered. Clear filter to show all tags.'
         : 'Filter by type for more detailed information.'
     },
     areTagsPlayable () {
@@ -145,7 +145,9 @@ export default {
         div
           .tag-list-title {{tagCountText}}
           .tag-list-subtitle {{tagListHelpText}}
-        md-button.md-accent.md-raised(@click="isFilterDialogOpen = true") Filter
+        div(:style="{display: 'flex'}")
+          md-button.md-raised(v-if="filter.type" @click="clearForm") Clear
+          md-button.md-primary.md-raised(@click="isFilterDialogOpen = true") Filter
 
       md-dialog(
       :md-active.sync="isFilterDialogOpen"
@@ -156,7 +158,7 @@ export default {
         :clearable="true"
         )
         md-dialog-actions
-          md-button(@click="clearForm") Clear all
+          md-button(@click="clearForm") Clear
           md-button.md-primary(@click="isFilterDialogOpen = false") Done
 
       // dummy function used for sort to bypass
@@ -226,6 +228,7 @@ export default {
     padding: 32px
   .tag-list-header
     display: flex
+    flex-wrap: wrap
     align-items: center
     justify-content: space-between
     margin-bottom: 16px
