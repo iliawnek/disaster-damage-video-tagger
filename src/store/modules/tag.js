@@ -147,7 +147,7 @@ export default {
 
       // add new tag to video's tags index
       const videoTagsIndex = videosRef.child(videoId).child('tags')
-      videoTagsIndex.child(newTagId).set(true)
+      videoTagsIndex.child(newTagId).set(number)
     },
 
     setTagsRef: firebaseAction(

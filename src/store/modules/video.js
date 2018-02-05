@@ -39,6 +39,10 @@ export default {
       const videoObject = typeof video === 'string' ? getters.getVideoById(video) : video
       return (videoObject && videoObject.tags) ? Object.keys(videoObject.tags).length : 0
     },
+
+    doesVideoHaveTag: () => (video, tagNumber) => {
+      return Object.values(video.tags).includes(tagNumber)
+    },
   },
 
   mutations: {

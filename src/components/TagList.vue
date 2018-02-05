@@ -1,7 +1,7 @@
 <script>
 import {tagForm} from '@/values/tagValues'
 import TagForm from '@/components/TagForm'
-import {capitalise} from '@/utilities'
+import {capitalise, mapGettersWithParams} from '@/utilities'
 import Lightbox from 'vue-image-lightbox'
 
 export default {
@@ -73,6 +73,10 @@ export default {
   },
 
   methods: {
+    ...mapGettersWithParams({
+      getLinkToVideo: 'video/getLinkToVideo',
+    }),
+
     clearForm () {
       this.filter.type = null
       this.filter.people.amount = null
@@ -136,8 +140,9 @@ export default {
         // tag rows
         md-table-row(v-for="(tag, index) in filteredTags" :key="tag['.key']")
           md-table-cell
-            md-button.md-icon-button.md-raised.md-accent.md-dense
-              md-icon play_arrow
+            router-link(:to="{path: getLinkToVideo(tag.video), query: {tag: tag.number}}")
+              md-button.md-icon-button.md-raised.md-accent.md-dense
+                md-icon play_arrow
           md-table-cell {{`#${tag.number}`}}
           md-table-cell
             img.thumbnail(:src="tag.crop.images.highlighted" @click="showImage(index)")

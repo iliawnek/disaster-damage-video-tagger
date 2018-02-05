@@ -1,5 +1,6 @@
 <script>
 import {mapState, mapGetters, mapMutations} from 'vuex'
+import {mapGettersWithParams} from '@/utilities'
 import Cropper from 'cropperjs'
 
 let createTagButton
@@ -10,7 +11,9 @@ let rangeNavigationButtons
 let cropTimeMarker
 let rangeBar
 let rangeHandle
-let instructionBar
+let infoBar
+let infoBarContent
+let closeTagButton
 
 export default {
   name: 'video-tagger',
@@ -22,6 +25,7 @@ export default {
   data () {
     return {
       url: this.video && this.video.url, // required since options on vue-video-player is not reactive
+      tag: null, // if not null, tag playback is enabled
     }
   },
 
@@ -48,7 +52,8 @@ export default {
         playbackRates: [0.25, 0.5, 1.0, 2.0],
       }
     },
-    instruction () {
+    infoText () {
+      if (this.tag) return `Currently playing tag #${this.tag}.`
       const name = this.currentStageName
       if (name === 'play') return 'When you spot something, pause the video to create a new tag.'
       if (name === 'crop') return 'Drag and resize the box to cover what you want to tag.'
@@ -63,10 +68,17 @@ export default {
         this.url = newVideo.url // required since options on vue-video-player is not reactive
       }
     },
+    $route ({query: {tag}}) {
+      if (tag) {
+        this.checkTagQuery()
+      } else {
+        this.disableTagPlayback()
+      }
+    },
+    infoText (infoText) {
+      infoBarContent.innerText = infoText
+    },
     stage (newStage, oldStage) {
-      // update instruction text
-      instructionBar.innerText = this.instruction
-
       const newStageName = this.getStageName(newStage)
       const oldStageName = this.getStageName(oldStage)
       const restarted = newStage === 0 && oldStage === this.lastStageIndex
@@ -143,6 +155,15 @@ export default {
       clearRangeEnd: 'tag/clearRangeEnd',
       resetTagger: 'tag/resetTagger',
     }),
+
+    ...mapGettersWithParams({
+      doesVideoHaveTag: 'video/doesVideoHaveTag',
+    }),
+
+    playerReady () {
+      this.buildInitialUI()
+      this.checkTagQuery()
+    },
 
     getStageName (stage) {
       return this.$store.getters['tag/getStageName'](stage)
@@ -258,12 +279,44 @@ export default {
       return navigationButtons
     },
 
-    // instruction bar
-    buildInstructionBar () {
-      instructionBar = document.createElement('div')
-      instructionBar.classList.add('vjs-instruction-bar')
-      instructionBar.innerText = this.instruction
-      this.videojs().appendChild(instructionBar)
+    // info bar
+    buildInfoBar () {
+      // info bar container
+      infoBar = document.createElement('div')
+      infoBar.classList.add('vjs-info-bar')
+      // info bar content
+      infoBarContent = document.createElement('span')
+      infoBarContent.innerText = this.infoText
+      infoBar.appendChild(infoBarContent)
+      // close tag button
+      closeTagButton = document.createElement('span')
+      closeTagButton.classList.add('vjs-close-tag-button')
+      closeTagButton.innerText = 'Done'
+      const context = this
+      closeTagButton.addEventListener('click', function () {
+        context.$router.push(context.$route.path)
+      })
+      infoBar.appendChild(closeTagButton)
+      this.hide(closeTagButton)
+      // add to video player
+      this.videojs().appendChild(infoBar)
+    },
+
+    // tag playback
+    checkTagQuery () {
+      const tag = parseInt(this.$route.query.tag, 10)
+      if (tag && this.doesVideoHaveTag(this.video, tag)) {
+        this.enableTagPlayback(tag)
+      }
+    },
+    enableTagPlayback (tag) {
+      this.tag = tag
+      this.show(closeTagButton)
+      window.scroll(0, 0)
+    },
+    disableTagPlayback () {
+      this.tag = null
+      this.hide(closeTagButton)
     },
 
     // frame-by-frame controls
@@ -297,7 +350,7 @@ export default {
       this.buildRangeBar()
       this.buildRangeHandle()
       this.buildCropTimeMarker()
-      this.buildInstructionBar()
+      this.buildInfoBar()
     },
 
     // playback
@@ -507,7 +560,7 @@ export default {
   ref="videoPlayer"
   v-if="video"
   :options="playerOptions"
-  @ready="buildInitialUI"
+  @ready="playerReady"
   @timeupdate="playerTimeUpdated"
   )
 </template>
@@ -617,8 +670,8 @@ export default {
     .vjs-frame-control
       font-weight: bold
 
-    // instruction bar
-    .vjs-instruction-bar
+    // info bar
+    .vjs-info-bar
       position: absolute
       top: 16px
       left: 50%
@@ -633,13 +686,22 @@ export default {
       line-height: 1.2em
       transition: ease-in-out 0.15s
       box-shadow: $shadow
-      text-align: center
       padding: 16px
       opacity: 0
-    .vjs-instruction-bar:hover
+    .vjs-info-bar:hover
       opacity: 1
-    .vjs-instruction-bar-hide
+    .vjs-info-bar-hide
       opacity: 0.3
+    // close tag button
+    .vjs-close-tag-button
+      text-transform: uppercase
+      cursor: pointer
+      color: $md-primary
+      margin-left: 24px
+      margin-right: 4px
+      transition: 0.15s ease-in-out
+    .vjs-close-tag-button:hover
+      color: white
 
     // buttons
     .vjs-tagger-button
@@ -727,17 +789,17 @@ export default {
 
   // video started and user inactive
   .vjs-has-started.vjs-user-inactive
-    .vjs-instruction-bar
+    .vjs-info-bar
       opacity: 0
   // video started and paused
   .vjs-has-started.vjs-paused
     .vjs-create-tag-button, .vjs-range-navigation-buttons
       display: flex
-    .vjs-instruction-bar, .vjs-control-bar
+    .vjs-info-bar, .vjs-control-bar
       opacity: 1
   // video started and playing
   .vjs-has-started
-    .vjs-instruction-bar, .vjs-control-bar
+    .vjs-info-bar, .vjs-control-bar
       opacity: 0.7
 
   // hide elements programmatically
