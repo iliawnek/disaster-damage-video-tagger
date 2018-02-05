@@ -679,6 +679,7 @@ export default {
         // played bar
         .vjs-play-progress
           background-color: $md-primary
+          transition: 0.15s ease-in-out
       .vjs-progress-holder
         margin: 0
     // remaining time
@@ -800,6 +801,7 @@ export default {
       height: 100%
       box-sizing: border-box !important
       box-shadow: $shadow
+      transition: 0.15s ease-in-out
     .vjs-progress-handle
       position: absolute
       right: 0
