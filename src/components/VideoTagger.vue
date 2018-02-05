@@ -258,7 +258,6 @@ export default {
       }
     },
     timeAsPercentage (time) {
-      console.log(this.player().duration)
       return time / this.player().duration()
     },
     percentageAsString (percentage) {
