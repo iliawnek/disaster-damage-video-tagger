@@ -40,8 +40,16 @@ export default {
       return (videoObject && videoObject.tags) ? Object.keys(videoObject.tags).length : 0
     },
 
-    doesVideoHaveTag: () => (video, tagNumber) => {
-      return Object.values(video.tags).includes(tagNumber)
+    getTagIdInVideo: () => (video, tagNumber) => {
+      if (video && tagNumber) {
+        const tagEntry = Object.entries(video.tags).find(([tagId, tagNum]) => tagNum === tagNumber)
+        if (tagEntry) {
+          const [tagId] = tagEntry
+          return tagId
+        }
+      } else {
+        return null
+      }
     },
   },
 

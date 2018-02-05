@@ -25,7 +25,7 @@ export default {
   data () {
     return {
       url: this.video && this.video.url, // required since options on vue-video-player is not reactive
-      tag: null, // if not null, tag playback is enabled
+      tagId: null, // if not null, tag playback is enabled
     }
   },
 
@@ -35,6 +35,7 @@ export default {
       crop: (state) => state.tag.crop,
       range: (state) => state.tag.range,
       lastStageIndex: (state) => state.tag.lastStageIndex,
+      areTagsLoaded: (state) => state.tag.areTagsLoaded,
     }),
     ...mapGetters({
       currentStageName: 'tag/currentStageName',
@@ -53,12 +54,18 @@ export default {
       }
     },
     infoText () {
-      if (this.tag) return `Currently playing tag #${this.tag}.`
+      if (this.tag) return `Only playing tag #${this.tag.number}.`
       const name = this.currentStageName
       if (name === 'play') return 'When you spot something, pause the video to create a new tag.'
       if (name === 'crop') return 'Drag and resize the box to cover what you want to tag.'
       if (name === 'range-start') return 'Navigate the video to when the tag enters the frame, then pause the video to continue.'
       else return 'Navigate the video to when the tag leaves the frame, then pause the video to continue.'
+    },
+    // tag to be played
+    tag () {
+      if (this.tagId && this.areTagsLoaded) {
+        return this.getTagById(this.tagId)
+      }
     },
   },
 
@@ -72,11 +79,25 @@ export default {
         this.url = newVideo.url // required since options on vue-video-player is not reactive
       }
     },
-    $route ({query: {tag}}) {
+    $route ($route) {
+      const {tag} = $route.query
       if (tag) {
         this.checkTagQuery()
       } else {
-        this.disableTagPlayback()
+        this.tagId = null
+      }
+    },
+    tag (tag) {
+      if (tag) {
+        this.player().currentTime(this.tag.range.start)
+        this.show(rangeBar)
+        this.setRangeBarToTag(tag)
+        this.show(closeTagButton)
+        window.scroll(0, 0)
+      } else {
+        this.hide(rangeBar)
+        this.resetRangeBar()
+        this.hide(closeTagButton)
       }
     },
     infoText (infoText) {
@@ -161,16 +182,35 @@ export default {
     }),
 
     ...mapGettersWithParams({
-      doesVideoHaveTag: 'video/doesVideoHaveTag',
+      getTagIdInVideo: 'video/getTagIdInVideo',
+      getTagById: 'tag/getTagById',
+      getStageName: 'tag/getStageName',
     }),
 
+    // player event listeners
     playerReady () {
       this.buildInitialUI()
-      this.checkTagQuery()
     },
-
-    getStageName (stage) {
-      return this.$store.getters['tag/getStageName'](stage)
+    playerTimeUpdated (player) {
+      // update range bar
+      if (this.currentStageName === 'range-start') {
+        this.updateRangeBarOnNewStart()
+      }
+      if (this.currentStageName === 'range-end') {
+        this.updateRangeBarOnNewEnd()
+      }
+      // restart tag range
+      if (this.tag) {
+        const time = player.currentTime()
+        const {start, end} = this.tag.range
+        if (time < start || end < time) {
+          player.currentTime(start)
+          player.pause()
+        }
+      }
+    },
+    playerLoadedData () {
+      this.checkTagQuery()
     },
 
     // frequently-accessed elements
@@ -201,35 +241,28 @@ export default {
 
     // slider bar percentages
     currentTimePercentage () {
-      return this.player().currentTime() / this.player().duration()
+      return this.timeAsPercentage(this.player().currentTime())
     },
     cropTimePercentage () {
       if (this.crop && this.crop.time) {
-        return this.crop.time / this.player().duration()
+        return this.timeAsPercentage(this.crop.time)
       } else {
         return 0
       }
     },
     startTimePercentage () {
       if (this.range && this.range.start) {
-        return this.range.start / this.player().duration()
+        return this.timeAsPercentage(this.range.start)
       } else {
         return 0
       }
     },
+    timeAsPercentage (time) {
+      console.log(this.player().duration)
+      return time / this.player().duration()
+    },
     percentageAsString (percentage) {
       return `${percentage * 100}%`
-    },
-
-    // player listeners
-    playerTimeUpdated () {
-      // update range bar
-      if (this.currentStageName === 'range-start') {
-        this.updateRangeBarOnNewStart()
-      }
-      if (this.currentStageName === 'range-end') {
-        this.updateRangeBarOnNewEnd()
-      }
     },
 
     // element visibility
@@ -295,7 +328,7 @@ export default {
       // close tag button
       closeTagButton = document.createElement('span')
       closeTagButton.classList.add('vjs-close-tag-button')
-      closeTagButton.innerText = 'Done'
+      closeTagButton.innerText = 'Stop'
       const context = this
       closeTagButton.addEventListener('click', function () {
         context.$router.push(context.$route.path)
@@ -308,21 +341,13 @@ export default {
 
     // tag playback
     checkTagQuery () {
-      const tag = parseInt(this.$route.query.tag, 10)
-      if (tag && this.doesVideoHaveTag(this.video, tag) && this.currentStageName === 'play') {
-        this.enableTagPlayback(tag)
+      const tagNumber = parseInt(this.$route.query.tag, 10)
+      const tagId = this.getTagIdInVideo(this.video, tagNumber)
+      if (tagId && this.currentStageName === 'play') {
+        this.tagId = tagId
       } else {
         this.$router.replace(this.$route.path)
       }
-    },
-    enableTagPlayback (tag) {
-      this.tag = tag
-      this.show(closeTagButton)
-      window.scroll(0, 0)
-    },
-    disableTagPlayback () {
-      this.tag = null
-      this.hide(closeTagButton)
     },
 
     // frame-by-frame controls
@@ -517,6 +542,12 @@ export default {
       }
       rangeBar.style.width = this.percentageAsString(this.currentTimePercentage() - this.startTimePercentage())
     },
+    setRangeBarToTag (tag) {
+      const leftPercentage = this.timeAsPercentage(tag.range.start)
+      const widthPercentage = this.timeAsPercentage(tag.range.end) - leftPercentage
+      rangeBar.style.left = this.percentageAsString(leftPercentage)
+      rangeBar.style.width = this.percentageAsString(widthPercentage)
+    },
     resetRangeBar () {
       rangeBar.style.width = 0
     },
@@ -567,6 +598,7 @@ export default {
   v-if="video"
   :options="playerOptions"
   @ready="playerReady"
+  @loadeddata="playerLoadedData"
   @timeupdate="playerTimeUpdated"
   )
 </template>
@@ -576,6 +608,7 @@ export default {
   @import '../styles/theme'
   $grey: #555
   $shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 5px 8px 0 rgba(0,0,0,.14), 0 1px 14px 0 rgba(0,0,0,.12)
+  $font: Roboto, sans-serif
 
   // big play button
   .video-js:hover .vjs-big-play-button
@@ -587,7 +620,7 @@ export default {
   .video-js
     width: 100%
     height: 50vh
-    font-family: Roboto, sans-serif
+    font-family: $font
 
     // control bar
     .vjs-control-bar
@@ -659,7 +692,7 @@ export default {
           background-color: $md-dark
           color: white
           width: 50px
-          font-family: Roboto, sans-serif
+          font-family: $font
           font-size: 0.8em !important
           font-weight: bold
           .vjs-menu-item
