@@ -62,6 +62,10 @@ export default {
     },
   },
 
+  destroyed () {
+    this.resetTagger()
+  },
+
   watch: {
     video (newVideo) {
       if (newVideo) {
