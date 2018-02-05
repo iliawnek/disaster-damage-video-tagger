@@ -1,6 +1,7 @@
 <script>
 import {tagForm} from '@/values/tagValues'
 import TagForm from '@/components/TagForm'
+import {mapGetters} from 'vuex'
 import {capitalise, mapGettersWithParams} from '@/utilities'
 import Lightbox from 'vue-image-lightbox'
 
@@ -20,10 +21,14 @@ export default {
     return {
       filter: tagForm({}),
       isFilterDialogOpen: false,
+      isTagPlaybackAlertOpen: false,
     }
   },
 
   computed: {
+    ...mapGetters({
+      currentStageName: 'tag/currentStageName',
+    }),
     doTagsExist () {
       return this.tags && this.tags.length > 0
     },
@@ -69,6 +74,9 @@ export default {
       return this.filter.type
         ? 'List is filtered. Remove filter to show all tags.'
         : 'Filter by type for more detailed information.'
+    },
+    areTagsPlayable () {
+      return this.currentStageName === 'play'
     },
   },
 
@@ -140,9 +148,11 @@ export default {
         // tag rows
         md-table-row(v-for="(tag, index) in filteredTags" :key="tag['.key']")
           md-table-cell
-            router-link(:to="{path: getLinkToVideo(tag.video), query: {tag: tag.number}}")
+            router-link(v-if="areTagsPlayable" :to="{path: getLinkToVideo(tag.video), query: {tag: tag.number}}")
               md-button.md-icon-button.md-raised.md-accent.md-dense
                 md-icon play_arrow
+            md-button.md-icon-button.md-raised.md-accent.md-dense(v-else @click="isTagPlaybackAlertOpen = true")
+              md-icon play_arrow
           md-table-cell {{`#${tag.number}`}}
           md-table-cell
             img.thumbnail(:src="tag.crop.images.highlighted" @click="showImage(index)")
@@ -153,6 +163,13 @@ export default {
             :key="subType"
             ) {{tag.details[subType]}}
           md-table-cell {{tag.details.description || '—'}}
+
+      md-dialog-alert(
+      :md-active.sync="isTagPlaybackAlertOpen"
+      md-title="Cannot play tag"
+      md-content="Tags cannot be played while creating a new tag. Finish creating the tag or cancel the process, then try again."
+      md-confirm-text="Understood"
+      )
 
       lightbox(
       v-if="filteredTagImages"
