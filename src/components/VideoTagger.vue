@@ -55,7 +55,7 @@ export default {
       }
     },
     infoText () {
-      if (this.tag) return `Currently playing Tag #${this.tag.number}.`
+      if (this.tag) return `Currently playing tag #${this.tag.number}.`
       const name = this.currentStageName
       if (name === 'play') return 'When you spot something, pause the video to create a new tag.'
       if (name === 'crop') return 'Drag and resize the box to cover what you want to tag.'
