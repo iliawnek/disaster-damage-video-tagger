@@ -222,7 +222,8 @@ export default {
     justify-content: center
   .tag-list-content
     max-width: 1200px
-    margin: 32px
+    width: 100%
+    padding: 32px
   .tag-list-header
     display: flex
     align-items: center
