@@ -4,6 +4,7 @@ import TagForm from '@/components/TagForm'
 import {mapGetters} from 'vuex'
 import {capitalise, mapGettersWithParams} from '@/utilities'
 import Lightbox from 'vue-image-lightbox'
+import {sortBy, findIndex} from 'lodash'
 
 export default {
   name: 'tag-list',
@@ -19,7 +20,10 @@ export default {
 
   data () {
     return {
+      visibleTags: this.tags,
       filter: tagForm({}),
+      sortBy: '#',
+      sortOrder: 'asc',
       isFilterDialogOpen: false,
       isTagPlaybackAlertOpen: false,
     }
@@ -33,7 +37,8 @@ export default {
       return this.tags && this.tags.length > 0
     },
     filteredTags () {
-      return this.tags && this.filter && this.tags.filter((tag) => {
+      // apply filter
+      const filtered = this.tags && this.filter && this.tags.filter((tag) => {
         if (this.filter.type) {
           const doesTagMatchType = tag.details.type === this.filter.type
           if (doesTagMatchType) {
@@ -51,6 +56,15 @@ export default {
           return true // no type, therefore no filter
         }
       })
+      // apply sort
+      const sorted = sortBy(filtered, (tag) => {
+        if (this.sortBy === 'number') return tag.number
+        if (this.sortBy === 'start') return tag.range.start
+        if (this.sortBy === 'end') return tag.range.end
+        return tag.details[this.sortBy]
+      })
+      // ascending or descending order
+      return this.sortOrder === 'desc' ? sorted.reverse() : sorted
     },
     filteredTagImages () {
       return this.filteredTags && this.filteredTags.map((tag) => {
@@ -80,6 +94,12 @@ export default {
     },
   },
 
+  watch: {
+    filteredTags (filteredTags) {
+      this.visibleTags = filteredTags
+    },
+  },
+
   methods: {
     ...mapGettersWithParams({
       getLinkToVideo: 'video/getLinkToVideo',
@@ -103,7 +123,8 @@ export default {
       return capitalise(string)
     },
 
-    showImage (index) {
+    showImage (tagNumber) {
+      const index = findIndex(this.filteredTags, (tag) => tag.number === tagNumber)
       this.$refs.lightbox.showImage(index)
     },
 
@@ -138,50 +159,35 @@ export default {
           md-button(@click="clearForm") Clear all
           md-button.md-primary(@click="isFilterDialogOpen = false") Done
 
-      md-table.tag-list-table(md-card)
-        // header row
-        md-table-row
-          md-table-head
-          md-table-head #
-          md-table-head Image
-          md-table-head Start
-          md-table-head End
-          md-table-head Type
-          template(v-if="filter.type")
-            md-table-head(
-            v-for="subType in Object.keys(filter[filter.type])"
-            :key="subType"
-            ) {{capitalise(subType)}}
-          md-table-head Description
-
-        // tag rows
-        md-table-row(v-for="(tag, index) in filteredTags" :key="tag['.key']")
-          // play
+      // dummy function used for sort to bypass
+      md-table.tag-list-table(
+      v-model="visibleTags"
+      :md-sort.sync="sortBy"
+      :md-sort-order.sync="sortOrder"
+      :md-sort-fn="(value) => value"
+      md-card
+      )
+        md-table-row(slot="md-table-row" slot-scope="{item}")
           md-table-cell
-            router-link(v-if="areTagsPlayable" :to="{path: getLinkToVideo(tag.video), query: {tag: tag.number}}")
+            router-link(v-if="areTagsPlayable" :to="{path: getLinkToVideo(item.video), query: {tag: item.number}}")
               md-button.md-icon-button.md-raised.md-accent.md-dense
                 md-icon play_arrow
             md-button.md-icon-button.md-raised.md-accent.md-dense(v-else @click="isTagPlaybackAlertOpen = true")
               md-icon play_arrow
-          // #
-          md-table-cell {{`#${tag.number}`}}
-          // image
-          md-table-cell
-            img.thumbnail(:src="tag.crop.images.highlighted" @click="showImage(index)")
-          // start
-          md-table-cell {{formatDuration(tag.range.start)}}
-          // end
-          md-table-cell {{formatDuration(tag.range.end)}}
-          // type
-          md-table-cell {{tag.details.type}}
-          // sub-types
+          md-table-cell(md-label="#" md-sort-by="number") {{`#${item.number}`}}
+          md-table-cell(md-label="Image")
+            img.thumbnail(:src="item.crop.images.highlighted" @click="showImage(item.number)")
+          md-table-cell(md-label="Start" md-sort-by="start") {{formatDuration(item.range.start)}}
+          md-table-cell(md-label="End" md-sort-by="end") {{formatDuration(item.range.end)}}
+          md-table-cell(md-label="Type" md-sort-by="type") {{item.details.type}}
           template(v-if="filter.type")
             md-table-cell(
             v-for="subType in Object.keys(filter[filter.type])"
+            :md-label="capitalise(subType)"
+            :md-sort-by="subType"
             :key="subType"
-            ) {{tag.details[subType]}}
-          // description
-          md-table-cell {{tag.details.description || '—'}}
+            ) {{item.details[subType]}}
+          md-table-cell(md-label="Description" md-sort-by="description") {{item.details.description || '—'}}
 
       md-dialog-alert(
       :md-active.sync="isTagPlaybackAlertOpen"
