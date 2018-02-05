@@ -106,6 +106,13 @@ export default {
     showImage (index) {
       this.$refs.lightbox.showImage(index)
     },
+
+    formatDuration (totalSeconds) {
+      const leadingZero = (value) => value < 10 ? `0${value}` : value
+      const minutes = leadingZero(Math.round(totalSeconds / 60))
+      const seconds = leadingZero(Math.round(totalSeconds % 60))
+      return `${minutes}:${seconds}`
+    },
   },
 }
 </script>
@@ -137,6 +144,8 @@ export default {
           md-table-head
           md-table-head #
           md-table-head Image
+          md-table-head Start
+          md-table-head End
           md-table-head Type
           template(v-if="filter.type")
             md-table-head(
@@ -147,27 +156,37 @@ export default {
 
         // tag rows
         md-table-row(v-for="(tag, index) in filteredTags" :key="tag['.key']")
+          // play
           md-table-cell
             router-link(v-if="areTagsPlayable" :to="{path: getLinkToVideo(tag.video), query: {tag: tag.number}}")
               md-button.md-icon-button.md-raised.md-accent.md-dense
                 md-icon play_arrow
             md-button.md-icon-button.md-raised.md-accent.md-dense(v-else @click="isTagPlaybackAlertOpen = true")
               md-icon play_arrow
+          // #
           md-table-cell {{`#${tag.number}`}}
+          // image
           md-table-cell
             img.thumbnail(:src="tag.crop.images.highlighted" @click="showImage(index)")
+          // start
+          md-table-cell {{formatDuration(tag.range.start)}}
+          // end
+          md-table-cell {{formatDuration(tag.range.end)}}
+          // type
           md-table-cell {{tag.details.type}}
+          // sub-types
           template(v-if="filter.type")
             md-table-cell(
             v-for="subType in Object.keys(filter[filter.type])"
             :key="subType"
             ) {{tag.details[subType]}}
+          // description
           md-table-cell {{tag.details.description || '—'}}
 
       md-dialog-alert(
       :md-active.sync="isTagPlaybackAlertOpen"
       md-title="Cannot play tag"
-      md-content="Tags cannot be played while creating a new tag. Finish creating the tag or cancel the process, then try again."
+      md-content="An existing tag cannot be played while creating a new tag. Finish creating the tag or cancel the process, then try again."
       md-confirm-text="Understood"
       )
 
