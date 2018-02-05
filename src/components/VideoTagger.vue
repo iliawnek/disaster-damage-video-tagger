@@ -55,12 +55,12 @@ export default {
       }
     },
     infoText () {
-      if (this.tag) return `Only playing tag #${this.tag.number}.`
+      if (this.tag) return `Currently playing Tag #${this.tag.number}.`
       const name = this.currentStageName
       if (name === 'play') return 'When you spot something, pause the video to create a new tag.'
       if (name === 'crop') return 'Drag and resize the box to cover what you want to tag.'
-      if (name === 'range-start') return 'Navigate the video to when the tag enters the frame, then pause the video to continue.'
-      else return 'Navigate the video to when the tag leaves the frame, then pause the video to continue.'
+      if (name === 'range-start') return 'Navigate the video to when the tag enters the frame.'
+      else return 'Navigate the video to when the tag leaves the frame.'
     },
     // tag to be played
     tag () {
