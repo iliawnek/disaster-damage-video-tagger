@@ -90,6 +90,7 @@ export default {
     tag (tag) {
       if (tag) {
         this.player().currentTime(this.tag.range.start)
+        this.player().play()
         this.show(rangeBar)
         this.setRangeBarToTag(tag)
         this.show(closeTagButton)
