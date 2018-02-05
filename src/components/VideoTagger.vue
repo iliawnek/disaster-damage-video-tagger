@@ -655,6 +655,20 @@ export default {
     display: block
     transform: translate(-50%, calc(-50% - 40px))
 
+  // tooltips
+  .vjs-time-tooltip
+    font-family: $font !important
+    font-weight: bold
+    box-shadow: $shadow
+  .vjs-mouse-display
+    .vjs-time-tooltip
+      background-color: white !important
+      color: black
+  .vjs-play-progress
+    .vjs-time-tooltip
+      background-color: $md-dark !important
+      color: white
+
   .video-js
     width: 100%
     height: 50vh
@@ -857,7 +871,7 @@ export default {
       color: white
       border-radius: 2px
       box-shadow: $shadow
-      font-size: 0.6em
+      font-size: 12px
       font-weight: bold
       text-transform: uppercase
       padding: 8px
