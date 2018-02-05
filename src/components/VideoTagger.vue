@@ -309,8 +309,10 @@ export default {
     // tag playback
     checkTagQuery () {
       const tag = parseInt(this.$route.query.tag, 10)
-      if (tag && this.doesVideoHaveTag(this.video, tag)) {
+      if (tag && this.doesVideoHaveTag(this.video, tag) && this.currentStageName === 'play') {
         this.enableTagPlayback(tag)
+      } else {
+        this.$router.replace(this.$route.path)
       }
     },
     enableTagPlayback (tag) {
