@@ -338,7 +338,6 @@ export default {
       // add to video player
       this.videojs().appendChild(infoBar)
     },
-
     // tag playback
     checkTagQuery () {
       const tagNumber = parseInt(this.$route.query.tag, 10)
@@ -349,7 +348,6 @@ export default {
         this.$router.replace(this.$route.path)
       }
     },
-
     // frame-by-frame controls
     buildFrameByFrameControls () {
       // create buttons
@@ -371,9 +369,17 @@ export default {
       this.controlBar().insertBefore(backFrame, this.playbackRateControl())
       this.controlBar().insertBefore(forwardFrame, this.playbackRateControl())
     },
+    buildPlayProgressMarker () {
+      // marker
+      const marker = document.createElement('div')
+      marker.classList.add('vjs-play-progress-marker')
+      // add to player
+      this.playProgress().appendChild(marker)
+    },
 
     // initialise player UI
     buildInitialUI () {
+      this.buildPlayProgressMarker()
       this.buildFrameByFrameControls()
       this.buildCanvas()
       this.buildCreateTagButton()
@@ -706,6 +712,15 @@ export default {
       font-weight: bold
       line-height: 50px
 
+    // play progress marker
+    .vjs-play-progress-marker
+      position: absolute
+      right: 0
+      height: 100%
+      width: 3px
+      background-color: white
+      transform: translateX(50%)
+      z-index: 1
     // frame-by-frame control
     .vjs-frame-control
       font-weight: bold
@@ -813,7 +828,7 @@ export default {
       cursor: ew-resize
       background-color: white
       box-shadow: $shadow
-      z-index: 1
+      z-index: 2
       color: black
       font-weight: bold
 
