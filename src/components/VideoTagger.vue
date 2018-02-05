@@ -477,6 +477,7 @@ export default {
     startCrop () {
       this.captureFullFrame()
       this.buildCropper()
+      this.hide(this.controlBar())
     },
     saveCrop () {
       const cropData = cropper.getData(true)
@@ -489,14 +490,17 @@ export default {
         },
       })
       this.endCrop()
+      this.show(this.controlBar())
     },
     cancelCrop () {
       this.endCrop()
       this.clearCrop()
+      this.show(this.controlBar())
     },
     resumeCrop () {
       this.buildCropper(this.crop.position)
       this.player().currentTime(this.crop.time)
+      this.hide(this.controlBar())
     },
     endCrop () {
       cropper.destroy()
