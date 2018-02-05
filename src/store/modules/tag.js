@@ -76,6 +76,7 @@ export default {
       state.crop = null
       state.range.start = null
       state.range.end = null
+      state.stage = 0
     },
 
     // stages
