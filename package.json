@@ -25,7 +25,7 @@
     "vue-cropperjs": "^2.2.0",
     "vue-image-lightbox": "^5.5.3",
     "vue-lazyload": "^1.1.4",
-    "vue-material": "^1.0.0-beta-7",
+    "vue-material": "^1.0.0-beta-8",
     "vue-router": "^3.0.1",
     "vue-touch": "^2.0.0-beta.4",
     "vue-video-player": "^4.0.6",
