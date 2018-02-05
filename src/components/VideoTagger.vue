@@ -14,6 +14,7 @@ let rangeHandle
 let infoBar
 let infoBarContent
 let closeTagButton
+let rangeTooltip
 
 export default {
   name: 'video-tagger',
@@ -95,6 +96,8 @@ export default {
         this.setRangeBarToTag(tag)
         this.show(cropTimeMarker)
         this.setCropTimeMarkerToTag(tag)
+        this.show(rangeTooltip)
+        this.setRangeTooltipToTag(tag)
         this.hide(this.playProgress())
         this.show(closeTagButton)
         window.scroll(0, 0)
@@ -528,10 +531,16 @@ export default {
       this.hide(cropTimeMarker)
     },
     buildRangeBar () {
+      // range bar
       rangeBar = document.createElement('div')
       rangeBar.classList.add('vjs-range-bar')
-      this.slider().appendChild(rangeBar)
+      // range tooltip
+      rangeTooltip = document.createElement('div')
+      rangeTooltip.classList.add('vjs-range-tooltip')
+      rangeBar.appendChild(rangeTooltip)
+      // add bar to player
       this.hide(rangeBar)
+      this.slider().appendChild(rangeBar)
     },
     buildRangeHandle () {
       // handle
@@ -568,7 +577,10 @@ export default {
       this.show(rangeBar)
       this.show(rangeHandle)
       this.hide(this.playProgress())
-      cropTimeMarker.style.left = this.percentageAsString(this.cropTimePercentage())
+      const leftPercentage = this.percentageAsString(this.cropTimePercentage())
+      rangeBar.style.left = leftPercentage
+      cropTimeMarker.style.left = leftPercentage
+      rangeTooltip.innerText = 'Select range'
     },
     startRangeEnd () {
       this.player().currentTime(this.crop.time)
@@ -610,6 +622,9 @@ export default {
     },
     setCropTimeMarkerToTag (tag) {
       cropTimeMarker.style.left = this.percentageAsString(this.timeAsPercentage(tag.crop.time))
+    },
+    setRangeTooltipToTag (tag) {
+      rangeTooltip.innerText = `Tag #${tag.number}`
     },
   },
 }
@@ -821,14 +836,7 @@ export default {
     .vjs-range-navigation-buttons
       display: none
 
-    // crop time marker
-    .vjs-crop-time-marker
-      position: absolute
-      top: 30%
-      height: 40%
-      width: 3px
-      transform: translateX(-50%)
-      background-color: $md-dark
+
     // range bar
     .vjs-range-bar
       position: absolute
@@ -838,6 +846,30 @@ export default {
       box-sizing: border-box !important
       box-shadow: $shadow
       transition: 0.15s ease-in-out
+    // range tooltip
+    .vjs-range-tooltip
+      position: absolute
+      white-space: nowrap
+      top: -50px
+      left: 50%
+      transform: translateX(-50%)
+      background-color: $md-primary
+      color: white
+      border-radius: 2px
+      box-shadow: $shadow
+      font-size: 0.6em
+      font-weight: bold
+      text-transform: uppercase
+      padding: 8px
+    // crop time marker
+    .vjs-crop-time-marker
+      position: absolute
+      top: 30%
+      height: 40%
+      width: 3px
+      transform: translateX(-50%)
+      background-color: $md-dark
+    // range handle
     .vjs-progress-handle
       position: absolute
       right: 0
