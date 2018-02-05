@@ -120,6 +120,7 @@ export default {
 
       if (left('play')) {
         this.hide(createTagButton)
+        if (this.tag) this.$router.push(this.$route.path) // stop tag playback
       }
       if (entered('play')) {
         this.show(createTagButton)
