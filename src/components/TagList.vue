@@ -168,25 +168,35 @@ export default {
       md-card
       )
         md-table-row(slot="md-table-row" slot-scope="{item}")
+          // play
           md-table-cell
             router-link(v-if="areTagsPlayable" :to="{path: getLinkToVideo(item.video), query: {tag: item.number}}")
               md-button.md-icon-button.md-raised.md-accent.md-dense
                 md-icon play_arrow
             md-button.md-icon-button.md-raised.md-accent.md-dense(v-else @click="isTagPlaybackAlertOpen = true")
               md-icon play_arrow
+          // number
           md-table-cell(md-label="#" md-sort-by="number") {{`#${item.number}`}}
+          // image
           md-table-cell(md-label="Image")
             img.thumbnail(:src="item.crop.images.highlighted" @click="showImage(item.number)")
+          // start
           md-table-cell(md-label="Start" md-sort-by="start") {{formatDuration(item.range.start)}}
+          // end
           md-table-cell(md-label="End" md-sort-by="end") {{formatDuration(item.range.end)}}
-          md-table-cell(md-label="Type" md-sort-by="type") {{item.details.type}}
+          // type
+          md-table-cell(md-label="Type" md-sort-by="type")
+            span.filter-link(@click="filter.type = item.details.type") {{item.details.type}}
+          // sub-types
           template(v-if="filter.type")
             md-table-cell(
             v-for="subType in Object.keys(filter[filter.type])"
             :md-label="capitalise(subType)"
             :md-sort-by="subType"
             :key="subType"
-            ) {{item.details[subType]}}
+            )
+              span.filter-link(@click="filter[filter.type][subType] = item.details[subType]") {{item.details[subType]}}
+          // descriptions
           md-table-cell(md-label="Description" md-sort-by="description") {{item.details.description || '—'}}
 
       md-dialog-alert(
@@ -206,6 +216,7 @@ export default {
 </template>
 
 <style scoped lang="sass">
+  @import '../styles/theme'
   .tag-list-container
     display: flex
     justify-content: center
@@ -230,4 +241,9 @@ export default {
     cursor: pointer
   .md-button // fix button showing above lightbox
     z-index: 0
+  .filter-link:hover
+    text-decoration: underline
+    cursor: pointer
+    transition: 0.15s ease-in-out
+
 </style>
