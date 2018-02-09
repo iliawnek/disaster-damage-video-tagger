@@ -1,4 +1,4 @@
-import {db} from '^/firebase'
+import {db} from '@/firebase'
 import {firebaseAction} from 'vuexfire'
 
 const videosRef = db.ref('videos')

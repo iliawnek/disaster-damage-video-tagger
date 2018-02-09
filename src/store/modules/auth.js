@@ -1,5 +1,5 @@
 import firebase from 'firebase'
-import {db, auth} from '^/firebase'
+import {db, auth} from '@/firebase'
 import moment from 'moment'
 import {firebaseAction} from 'vuexfire'
 import router from '@/router'

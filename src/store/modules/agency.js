@@ -1,4 +1,4 @@
-import {db, storage} from '^/firebase'
+import {db, storage} from '@/firebase'
 import {firebaseAction} from 'vuexfire'
 
 const agenciesRef = db.ref('agencies')

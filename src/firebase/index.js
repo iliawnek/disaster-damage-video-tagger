@@ -9,6 +9,7 @@ const config = {
   messagingSenderId: '737684330599',
 }
 
+/* eslint-disable no-unused-vars */
 const app = firebase.initializeApp(config)
 
 export const db = firebase.database()
