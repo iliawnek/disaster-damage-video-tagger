@@ -48,7 +48,7 @@ export default {
       const token = result.credential.accessToken
       const user = result.user
       dispatch('saveUser', {user, token})
-      router.push({name: 'Browse'})
+      router.push({name: 'browse'})
     },
 
     saveUser (context, {user, token}) {
@@ -78,7 +78,7 @@ export default {
     async signOut ({commit}) {
       await auth.signOut()
       commit('clearUser')
-      router.push({name: 'Home'})
+      router.push({name: 'home'})
     },
   },
 }

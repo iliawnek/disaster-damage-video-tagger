@@ -12,42 +12,42 @@ export default new Router({
   routes: [
     {
       path: '',
-      name: 'Home',
+      name: 'home',
       component: Home,
     },
     {
       path: '/browse',
       redirect: '/browse/videos',
-      name: 'Browse',
+      name: 'browse',
       component: Browse,
       children: [
         {
           path: 'videos',
-          name: 'Videos',
+          name: 'videos',
         },
         {
           path: 'events',
-          name: 'Events',
+          name: 'events',
         },
         {
           path: 'agencies',
-          name: 'Agencies',
+          name: 'agencies',
         },
       ],
     },
     {
       path: '/agency/:agencyId',
-      name: 'Agency',
+      name: 'agency',
       component: Agency,
     },
     {
       path: '/event/:eventId',
-      name: 'Event',
+      name: 'event',
       component: Event,
     },
     {
       path: '/video/:videoId',
-      name: 'Video',
+      name: 'video',
       component: Video,
     },
   ],
