@@ -23,7 +23,7 @@ export default {
 
 <template lang="pug">
   md-toolbar
-      md-button.md-icon-button(@click="openDrawer")
+      md-button.md-icon-button(v-if="isSignedIn" @click="openDrawer")
         md-icon menu
       router-link.md-title(to="/") Disaster Damage Video Tagger
       md-button(v-if="!isSignedIn" @click="signInWithGoogle") Sign in or register

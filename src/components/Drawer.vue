@@ -55,10 +55,6 @@ export default {
   md-drawer(
   :md-active.sync="isDrawerOpen"
   )
-    // sign in
-    md-content.md-primary.not-signed-in(v-if="!isSignedIn")
-      md-button.signin-button.md-raised(@click="signInWithGoogle") Sign in or register
-
     // current user
     md-list.user-section.md-double-line(v-if="isSignedIn")
       md-list-item
@@ -102,12 +98,6 @@ export default {
 
 <style scoped lang="sass">
   @import '../styles/theme'
-  .not-signed-in
-    display: flex
-    justify-content: center
-    align-items: center
-    height: 100px
-
   .user-section
     background-color: $md-primary
   .display-name
