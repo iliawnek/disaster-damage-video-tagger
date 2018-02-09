@@ -19,7 +19,7 @@ export default {
         'Browse videos of recent disaster events, or submit your own.',
         'Tag video frames that contain something of interest.',
         'Categorise and describe what you\'ve tagged.',
-        'Agencies will use all submitted tags to assist their relief effort.',
+        'All submitted tags can be used by agencies to assist their relief effort.',
       ],
     }
   },
