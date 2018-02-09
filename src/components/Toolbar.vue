@@ -1,5 +1,5 @@
 <script>
-import {mapGetters, mapMutations} from 'vuex'
+import {mapGetters, mapMutations, mapActions} from 'vuex'
 
 export default {
   name: 'toolbar',
@@ -14,6 +14,9 @@ export default {
     ...mapMutations({
       openDrawer: 'ui/openDrawer',
     }),
+    ...mapActions({
+      signInWithGoogle: 'auth/signInWithGoogle',
+    }),
   },
 }
 </script>
@@ -23,7 +26,7 @@ export default {
       md-button.md-icon-button(@click="openDrawer")
         md-icon menu
       router-link.md-title(to="/") Disaster Damage Video Tagger
-      md-button(v-if="!isSignedIn" @click="openDrawer") Sign in or register
+      md-button(v-if="!isSignedIn" @click="signInWithGoogle") Sign in or register
 </template>
 
 <style scoped lang="sass">

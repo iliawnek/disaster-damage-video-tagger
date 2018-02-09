@@ -57,7 +57,7 @@ export default {
   )
     // sign in
     md-content.md-primary.not-signed-in(v-if="!isSignedIn")
-      md-button.signin-button.md-raised(@click="signInWithGoogle") Enter with Google
+      md-button.signin-button.md-raised(@click="signInWithGoogle") Sign in or register
 
     // current user
     md-list.user-section.md-double-line(v-if="isSignedIn")

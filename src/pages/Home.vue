@@ -1,5 +1,5 @@
 <script>
-import {mapMutations} from 'vuex'
+import {mapGetters, mapActions} from 'vuex'
 
 export default {
   name: 'Home',
@@ -24,10 +24,23 @@ export default {
     }
   },
 
-  methods: {
-    ...mapMutations({
-      openDrawer: 'ui/openDrawer',
+  computed: {
+    ...mapGetters({
+      isSignedIn: 'auth/isSignedIn',
     }),
+  },
+
+  methods: {
+    ...mapActions({
+      signInWithGoogle: 'auth/signInWithGoogle',
+    }),
+    getStarted () {
+      if (this.isSignedIn) {
+        this.$router.push({name: 'browse'})
+      } else {
+        this.signInWithGoogle()
+      }
+    },
   },
 }
 </script>
@@ -39,7 +52,7 @@ export default {
         .tagline {{tagline}}
         .short-description {{shortDescription}}
         div
-          md-button.call-to-action.md-primary.md-raised(@click="openDrawer") Get started
+          md-button.call-to-action.md-primary.md-raised(@click="getStarted") Get started
 
     .section.md-white
       .section-content
