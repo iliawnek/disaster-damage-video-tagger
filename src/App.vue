@@ -1,4 +1,5 @@
 <script>
+import {mapState} from 'vuex'
 import Toolbar from '@/components/Toolbar'
 import Drawer from '@/components/Drawer'
 import NewAgencyDialog from '@/components/NewAgencyDialog'
@@ -7,6 +8,7 @@ import NewVideoDialog from '@/components/NewVideoDialog'
 
 export default {
   name: 'app',
+
   components: {
     Toolbar,
     Drawer,
@@ -14,6 +16,7 @@ export default {
     NewEventDialog,
     NewVideoDialog,
   },
+
   data () {
     return {
       email: '',
@@ -21,14 +24,21 @@ export default {
       passwordAgain: '',
     }
   },
+
   beforeCreate () {
     this.$store.dispatch('auth/getUser')
+  },
+
+  computed: {
+    ...mapState({
+      isUserLoaded: (state) => state.auth.isUserLoaded,
+    }),
   },
 }
 </script>
 
 <template lang="pug">
-  #app
+  #app(v-if="isUserLoaded")
     toolbar
     drawer
     new-agency-dialog

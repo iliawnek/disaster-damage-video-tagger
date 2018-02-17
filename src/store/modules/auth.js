@@ -8,10 +8,14 @@ const usersRef = db.ref('users')
 
 export default {
   namespaced: true,
+
   state: {
     user: null,
     data: null,
+    isUserLoading: false,
+    isUserLoaded: false,
   },
+
   getters: {
     isSignedIn: (state) => (state.user !== null && state.data !== null),
 
@@ -19,6 +23,7 @@ export default {
 
     currentUid: (state) => state.user && state.user.uid,
   },
+
   mutations: {
     updateUser (state, {user}) {
       state.user = {
@@ -34,11 +39,25 @@ export default {
       state.user = null
       state.data = null
     },
+
+    setIsUserLoaded (state) {
+      state.isUserLoading = false
+      state.isUserLoaded = true
+    },
+
+    setIsUserLoading (state) {
+      state.isUserLoading = true
+    },
   },
+
   actions: {
     setDataRef: firebaseAction(
-      ({bindFirebaseRef}, ref) => {
-        bindFirebaseRef('data', ref)
+      ({bindFirebaseRef}, {ref, commit}) => {
+        bindFirebaseRef('data', ref, {
+          readyCallback: () => {
+            commit('setIsUserLoaded')
+          },
+        })
       }
     ),
 
@@ -67,11 +86,18 @@ export default {
     },
 
     getUser ({commit, dispatch}) {
+      commit('setIsUserLoading')
       auth.onAuthStateChanged((user) => {
         if (user) {
           commit('updateUser', {user})
-          dispatch('setDataRef', usersRef.child(user.uid))
-        } else commit('clearUser')
+          dispatch('setDataRef', {
+            ref: usersRef.child(user.uid),
+            commit,
+          })
+        } else {
+          commit('clearUser')
+          commit('setIsUserLoaded')
+        }
       })
     },
 
