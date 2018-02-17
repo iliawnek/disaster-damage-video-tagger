@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import store from '@/store'
 import Router from 'vue-router'
 import Home from '@/pages/Home'
 import Browse from '@/pages/Browse'
@@ -52,16 +51,6 @@ const router = new Router({
       component: Video,
     },
   ],
-})
-
-// redirect to home if not signed in
-router.beforeEach((to, from, next) => {
-  const isSignedIn = store.getters['auth/isSignedIn']
-  if (to.name !== 'home' && !isSignedIn) {
-    next({name: 'home'})
-  } else {
-    next()
-  }
 })
 
 export default router
